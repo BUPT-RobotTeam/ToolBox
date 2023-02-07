@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1054</width>
+    <height>642</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Tool Box</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/res/images/v1logo.png</normaloff>:/res/images/v1logo.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
+    <property name="leftMargin">
+     <number>6</number>
+    </property>
+    <property name="bottomMargin">
+     <number>2</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="pageLabel">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>220</width>
+            <height>56</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="res.qrc">:/res/images/tool_box.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="pageList">
+          <property name="minimumSize">
+           <size>
+            <width>220</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>220</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="pageWidget">
+        <property name="currentIndex">
+         <number>-1</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <property name="spacing">
+       <number>2</number>
+      </property>
+      <item row="0" column="10">
+       <widget class="QPushButton" name="cmdSendButton_3">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="whatsThis">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="cmdSendEdit_11"/>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="cmdSendEdit_1">
+        <property name="whatsThis">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>1:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="15">
+       <widget class="QLineEdit" name="cmdSendEdit_0"/>
+      </item>
+      <item row="1" column="16">
+       <widget class="QPushButton" name="cmdSendButton_0">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QPushButton" name="cmdSendButton_7">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="whatsThis">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
+       <widget class="QPushButton" name="cmdSendButton_2">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="whatsThis">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="10">
+       <widget class="QPushButton" name="cmdSendButton_8">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="13">
+       <widget class="QPushButton" name="cmdSendButton_9">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="9">
+       <widget class="QLineEdit" name="cmdSendEdit_3"/>
+      </item>
+      <item row="0" column="8">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>3:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>6:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="9">
+       <widget class="QLineEdit" name="cmdSendEdit_8"/>
+      </item>
+      <item row="1" column="4">
+       <widget class="QPushButton" name="cmdSendButton_6">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="whatsThis">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="cmdSendEdit_12"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="cmdSendButton_12">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="whatsThis">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="11">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>4:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>7:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QLineEdit" name="cmdSendEdit_7"/>
+      </item>
+      <item row="0" column="15">
+       <widget class="QLineEdit" name="cmdSendEdit_5"/>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="cmdSendButton_1">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="whatsThis">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+2</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="16">
+       <widget class="QPushButton" name="cmdSendButton_5">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="cmdSendEdit_6"/>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>2:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="13">
+       <widget class="QPushButton" name="cmdSendButton_4">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="11">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>9:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="cmdSendButton_11">
+        <property name="toolTip">
+         <string>Send</string>
+        </property>
+        <property name="whatsThis">
+         <string>Send</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/res/icons/Circled Play-96.png</normaloff>:/res/icons/Circled Play-96.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="12">
+       <widget class="QLineEdit" name="cmdSendEdit_4"/>
+      </item>
+      <item row="1" column="8">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>8:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="12">
+       <widget class="QLineEdit" name="cmdSendEdit_9"/>
+      </item>
+      <item row="0" column="6">
+       <widget class="QLineEdit" name="cmdSendEdit_2"/>
+      </item>
+      <item row="0" column="14">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>5:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="14">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>0:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1054</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionVESCToolChangelog"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+    <addaction name="actionAboutQt"/>
+    <addaction name="separator"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>24</width>
+     <height>24</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>RightToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionReconnect"/>
+   <addaction name="actionDisconnect"/>
+   <addaction name="separator"/>
+   <addaction name="actionRxPControl"/>
+   <addaction name="actionTxPControl"/>
+   <addaction name="actionKeyboardControl"/>
+   <addaction name="actionIMU"/>
+   <addaction name="actionSendAlive"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionDisconnect">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/Disconnected-96.png</normaloff>:/res/icons/Disconnected-96.png</iconset>
+   </property>
+   <property name="text">
+    <string>disconnect</string>
+   </property>
+   <property name="toolTip">
+    <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionReconnect">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/Connected-96.png</normaloff>:/res/icons/Connected-96.png</iconset>
+   </property>
+   <property name="text">
+    <string>reconnect</string>
+   </property>
+   <property name="toolTip">
+    <string>Reconnect last connection</string>
+   </property>
+  </action>
+  <action name="actionRxPControl">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/rxp_off.png</normaloff>
+     <normalon>:/res/icons/rxp_on.png</normalon>:/res/icons/rxp_off.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rx Protocol Control</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable Rx Protocol Control</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/Shutdown-96.png</normaloff>:/res/icons/Shutdown-96.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/About-96.png</normaloff>:/res/icons/About-96.png</iconset>
+   </property>
+   <property name="text">
+    <string>About Tool Box</string>
+   </property>
+  </action>
+  <action name="actionKeyboardControl">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/keys_off.png</normaloff>
+     <normalon>:/res/icons/keys_on.png</normalon>:/res/icons/keys_off.png</iconset>
+   </property>
+   <property name="text">
+    <string>keyboardControl</string>
+   </property>
+   <property name="toolTip">
+    <string>Use arrow keys to control motor</string>
+   </property>
+  </action>
+  <action name="actionTxPControl">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/txp_off.png</normaloff>
+     <normalon>:/res/icons/txp_on.png</normalon>:/res/icons/txp_off.png</iconset>
+   </property>
+   <property name="text">
+    <string>Tx Protocol Control</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable Tx Protocol Control</string>
+   </property>
+  </action>
+  <action name="actionSendAlive">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/alive_off.png</normaloff>
+     <normalon>:/res/icons/alive_on.png</normalon>:/res/icons/alive_off.png</iconset>
+   </property>
+   <property name="text">
+    <string>Send Alive Commands</string>
+   </property>
+   <property name="toolTip">
+    <string>Send alive packets periodically to prevent timeout</string>
+   </property>
+  </action>
+  <action name="actionAboutQt">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/About-96.png</normaloff>:/res/icons/About-96.png</iconset>
+   </property>
+   <property name="text">
+    <string>About Qt</string>
+   </property>
+   <property name="toolTip">
+    <string>Show the Qt library's About box</string>
+   </property>
+  </action>
+  <action name="actionVESCToolChangelog">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/About-96.png</normaloff>:/res/icons/About-96.png</iconset>
+   </property>
+   <property name="text">
+    <string>Tool Box Changelog</string>
+   </property>
+  </action>
+  <action name="actionIMU">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/icons/imu_off.png</normaloff>
+     <normalon>:/res/icons/imu_on.png</normalon>:/res/icons/imu_off.png</iconset>
+   </property>
+   <property name="text">
+    <string>IMU</string>
+   </property>
+   <property name="toolTip">
+    <string>Activate IMU Sampling</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
+ <connections/>
+</ui>
