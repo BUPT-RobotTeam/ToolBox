@@ -31,6 +31,7 @@ int y_toggle=1;
 int x2_toggle=1;
 int y2_toggle=1;
 int curve=-1;
+float res_w,res_h;
 
 Bezier *bezier_path = new Bezier[10];
 int bezier_num = 1;
@@ -53,6 +54,14 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 
     img = new QImage;
     img->load(":/res/path_image/ground.png");
+
+    res_w=float(ui->customPlot->width());
+    res_h=float(ui->customPlot->width())/float(img->size().width())*float(img->size().height());
+    ui->customPlot->resize(int(res_w),int(res_h));
+    qDebug()<<"init"<<ui->customPlot->width()<<ui->customPlot->height()<<img->size().height();
+
+    newImg = new QImage;
+    *newImg = img->scaled(int(res_w),int(res_h));
     point_num=0;
 
     translate_dx = ui->Edit_translate_dx->text().toDouble();
@@ -67,6 +76,7 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     ui->widget->setMinimumSize(500,1000);
 
     init_table_out();
+    table_update();
 
     actionScreen = new QAction();
     connect(ui->spinBox_kspeed, SIGNAL(valueChanged(int)), ui->Slider_kspeed, SLOT(setValue(int)));
@@ -112,8 +122,8 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     ui->customPlot->yAxis2->setSubTickLength(4);
     ui->customPlot->yAxis2->setNumberFormat("g");
 
-    init_table_out();
-    table_update();
+    ui->customPlot->addGraph();
+    ui->customPlot->addGraph();
 }
 
 
@@ -262,25 +272,16 @@ void PagePath::on_Button_load_path_clicked()
 
     map_width = ui->Edit_map_width->text().toFloat();
     map_height = ui->Edit_map_heigh->text().toFloat();
-    float res_w,res_h;
+
     res_w=float(ui->customPlot->width());
     res_h=float(ui->customPlot->width())/float(img->size().width())*float(img->size().height());
-    res_h=res_h>ui->customPlot->height()?ui->customPlot->height():res_h;
-    res_w=res_h>ui->customPlot->height()?float(ui->customPlot->height())/res_h*res_w:res_w;
     ui->customPlot->resize(int(res_w),int(res_h));
-
-    QImage newImg = img->scaled(int(res_w),int(res_h));
+    *newImg = img->scaled(int(res_w),int(res_h));
     QLinearGradient plotGradient;
     plotGradient.setColorAt(0, QColor(255, 255, 255, 0));
     ui->customPlot->axisRect()->setBackground(plotGradient);
-    ui->customPlot->axisRect()->setBackground(QPixmap::fromImage(newImg));
+    ui->customPlot->axisRect()->setBackground(QPixmap::fromImage(*newImg));
     ui->customPlot->axisRect()->setBackgroundScaledMode(Qt::AspectRatioMode::IgnoreAspectRatio);
-
-    ui->customPlot->addGraph();
-    ui->customPlot->xAxis->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
-    ui->customPlot->xAxis2->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
-    ui->customPlot->yAxis->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
-    ui->customPlot->yAxis2->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
 
     if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==1)
     {
@@ -302,6 +303,10 @@ void PagePath::on_Button_load_path_clicked()
         y_toggle=1;
         ui->customPlot->graph(0)->setKeyAxis(ui->customPlot->xAxis);
         ui->customPlot->graph(0)->setValueAxis(ui->customPlot->yAxis);
+        ui->customPlot->graph(1)->setKeyAxis(ui->customPlot->xAxis);
+        ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis);
+        ui->customPlot->xAxis->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
+        ui->customPlot->yAxis->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
     }
     else if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==-1)
     {
@@ -323,6 +328,10 @@ void PagePath::on_Button_load_path_clicked()
         y_toggle=-1;
         ui->customPlot->graph(0)->setKeyAxis(ui->customPlot->xAxis2);
         ui->customPlot->graph(0)->setValueAxis(ui->customPlot->yAxis);
+        ui->customPlot->graph(1)->setKeyAxis(ui->customPlot->xAxis2);
+        ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis);
+        ui->customPlot->xAxis2->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
+        ui->customPlot->yAxis->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
     }
     else if(ui->Edit_x_toggle->text().toInt()==-1 && ui->Edit_y_toggle->text().toInt()==1)
     {
@@ -344,8 +353,12 @@ void PagePath::on_Button_load_path_clicked()
         y2_toggle=1;
         ui->customPlot->graph(0)->setKeyAxis(ui->customPlot->xAxis);
         ui->customPlot->graph(0)->setValueAxis(ui->customPlot->yAxis2);
+        ui->customPlot->graph(1)->setKeyAxis(ui->customPlot->xAxis);
+        ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis2);
+        ui->customPlot->xAxis->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
+        ui->customPlot->yAxis2->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
     }
-    else
+    else if(ui->Edit_x_toggle->text().toInt()==-1 && ui->Edit_y_toggle->text().toInt()==-1)
     {
         ui->customPlot->xAxis2->setRange(-ui->Edit_translate_dy->text().toFloat(), map_width-ui->Edit_translate_dy->text().toFloat());
         ui->customPlot->yAxis2->setRange(-ui->Edit_translate_dx->text().toFloat(), map_height-ui->Edit_translate_dx->text().toFloat());
@@ -365,13 +378,16 @@ void PagePath::on_Button_load_path_clicked()
         y2_toggle=-1;
         ui->customPlot->graph(0)->setKeyAxis(ui->customPlot->xAxis2);
         ui->customPlot->graph(0)->setValueAxis(ui->customPlot->yAxis2);
+        ui->customPlot->graph(1)->setKeyAxis(ui->customPlot->xAxis2);
+        ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis2);
+        ui->customPlot->xAxis2->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
+        ui->customPlot->yAxis2->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
     }
 
     ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::green, 8));
     ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
     ui->customPlot->graph(0)->setData(x, y);
 
-    ui->customPlot->addGraph();
     ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::red, 2), QBrush(Qt::white), 8));
     ui->customPlot->graph(1)->setLineStyle(QCPGraph::lsNone);
     ui->customPlot->graph(1)->setData(x1, y1);
@@ -430,7 +446,7 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
             if(fabs(x_val-x[i])<0.2&&fabs(y_val-y[i])<0.2){
                 m_point=i;
                 curve=0;
-//                qDebug()<<"left now is"<<i;
+                //                qDebug()<<"left now is"<<i;
                 break;
             }
         }
@@ -440,7 +456,7 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
                 if(fabs(x_val-x1[i])<0.2&&fabs(y_val-y1[i])<0.2){
                     m_point=i;
                     curve=1;
-//                    qDebug()<<"left now is"<<i;
+                    //                    qDebug()<<"left now is"<<i;
                     break;
                 }
             }
@@ -456,7 +472,7 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
         }
         for(int i=0;i<x.size();i++){
             if(fabs(x_val-x[i])<0.2&&fabs(y_val-y[i])<0.2){
-//                qDebug()<<"right now is"<<i;
+                //                qDebug()<<"right now is"<<i;
                 n_point=i;
                 curve=0;
                 break;
@@ -466,7 +482,7 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
             if(fabs(x_val-x1[i])<0.2&&fabs(y_val-y1[i])<0.2){
                 n_point=i;
                 curve=1;
-//                qDebug()<<"right now is"<<i;
+                //                qDebug()<<"right now is"<<i;
                 break;
             }
         }
@@ -915,19 +931,16 @@ void PagePath::on_Button_load_img_clicked()
     }
     ui->Edit_img_location->setText(tempFilename);
     img->load(tempFilename);
-
-    float res_w,res_h;
     res_w=float(ui->customPlot->width());
     res_h=float(ui->customPlot->width())/float(img->size().width())*float(img->size().height());
     ui->customPlot->resize(int(res_w),int(res_h));
-    QImage newImg = img->scaled(int(res_w),int(res_h));
+    *newImg = img->scaled(int(res_w),int(res_h));
     QLinearGradient plotGradient;
     plotGradient.setColorAt(0, QColor(255, 255, 255, 0));
     ui->customPlot->axisRect()->setBackground(plotGradient);
-    ui->customPlot->axisRect()->setBackground(QPixmap::fromImage(newImg));
+    ui->customPlot->axisRect()->setBackground(QPixmap::fromImage(*newImg));
     ui->customPlot->axisRect()->setBackgroundScaledMode(Qt::AspectRatioMode::IgnoreAspectRatio);
     ui->customPlot->replot();
-    //    qDebug()<<"picture loading---"<<ui->customPlot->width()<<ui->customPlot->height();
 }
 
 

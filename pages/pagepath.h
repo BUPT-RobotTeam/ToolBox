@@ -95,6 +95,7 @@ private:
     QStandardItem *aItem;
     Bezier_Label *bezier_label;
     QImage *img;
+    QImage *newImg;
     Mychart *mychart;
     QLineEdit *point;
     QLabel *xy;
