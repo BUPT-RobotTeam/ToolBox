@@ -39,7 +39,7 @@ RESOURCES += res.qrc
 
 
 # V-rep lib
-#此处外部库的添加使用了绝对路径，相对路径有问题
+
 #LIBS += -L'D:\\vrepdll' -lremoteApi
 #INCLUDEPATH += './v-rep/remoteApi/common'
 #DEPENDPATH += './v-rep/remoteApi/common'
