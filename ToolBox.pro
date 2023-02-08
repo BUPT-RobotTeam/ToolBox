@@ -143,4 +143,4 @@ build_original {
     RESOURCES +=
     DEFINES += VER_ORIGINAL
 }
-CONFIG += console
+#CONFIG += console

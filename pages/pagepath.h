@@ -86,16 +86,9 @@ private slots:
 
 private:
     Ui::PagePath *ui;
-    int m_point;
-    int n_point;
-    int point_num;
-    int x_toggle;
-    int y_toggle;
-    int x2_toggle;
-    int y2_toggle;
     QVector<double> x0,y0;
-    QVector<double> x, y; // 初始化向量x和y
-    QVector<double> x1, y1;// 初始化向量x和y
+    QVector<double> x, y;
+    QVector<double> x1, y1;
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *model;
