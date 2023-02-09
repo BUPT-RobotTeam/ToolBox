@@ -70,7 +70,7 @@ private slots:
 
     void drawpos(float x, float y);
 
-    void on_Button_cmp_clicked();
+//    void on_Button_cmp_clicked();
 
     void on_Button_add_point_clicked();
 
@@ -86,27 +86,22 @@ private slots:
 
 private:
     Ui::PagePath *ui;
-    int m_point;
-    int n_point;
-    int point_num;
-    int x_toggle;
-    int y_toggle;
-    int x2_toggle;
-    int y2_toggle;
     QVector<double> x0,y0;
-    QVector<double> x, y; // 初始化向量x和y
-    QVector<double> x1, y1;// 初始化向量x和y
+    QVector<double> x, y;
+    QVector<double> x1, y1;
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *model;
     QStandardItem *aItem;
     Bezier_Label *bezier_label;
     QImage *img;
+    QImage *newImg;
     Mychart *mychart;
     QLineEdit *point;
     QLabel *xy;
     QLayout *point_line;
     QAction *actionScreen;
+//    QPushButton *pushButton;
 };
 
 #endif // PAGEPATH_H

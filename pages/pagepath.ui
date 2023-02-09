@@ -56,6 +56,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_9">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetMinimumSize</enum>
+             </property>
              <item>
               <widget class="QLabel" name="label_14">
                <property name="text">
@@ -80,6 +83,9 @@
            </item>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_5">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetMinimumSize</enum>
+             </property>
              <item>
               <widget class="QLabel" name="label_15">
                <property name="text">
@@ -104,6 +110,9 @@
            </item>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_7">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetMinimumSize</enum>
+             </property>
              <item>
               <widget class="QLabel" name="label_12">
                <property name="text">
@@ -137,6 +146,9 @@
            </item>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_8">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetMinimumSize</enum>
+             </property>
              <item>
               <widget class="QLabel" name="label_22">
                <property name="sizePolicy">
@@ -179,8 +191,17 @@
              <property name="spacing">
               <number>7</number>
              </property>
+             <property name="sizeConstraint">
+              <enum>QLayout::SetMinimumSize</enum>
+             </property>
              <item>
               <widget class="QLabel" name="label_30">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>平移、旋转坐标系(顺时针为旋转正方向)</string>
                </property>
@@ -188,6 +209,9 @@
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetMinimumSize</enum>
+               </property>
                <item>
                 <widget class="QLabel" name="label_33">
                  <property name="text">
@@ -632,7 +656,7 @@
                   <x>0</x>
                   <y>0</y>
                   <width>233</width>
-                  <height>255</height>
+                  <height>289</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -711,9 +735,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="Button_create_file">
+             <widget class="QPushButton" name="Button_update_point">
               <property name="text">
-               <string>生成文件</string>
+               <string>更新输出</string>
               </property>
              </widget>
             </item>
@@ -729,20 +753,13 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="Button_cmp">
+             <widget class="QPushButton" name="Button_create_file">
               <property name="text">
-               <string>曲线比对</string>
+               <string>生成文件</string>
               </property>
              </widget>
             </item>
            </layout>
-          </item>
-          <item>
-           <widget class="QPushButton" name="Button_update_point">
-            <property name="text">
-             <string>更新输出</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </widget>
@@ -907,8 +924,6 @@
   <tabstop>Button_create_path</tabstop>
   <tabstop>Button_load_path</tabstop>
   <tabstop>Button_add_bezier</tabstop>
-  <tabstop>Button_create_file</tabstop>
-  <tabstop>Button_clear</tabstop>
   <tabstop>Edit_bezier_length</tabstop>
   <tabstop>Edit_point_num</tabstop>
   <tabstop>plainTextEdit_input</tabstop>
