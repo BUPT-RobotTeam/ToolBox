@@ -75,7 +75,13 @@ set(
         widgets/historylineedit.h
         widgets/vesc3dview.h
         widgets/superslider.h
-)
+        time_optimizer/mosek.h
+        time_optimizer/time_optimizer.h
+        time_optimizer/timeAllocator.h
+        time_optimizer/traj_poly_mono.h
+        time_optimizer/trajectory_base.h
+        time_optimizer/trajectory_generator.h
+        time_optimizer/trajectory_generator_waypoint.h)
 
 set(
         FORMS
@@ -139,6 +145,7 @@ set(
         widgets/vesc3dview.cpp 
         widgets/superslider.cpp
 
+        time_optimizer/time_optimizer.cpp time_optimizer/trajectory_generator.cpp time_optimizer/trajectory_generator_waypoint.cpp
 )
 option(HAS_SERIALPORT "use serial port" on)
 
@@ -153,6 +160,7 @@ endif()
 #QT5_WRAP_UI(UIS ${FORMS})
 
 include_directories(./ pages res time_optimizer v-rep widgets)
+link_directories( ${PROJECT_SOURCE_DIR}/time_optimizer/mosek8_1 )
 
 set(
         RESOURCES
@@ -176,5 +184,6 @@ target_link_libraries(${PROJECT_NAME}_${PROJECT_VERSION}
     Qt5::Quick
     Qt5::QuickControls2
     Qt5::SerialPort
-#    Qt5::LinguistTools
+    mosek64_8_1.lib
+        #    Qt5::LinguistTools
 )
