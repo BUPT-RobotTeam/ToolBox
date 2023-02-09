@@ -70,7 +70,7 @@ private slots:
 
     void drawpos(float x, float y);
 
-    void on_Button_cmp_clicked();
+//    void on_Button_cmp_clicked();
 
     void on_Button_add_point_clicked();
 
@@ -101,6 +101,7 @@ private:
     QLabel *xy;
     QLayout *point_line;
     QAction *actionScreen;
+//    QPushButton *pushButton;
 };
 
 #endif // PAGEPATH_H

@@ -124,6 +124,16 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 
     ui->customPlot->addGraph();
     ui->customPlot->addGraph();
+
+
+//        QGraphicsScene* pScene = new QGraphicsScene(this);
+//        pScene->addWidget (ui->button);
+//        QGraphicsView* pView = new QGraphicsView(ui->groupBox_2);
+//        pView->setScene(pScene);
+//        pView->setFixedSize (ui->button->width(),ui->button->height());
+////        pView->setVerticalScrollBarPolicy (Qt::ScrollBarAlwaysOff);
+//        pView->rotate(90);
+
 }
 
 
@@ -945,15 +955,15 @@ void PagePath::on_Button_load_img_clicked()
 }
 
 
-/**
- * @brief 点击“曲线对比”按钮
- *
- */
-void PagePath::on_Button_cmp_clicked()
-{
-    mychart = new Mychart;
-    mychart->show();
-}
+///**
+// * @brief 点击“曲线对比”按钮
+// *
+// */
+//void PagePath::on_Button_cmp_clicked()
+//{
+//    mychart = new Mychart;
+//    mychart->show();
+//}
 
 
 /**
