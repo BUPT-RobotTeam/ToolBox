@@ -283,6 +283,7 @@ void PagePath::on_Button_load_path_clicked()
     ui->customPlot->axisRect()->setBackground(QPixmap::fromImage(*newImg));
     ui->customPlot->axisRect()->setBackgroundScaledMode(Qt::AspectRatioMode::IgnoreAspectRatio);
 
+    ui->customPlot->axisRect()->setMinimumMargins(QMargins(20, 0, 20, 0));
     if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==1)
     {
         ui->customPlot->xAxis->setRange(-ui->Edit_translate_dy->text().toFloat(), map_width-ui->Edit_translate_dy->text().toFloat());
