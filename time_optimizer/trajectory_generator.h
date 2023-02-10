@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <math.h>
+#include <cmath>
 #include <Eigen/Dense>
 #include <random>
 
@@ -23,18 +23,14 @@ using namespace Eigen;
 // namespace backward {
 //     backward::SignalHandling sh;
 // }
-int _poly_num1D;
+
 class TimeOptimizerTraj
 {
     public:
 
-    TimeOptimizerTraj(double max_vel,double max_acc=1.0,double max_d_acc=0.5,double d_s=0.5,
-                      int dev_order=4,int min_order=3,double rho=0.000):
-        _dev_order(dev_order),_min_order(min_order),_rho(rho),
-        _MAX_Vel(max_vel),_MAX_Acc(max_acc),_MAX_d_Acc(max_d_acc),_d_s(d_s)
-    {
-        _poly_num1D = 2 * _dev_order;
-    };
+    TimeOptimizerTraj(double max_vel,double max_acc,double max_d_acc=0.5,double d_s=0.5,
+                      int dev_order=4,int min_order=3,double rho=0.000);
+
 
 
     void trajGeneration(Eigen::MatrixXd path,double max_vel,double max_acc=1.0,double _max_d_acc=0.5,double _d_s=0.5);
@@ -79,4 +75,4 @@ class TimeOptimizerTraj
 
 
 
-#endif
+#endif //_TRAJ_GEN_H_

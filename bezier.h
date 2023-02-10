@@ -12,7 +12,7 @@ class Bezier
 public:
     int input_num;
     int num_btw_two;
-    int out_num;
+    int out_num=0;
     int max_speed;
     int k_speed;
     float now_angle;

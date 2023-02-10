@@ -1,6 +1,24 @@
 #include <trajectory_generator.h>
+int _poly_num1D;
 
 
+TimeOptimizerTraj::TimeOptimizerTraj(double max_vel,double max_acc,double max_d_acc,double d_s,
+                  int dev_order,int min_order,double rho):
+        _MAX_Vel(max_vel),_MAX_Acc(max_acc),_MAX_d_Acc(max_d_acc),
+        _d_s(d_s),_rho(rho),_dev_order(dev_order),_min_order(min_order)
+{
+    _poly_num1D = 2 * _dev_order;
+};
+
+
+/**
+ * @brief 轨迹生成函数
+ * @param path Eigen::MatrixXd 路径点
+ * @param max_vel
+ * @param max_acc
+ * @param _max_d_acc
+ * @param _d_s
+ */
 void TimeOptimizerTraj::trajGeneration(Eigen::MatrixXd path, double max_vel, double max_acc, double _max_d_acc, double _d_s)
 {
     TrajectoryGeneratorWaypoint  trajectoryGeneratorWaypoint;

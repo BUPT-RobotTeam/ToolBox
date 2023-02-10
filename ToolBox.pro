@@ -113,7 +113,7 @@ SOURCES += main.cpp\
     utility.cpp \
     tcpserversimple.cpp \
     bezier.cpp \
-    bezier_label.cpp
+
 
 HEADERS  += mainwindow.h \
     packet.h \
@@ -125,7 +125,7 @@ HEADERS  += mainwindow.h \
     utility.h \
     tcpserversimple.h \
     bezier.h \
-    bezier_label.h
+
 
 FORMS    += mainwindow.ui
 

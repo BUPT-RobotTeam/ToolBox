@@ -1,5 +1,5 @@
 FORMS += \
-    $$PWD/mychart.ui \
+
     $$PWD/pageconnection.ui \
     $$PWD/pagedebugprint.ui \
 #    $$PWD/pageterminal.ui \
@@ -18,7 +18,7 @@ FORMS += \
 #    $$PWD/pageomniwheel.ui
 
 HEADERS += \
-    $$PWD/mychart.h \
+
     $$PWD/pageconnection.h \
     $$PWD/pagedebugprint.h \
 #    $$PWD/pageterminal.h \
@@ -37,7 +37,7 @@ HEADERS += \
 #    $$PWD/pageomniwheel.h
 
 SOURCES += \
-    $$PWD/mychart.cpp \
+
     $$PWD/pageconnection.cpp \
     $$PWD/pagedebugprint.cpp \
 #    $$PWD/pageterminal.cpp \

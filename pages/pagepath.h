@@ -6,31 +6,20 @@
 #include "bezier.h"
 #include <QStandardItemModel>
 #include "txtdialog.h"
-#include "bezier_label.h"
-#include "mychart.h"
 #include <QLineEdit>
+#include <QLabel>
 
 namespace Ui {
 class PagePath;
 }
 
-extern float map_width;
-extern float map_height;
-extern float map_width_pixel;
-extern float map_height_pixel;
-extern double translate_dx;
-extern double translate_dy;
-extern double translate_dangle;
-extern Bezier *bezier_path;
-extern int bezier_num;
-extern int bezier_cnt;
-extern int toggle_x;
-extern int toggle_y;
-extern QPointF *carpos;
-extern int carpos_cnt;
-extern float width_t;
-extern float height_t;
-
+//extern float map_width;
+//extern float map_height;
+//extern Bezier *bezier_path ;
+//extern int bezier_num;
+//extern int bezier_cnt;
+//extern QPointF *carpos;
+//extern int carpos_cnt;
 class PagePath : public QWidget
 {
     Q_OBJECT
@@ -86,17 +75,16 @@ private slots:
 
 private:
     Ui::PagePath *ui;
-    QVector<double> x0,y0;
-    QVector<double> x, y;
-    QVector<double> x1, y1;
+    QVector<double> x0{10},y0{10};
+    QVector<double> x{10}, y{10};
+    QVector<double> x1{10}, y1{10};
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *model;
     QStandardItem *aItem;
-    Bezier_Label *bezier_label;
+//    Bezier_Label *bezier_label;
     QImage *img;
     QImage *newImg;
-    Mychart *mychart;
     QLineEdit *point;
     QLabel *xy;
     QLayout *point_line;

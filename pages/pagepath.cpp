@@ -10,16 +10,10 @@
 #include <QVector>
 #include <QMenu>
 #include <QTransform>
+#include <time_optimizer/trajectory_generator.h>
 
 float map_width = 0;
 float map_height = 0;
-float map_width_pixel = 0;
-float map_height_pixel = 0;
-double translate_dx = 0;
-double translate_dy = 0;
-double translate_dangle = 0;
-int toggle_x = 1;
-int toggle_y = 1;
 QPointF *carpos = new QPointF[1000];
 int carpos_cnt = 0;
 int m_point=-1;
@@ -33,7 +27,11 @@ int y2_toggle=1;
 int curve=-1;
 float res_w,res_h;
 
+//TODO:: use abstract trajectory generator class;
 Bezier *bezier_path = new Bezier[10];
+QVector<TimeOptimizerTraj> traj_generators;
+
+
 int bezier_num = 1;
 int bezier_cnt = 0;
 
@@ -51,10 +49,10 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 
     ui->setupUi(this);
     mVesc = 0;
-
+    //加载场地图
     img = new QImage;
     img->load(":/res/path_image/ground.png");
-
+    //调整plot尺寸
     res_w=float(ui->customPlot->width());
     res_h=float(ui->customPlot->width())/float(img->size().width())*float(img->size().height());
     ui->customPlot->resize(int(res_w),int(res_h));
@@ -64,9 +62,9 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     *newImg = img->scaled(int(res_w),int(res_h));
     point_num=0;
 
-    translate_dx = ui->Edit_translate_dx->text().toDouble();
-    translate_dy = ui->Edit_translate_dy->text().toDouble();
-    translate_dangle = ui->Edit_translate_dangle->text().toDouble() - 90;
+    ui->Edit_translate_dx->text().toDouble();
+    ui->Edit_translate_dy->text().toDouble();
+    ui->Edit_translate_dangle->text().toDouble() - 90;
 
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),this,SLOT(myMousePressEvent(QMouseEvent*)));
     connect(ui->customPlot,SIGNAL(mouseRelease(QMouseEvent*)),this,SLOT(myMouseReleaseEvent(QMouseEvent*)));
@@ -174,6 +172,7 @@ void PagePath::init_table_out()
  */
 void PagePath::table_update()
 {
+//    if( !bezier_cnt ) {return;}
     for (int i = 0; i <= bezier_path[bezier_cnt].out_num; i++)
     {
         QString num = QString::asprintf("%d", i);
@@ -242,9 +241,9 @@ void PagePath::drawpos(float x, float y)
     carpos[carpos_cnt++].setX(x);
     carpos[carpos_cnt++].setY(y);
     QString pos_ = "";
-    pos_.sprintf("%.3f", x);
+    pos_=QString::asprintf("%.3f", x);
     ui->Edit_posx->setText(pos_);
-    pos_.sprintf("%.3f", y);
+    pos_=QString::asprintf("%.3f", y);
     ui->Edit_posy->setText(pos_);
 }
 
@@ -270,14 +269,14 @@ void PagePath::on_Button_bezier_num_clicked()
  */
 void PagePath::on_Button_load_path_clicked()
 {
-    translate_dangle = ui->Edit_translate_dangle->text().toDouble() - 90;
+    ui->Edit_translate_dangle->text().toDouble() - 90;
     if (ui->Edit_x_toggle->text().toInt())
     {
-        toggle_x = ui->Edit_x_toggle->text().toInt();
+        ui->Edit_x_toggle->text().toInt();
     }
     if (ui->Edit_x_toggle->text().toInt())
     {
-        toggle_y = ui->Edit_x_toggle->text().toInt();
+        ui->Edit_x_toggle->text().toInt();
     }
 
     map_width = ui->Edit_map_width->text().toFloat();
@@ -649,9 +648,9 @@ void PagePath::on_actionScreen_triggered()
 void PagePath::on_Button_add_bezier_clicked()
 {
     bezier_cnt = (bezier_cnt + 1) % bezier_num;
-    ui->Edit_bezier_cnt->clear();
+//    ui->Edit_bezier_cnt->clear();
     QString cnt = "";
-    cnt.sprintf("%d", bezier_cnt);
+    cnt = QString::asprintf("%d", bezier_cnt);
     ui->Edit_bezier_cnt->setText(cnt);
 
     QMessageBox::information(NULL, "提示", "请输入过程点",
@@ -660,7 +659,7 @@ void PagePath::on_Button_add_bezier_clicked()
 
 
 /**
- * @brief 点击“确定”按钮
+ * @brief 点击“确定”按钮，开始规划轨迹
  *
  */
 void PagePath::on_Button_create_path_clicked()
