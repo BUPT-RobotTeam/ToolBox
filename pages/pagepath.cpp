@@ -10,6 +10,8 @@
 #include <QVector>
 #include <QMenu>
 #include <QTransform>
+#include <math.h>
+#define PI                      3.141592654
 
 float map_width = 0;
 float map_height = 0;
@@ -55,18 +57,11 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     img = new QImage;
     img->load(":/res/path_image/ground.png");
 
-    res_w=float(ui->customPlot->width());
-    res_h=float(ui->customPlot->width())/float(img->size().width())*float(img->size().height());
-    ui->customPlot->resize(int(res_w),int(res_h));
-    qDebug()<<"init"<<ui->customPlot->width()<<ui->customPlot->height()<<img->size().height();
-
     newImg = new QImage;
-    *newImg = img->scaled(int(res_w),int(res_h));
-    point_num=0;
 
     translate_dx = ui->Edit_translate_dx->text().toDouble();
     translate_dy = ui->Edit_translate_dy->text().toDouble();
-    translate_dangle = ui->Edit_translate_dangle->text().toDouble() - 90;
+    translate_dangle = ui->Edit_translate_dangle->text().toDouble();
 
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),this,SLOT(myMousePressEvent(QMouseEvent*)));
     connect(ui->customPlot,SIGNAL(mouseRelease(QMouseEvent*)),this,SLOT(myMouseReleaseEvent(QMouseEvent*)));
@@ -125,15 +120,14 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     ui->customPlot->addGraph();
     ui->customPlot->addGraph();
 
-
-//        QGraphicsScene* pScene = new QGraphicsScene(this);
-//        pScene->addWidget (ui->button);
-//        QGraphicsView* pView = new QGraphicsView(ui->groupBox_2);
-//        pView->setScene(pScene);
-//        pView->setFixedSize (ui->button->width(),ui->button->height());
-////        pView->setVerticalScrollBarPolicy (Qt::ScrollBarAlwaysOff);
-//        pView->rotate(90);
-
+    arrow_x = new QCPItemLine(ui->customPlot);
+    textLabel_x = new QCPItemText(ui->customPlot);
+    arrow_y = new QCPItemLine(ui->customPlot);
+    textLabel_y = new QCPItemText(ui->customPlot);
+    arrow_x->setVisible(false);
+    arrow_y->setVisible(false);
+    textLabel_x->setVisible(false);
+    textLabel_y->setVisible(false);
 }
 
 
@@ -270,15 +264,6 @@ void PagePath::on_Button_bezier_num_clicked()
  */
 void PagePath::on_Button_load_path_clicked()
 {
-    translate_dangle = ui->Edit_translate_dangle->text().toDouble() - 90;
-    if (ui->Edit_x_toggle->text().toInt())
-    {
-        toggle_x = ui->Edit_x_toggle->text().toInt();
-    }
-    if (ui->Edit_x_toggle->text().toInt())
-    {
-        toggle_y = ui->Edit_x_toggle->text().toInt();
-    }
 
     map_width = ui->Edit_map_width->text().toFloat();
     map_height = ui->Edit_map_heigh->text().toFloat();
@@ -293,7 +278,6 @@ void PagePath::on_Button_load_path_clicked()
     ui->customPlot->axisRect()->setBackground(QPixmap::fromImage(*newImg));
     ui->customPlot->axisRect()->setBackgroundScaledMode(Qt::AspectRatioMode::IgnoreAspectRatio);
 
-    ui->customPlot->axisRect()->setMinimumMargins(QMargins(20, 0, 20, 0));
     if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==1)
     {
         ui->customPlot->xAxis->setRange(-ui->Edit_translate_dy->text().toFloat(), map_width-ui->Edit_translate_dy->text().toFloat());
@@ -318,6 +302,12 @@ void PagePath::on_Button_load_path_clicked()
         ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis);
         ui->customPlot->xAxis->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
         ui->customPlot->yAxis->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
+
+        arrow_x->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
+        arrow_x->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
+        arrow_y->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
+        arrow_y->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
+
     }
     else if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==-1)
     {
@@ -343,6 +333,11 @@ void PagePath::on_Button_load_path_clicked()
         ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis);
         ui->customPlot->xAxis2->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
         ui->customPlot->yAxis->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
+
+        arrow_x->start->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis);
+        arrow_x->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis);
+        arrow_y->start->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis);
+        arrow_y->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis);
     }
     else if(ui->Edit_x_toggle->text().toInt()==-1 && ui->Edit_y_toggle->text().toInt()==1)
     {
@@ -368,6 +363,11 @@ void PagePath::on_Button_load_path_clicked()
         ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis2);
         ui->customPlot->xAxis->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
         ui->customPlot->yAxis2->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
+
+        arrow_x->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis2);
+        arrow_x->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis2);
+        arrow_y->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis2);
+        arrow_y->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis2);
     }
     else if(ui->Edit_x_toggle->text().toInt()==-1 && ui->Edit_y_toggle->text().toInt()==-1)
     {
@@ -393,6 +393,52 @@ void PagePath::on_Button_load_path_clicked()
         ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis2);
         ui->customPlot->xAxis2->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
         ui->customPlot->yAxis2->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
+
+        arrow_x->start->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
+        arrow_x->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
+        arrow_y->start->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
+        arrow_y->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
+    }
+
+    if(translate_dangle!=0)
+    {
+        ui->customPlot->yAxis2->setVisible(false);
+        ui->customPlot->yAxis->setVisible(false);
+        ui->customPlot->xAxis->setVisible(false);
+        ui->customPlot->xAxis2->setVisible(false);
+
+        arrow_x->setPen(QPen(Qt::blue,3,Qt::PenStyle::SolidLine));
+        arrow_x->start->setCoords(0,0);
+        arrow_x->end->setCoords((double(2))*cos(translate_dangle*PI/180.0) - 0*sin(translate_dangle*PI/180.0), 0*cos(translate_dangle*PI/180.0) + (double(2))*sin(translate_dangle*PI/180.0));
+        arrow_x->setHead(QCPLineEnding::esSpikeArrow);
+        arrow_x->setVisible(true);
+
+        textLabel_x->setPositionAlignment(Qt::AlignTop|Qt::AlignLeft);
+        textLabel_x->position->setType(QCPItemPosition::ptAxisRectRatio);
+        textLabel_x->position->setParentAnchor(arrow_x->end);
+        textLabel_x->setText("X");
+        textLabel_x->setFont(QFont(font().family(), 16,Qt::black));
+        textLabel_x->setVisible(true);
+
+        arrow_y->setPen(QPen(Qt::blue,3,Qt::PenStyle::SolidLine));
+        arrow_y->start->setCoords(0,0);
+        arrow_y->end->setCoords(0*cos(translate_dangle*PI/180.0) - (double(2))*sin(translate_dangle*PI/180.0), (double(2))*cos(translate_dangle*PI/180.0) + 0*sin(translate_dangle*PI/180.0));
+        arrow_y->setHead(QCPLineEnding::esSpikeArrow);
+        arrow_y->setVisible(true);
+
+        textLabel_y->setPositionAlignment(Qt::AlignTop|Qt::AlignLeft);
+        textLabel_y->position->setType(QCPItemPosition::ptAxisRectRatio);
+        textLabel_y->position->setParentAnchor(arrow_y->end);
+        textLabel_y->setText("Y");
+        textLabel_y->setFont(QFont(font().family(), 16,Qt::black));
+        textLabel_y->setVisible(true);
+    }
+    else
+    {
+        arrow_x->setVisible(false);
+        arrow_y->setVisible(false);
+        textLabel_x->setVisible(false);
+        textLabel_y->setVisible(false);
     }
 
     ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::green, 8));
@@ -404,12 +450,6 @@ void PagePath::on_Button_load_path_clicked()
     ui->customPlot->graph(1)->setData(x1, y1);
 
     ui->customPlot->replot();
-
-    //    QCPPainter *painter=new QCPPainter(ui->customPlot);
-    //    ui->customPlot->toPainter(painter);
-    //    painter->rotate(45.0);
-
-    //    qDebug()<<"---plot loading"<<ui->customPlot->width()<<ui->customPlot->height();
 }
 
 
@@ -457,7 +497,6 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
             if(fabs(x_val-x[i])<0.2&&fabs(y_val-y[i])<0.2){
                 m_point=i;
                 curve=0;
-                //                qDebug()<<"left now is"<<i;
                 break;
             }
         }
@@ -467,7 +506,6 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
                 if(fabs(x_val-x1[i])<0.2&&fabs(y_val-y1[i])<0.2){
                     m_point=i;
                     curve=1;
-                    //                    qDebug()<<"left now is"<<i;
                     break;
                 }
             }
@@ -483,7 +521,6 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
         }
         for(int i=0;i<x.size();i++){
             if(fabs(x_val-x[i])<0.2&&fabs(y_val-y[i])<0.2){
-                //                qDebug()<<"right now is"<<i;
                 n_point=i;
                 curve=0;
                 break;
@@ -493,7 +530,6 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
             if(fabs(x_val-x1[i])<0.2&&fabs(y_val-y1[i])<0.2){
                 n_point=i;
                 curve=1;
-                //                qDebug()<<"right now is"<<i;
                 break;
             }
         }
@@ -512,7 +548,6 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
             curve=-1;
         }
     }
-    qDebug()<<"-----pressed"<<"x0_num"<<x0_num;
 }
 
 
@@ -560,22 +595,17 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
     for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
         if(fabs(x_val-x0[i])<0.2&&fabs(y_val-y0[i])<0.2 && !(event->button()&Qt::LeftButton)){
             QString str;
-            str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",i+1)).arg(QString::asprintf("%.3f", x0[i]))
-                    .arg(QString::asprintf("%.3f",y0[i]));
-            qDebug()<<"i"<<i<<"x"<<x0[i]<<"y"<<y0[i];
+            str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",i+1)).
+                    arg(QString::asprintf("%.3f", bezier_path[bezier_cnt].out_points[i].X))
+                    .arg(QString::asprintf("%.3f",bezier_path[bezier_cnt].out_points[i].Y));
+            qDebug()<<"i"<<i<<"x"<<bezier_path[bezier_cnt].out_points[i].X
+                   <<"y"<<bezier_path[bezier_cnt].out_points[i].Y;
             QToolTip::showText(cursor().pos(), str, this);
             break;
         }
     }
     if(m_point==-1)
         return;
-
-    QString str;
-    str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",x0_num+1)).arg(QString::asprintf("%.3f", x_val))
-            .arg(QString::asprintf("%.3f",y_val));
-    qDebug()<<"x0_num"<<x0_num
-           <<"point:"<<x_val<<y_val<<str;
-    QToolTip::showText(cursor().pos(), str, this);
 
     x0[x0_num]=x_val;
     y0[x0_num]=y_val;
@@ -591,8 +621,17 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
         y[m_point]=y_val;
     }
 
-    bezier_path[bezier_cnt].out_points[x0_num].X=x_val;
-    bezier_path[bezier_cnt].out_points[x0_num].Y=y_val;
+    float x0_val=x_val*cos(-translate_dangle * PI / 180.0) - y_val*sin(-translate_dangle* PI / 180.0);
+    float y0_val=y_val*cos(-translate_dangle * PI / 180.0) + x_val*sin(-translate_dangle * PI / 180.0);
+    QString str;
+    str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",x0_num+1)).arg(QString::asprintf("%.3f", x0_val))
+            .arg(QString::asprintf("%.3f",y0_val));
+    qDebug()<<"x0_num"<<x0_num
+           <<"point:"<<x0_val<<y0_val<<str;
+    QToolTip::showText(cursor().pos(), str, this);
+
+    bezier_path[bezier_cnt].out_points[x0_num].X=x0_val;
+    bezier_path[bezier_cnt].out_points[x0_num].Y=y0_val;
 
     ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::green, 8));
     ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
@@ -636,8 +675,6 @@ void PagePath::on_actionScreen_triggered()
     ui->customPlot->graph(0)->setData(x, y);
     ui->customPlot->graph(1)->setData(x1, y1);
     ui->customPlot->replot();
-
-    qDebug()<<"n_point"<<n_point<<"out_num"<<bezier_path[bezier_cnt].out_num;
 }
 
 
@@ -670,7 +707,7 @@ void PagePath::on_Button_create_path_clicked()
     //        QMessageBox::warning(NULL, "过程点数量不能为0", "请输入正确的过程点", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
     //        return;
     //    }
-
+    translate_dangle = ui->Edit_translate_dangle->text().toDouble();
     // 获取路径点
     bezier_path[bezier_cnt].input_num = 0;
     bezier_path[bezier_cnt].num_btw_two = ui->Edit_num_btw_two->text().toInt();
@@ -701,11 +738,6 @@ void PagePath::on_Button_create_path_clicked()
     }
 
     // 路径规划
-    //        for(int i=0;i<bezier_path[bezier_cnt].input_num;i++)
-    //        {
-    //            bezier_path[bezier_cnt].input_points[i].X=bezier_path[bezier_cnt].input_points[i].X+ui->Edit_translate_dy->text().toFloat();
-    //            bezier_path[bezier_cnt].input_points[i].Y=bezier_path[bezier_cnt].input_points[i].Y+ui->Edit_translate_dx->text().toFloat();
-    //        }
     bezier_path[bezier_cnt].out_num = (bezier_path[bezier_cnt].input_num - 1) * bezier_path[bezier_cnt].num_btw_two;
 
     bezier_path[bezier_cnt].ctrlpoints_get();
@@ -782,9 +814,12 @@ void PagePath::on_Button_create_path_clicked()
         x0[j]=bezier_path[bezier_cnt].out_points[j].X;
         y0[j]=bezier_path[bezier_cnt].out_points[j].Y;
     }
-    qDebug()<<"input_num"<<bezier_path[bezier_cnt].input_num<<"out_num"<<bezier_path[bezier_cnt].out_num;
-
-    //    qDebug()<<"-----sure---"<<ui->customPlot->width()<<ui->customPlot->height();
+    if(translate_dangle!=0)
+    {
+        point_rotate(&x,&y,translate_dangle);
+        point_rotate(&x1,&y1,translate_dangle);
+        point_rotate(&x0,&y0,translate_dangle);
+    }
 }
 
 
@@ -993,11 +1028,6 @@ void PagePath::on_Button_add_point_clicked()
     p->setLayout(point_line);
     ui->point_area_3->addWidget(p);
     point_num++;
-    //    qDebug() << point_line->parent()->parent();
-    //    qDebug() << point_line->parent()->parent()->parent();
-    //    qDebug() << ui->point_area_3->children();
-    //    qDebug() << point_line->parent()->parent()->children();
-    //    qDebug("input point=============================:%d", point_num);
 }
 
 
@@ -1056,4 +1086,15 @@ void PagePath::on_Button_update_point_clicked()
 {
     init_table_out();
     table_update();
+}
+
+
+void PagePath::point_rotate(QVector<double> *x,QVector<double> *y, double angle)
+{
+    for (int i=0;i<x->size();i++)
+    {
+        double x_val=(*x)[i],y_val=(*y)[i];
+        (*x)[i]=x_val*cos(angle * PI / 180.0) - y_val*sin(angle * PI / 180.0);
+        (*y)[i]=y_val*cos(angle * PI / 180.0) + x_val*sin(angle * PI / 180.0);
+    }
 }

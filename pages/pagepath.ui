@@ -74,6 +74,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimum">
+                <double>2.000000000000000</double>
+               </property>
                <property name="value">
                 <double>13.300000000000001</double>
                </property>
@@ -100,6 +103,9 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="minimum">
+                <double>2.000000000000000</double>
                </property>
                <property name="value">
                 <double>10.000000000000000</double>
@@ -203,7 +209,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>平移、旋转坐标系(顺时针为旋转正方向)</string>
+                <string>平移、旋转坐标系(逆时针为旋转正方向)</string>
                </property>
               </widget>
              </item>
@@ -268,10 +274,10 @@
                   </sizepolicy>
                  </property>
                  <property name="minimum">
-                  <double>-360.000000000000000</double>
+                  <double>-90.000000000000000</double>
                  </property>
                  <property name="maximum">
-                  <double>360.000000000000000</double>
+                  <double>90.000000000000000</double>
                  </property>
                  <property name="value">
                   <double>0.000000000000000</double>

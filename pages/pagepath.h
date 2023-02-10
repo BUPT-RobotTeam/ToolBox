@@ -9,6 +9,7 @@
 #include "bezier_label.h"
 #include "mychart.h"
 #include <QLineEdit>
+#include <widgets/qcustomplot.h>
 
 namespace Ui {
 class PagePath;
@@ -43,6 +44,7 @@ public:
     void setVesc(VescInterface *vesc);
     void init_table_out();
     void table_update();
+    void point_rotate(QVector<double> *x,QVector<double> *y, double angle);
 
 
 public slots:
@@ -70,7 +72,7 @@ private slots:
 
     void drawpos(float x, float y);
 
-//    void on_Button_cmp_clicked();
+    //    void on_Button_cmp_clicked();
 
     void on_Button_add_point_clicked();
 
@@ -101,7 +103,10 @@ private:
     QLabel *xy;
     QLayout *point_line;
     QAction *actionScreen;
-//    QPushButton *pushButton;
+    QCPItemLine *arrow_x;
+    QCPItemText *textLabel_x;
+    QCPItemLine *arrow_y;
+    QCPItemText *textLabel_y;
 };
 
 #endif // PAGEPATH_H
