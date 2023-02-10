@@ -120,6 +120,8 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     ui->customPlot->addGraph();
     ui->customPlot->addGraph();
 
+
+    // 旋转坐标系
     arrow_x = new QCPItemLine(ui->customPlot);
     textLabel_x = new QCPItemText(ui->customPlot);
     arrow_y = new QCPItemLine(ui->customPlot);
@@ -303,6 +305,7 @@ void PagePath::on_Button_load_path_clicked()
         ui->customPlot->xAxis->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
         ui->customPlot->yAxis->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
 
+        // 选择旋转坐标系坐标轴1
         arrow_x->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
         arrow_x->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
         arrow_y->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
@@ -400,6 +403,8 @@ void PagePath::on_Button_load_path_clicked()
         arrow_y->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
     }
 
+
+    // 旋转坐标系绘制坐标轴
     if(translate_dangle!=0)
     {
         ui->customPlot->yAxis2->setVisible(false);
@@ -592,6 +597,7 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
         y_val = ui->customPlot->yAxis2->pixelToCoord(y_pos);
     }
 
+    // 旋转坐标系游标值
     for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
         if(fabs(x_val-x0[i])<0.2&&fabs(y_val-y0[i])<0.2 && !(event->button()&Qt::LeftButton)){
             QString str;
@@ -604,6 +610,7 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
             break;
         }
     }
+
     if(m_point==-1)
         return;
 
@@ -621,6 +628,7 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
         y[m_point]=y_val;
     }
 
+    // 旋转坐标系游标值
     float x0_val=x_val*cos(-translate_dangle * PI / 180.0) - y_val*sin(-translate_dangle* PI / 180.0);
     float y0_val=y_val*cos(-translate_dangle * PI / 180.0) + x_val*sin(-translate_dangle * PI / 180.0);
     QString str;
@@ -630,6 +638,7 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
            <<"point:"<<x0_val<<y0_val<<str;
     QToolTip::showText(cursor().pos(), str, this);
 
+    // 更改输出值
     bezier_path[bezier_cnt].out_points[x0_num].X=x0_val;
     bezier_path[bezier_cnt].out_points[x0_num].Y=y0_val;
 
@@ -707,7 +716,10 @@ void PagePath::on_Button_create_path_clicked()
     //        QMessageBox::warning(NULL, "过程点数量不能为0", "请输入正确的过程点", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
     //        return;
     //    }
+
+    // 获取坐标系旋转角度
     translate_dangle = ui->Edit_translate_dangle->text().toDouble();
+
     // 获取路径点
     bezier_path[bezier_cnt].input_num = 0;
     bezier_path[bezier_cnt].num_btw_two = ui->Edit_num_btw_two->text().toInt();
@@ -715,7 +727,6 @@ void PagePath::on_Button_create_path_clicked()
     bezier_path[bezier_cnt].max_speed = ui->Edit_max_speed->text().toInt();
     bezier_path[bezier_cnt].now_angle = ui->Edit_now_angle->text().toFloat();
     bezier_path[bezier_cnt].target_angle = ui->Edit_target_angle->text().toFloat();
-
 
     for(int i=0;i<point_num;i++)
     {
@@ -814,6 +825,8 @@ void PagePath::on_Button_create_path_clicked()
         x0[j]=bezier_path[bezier_cnt].out_points[j].X;
         y0[j]=bezier_path[bezier_cnt].out_points[j].Y;
     }
+
+    // 计算旋转坐标系后坐标
     if(translate_dangle!=0)
     {
         point_rotate(&x,&y,translate_dangle);
@@ -914,7 +927,6 @@ void PagePath::on_Button_clear_clicked()
         QString p_name = "point" + QString::number(i);
         QWidget *p = ui->groupBox_2->findChild<QWidget *>(p_name);
         QList<QLineEdit *> items = p->findChildren<QLineEdit *>();
-        //        qDebug() << items;
         for (QLineEdit *item : items)
         {
             item->clear();
@@ -1088,7 +1100,12 @@ void PagePath::on_Button_update_point_clicked()
     table_update();
 }
 
-
+/**
+ * @brief PagePath::point_rotate 计算坐标点旋转后坐标值
+ * @param x
+ * @param y
+ * @param angle
+ */
 void PagePath::point_rotate(QVector<double> *x,QVector<double> *y, double angle)
 {
     for (int i=0;i<x->size();i++)

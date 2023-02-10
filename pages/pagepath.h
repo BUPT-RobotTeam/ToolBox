@@ -103,6 +103,7 @@ private:
     QLabel *xy;
     QLayout *point_line;
     QAction *actionScreen;
+    // rotate coordinate system
     QCPItemLine *arrow_x;
     QCPItemText *textLabel_x;
     QCPItemLine *arrow_y;
