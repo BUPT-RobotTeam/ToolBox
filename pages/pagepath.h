@@ -13,6 +13,10 @@ namespace Ui {
 class PagePath;
 }
 
+struct ctrl_cmd{
+
+};
+
 //extern float map_width;
 //extern float map_height;
 //extern Bezier *bezier_path ;
@@ -57,7 +61,7 @@ private slots:
 
     void on_Button_load_img_clicked();
 
-    void drawpos(float x, float y);
+    void drawCarPos(float x, float y);
 
 //    void on_Button_cmp_clicked();
 
@@ -75,14 +79,13 @@ private slots:
 
 private:
     Ui::PagePath *ui;
-    QVector<double> x0{10},y0{10};
-    QVector<double> x{10}, y{10};
-    QVector<double> x1{10}, y1{10};
+    QVector<double> x_all_pts{10},y_all_pts{10};
+    QVector<double> x_inserted_pts{10}, y_inserted_pts{10};
+    QVector<double> x_input_pts{10}, y_input_pts{10};
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *model;
     QStandardItem *aItem;
-//    Bezier_Label *bezier_label;
     QImage *img;
     QImage *newImg;
     QLineEdit *point;

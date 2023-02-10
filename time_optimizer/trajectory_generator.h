@@ -50,7 +50,7 @@ class TimeOptimizerTraj
     //planning : motion variable
     double _MAX_Vel=1, _MAX_Acc=1, _MAX_d_Acc=0.5, _d_s=0.5;
     //planning: start point
-    double _start_x, _start_y, _start_z;
+//    double _start_x, _start_y, _start_z;
     //plannging: a hyperparameter that weighting acc regularization (punishing large acc)
     double _rho; 
     //planning: poly order
@@ -61,9 +61,9 @@ class TimeOptimizerTraj
     // std::string _pkg_path;
     MatrixXd _polyCoeff;
     VectorXd _polyTime;
-    int _segment_num;
+    int _segment_num = 0 ;
     // ros::Time _traj_time_start, _traj_time_final;
-    double _traj_time_final , _traj_time_start ;
+    double _traj_time_final = 0 , _traj_time_start = 0 ;
     bool _has_traj = false;
     Allocator * _time_allocator = NULL;
 

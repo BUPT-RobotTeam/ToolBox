@@ -224,19 +224,19 @@ void PagePath::setVesc(VescInterface *vesc)
     mVesc = vesc;
     if (mVesc)
     {
-        connect(mVesc->commands(), SIGNAL(drawpos(float, float)),
-                this, SLOT(drawpos(float, float)));
+        connect(mVesc->commands(), SIGNAL(drawCarPos(float, float)),
+                this, SLOT(drawCarPos(float, float)));
     }
 }
 
 
 /**
- * @brief 打印轨迹点
+ * @brief 打印小车轨迹点
  *
  * @param x
  * @param y
  */
-void PagePath::drawpos(float x, float y)
+void PagePath::drawCarPos(float x, float y)
 {
     carpos[carpos_cnt++].setX(x);
     carpos[carpos_cnt++].setY(y);
@@ -254,6 +254,7 @@ void PagePath::drawpos(float x, float y)
  */
 void PagePath::on_Button_bezier_num_clicked()
 {
+    //TODO:: 应该使用edit的事件来触发判断和数量更新
     if (ui->Edit_bezier_num->text().isEmpty())
     {
         QMessageBox::warning(NULL, "贝塞尔曲线数量不能为0", "请输入正确的数目", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
@@ -396,11 +397,11 @@ void PagePath::on_Button_load_path_clicked()
 
     ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::green, 8));
     ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(0)->setData(x, y);
+    ui->customPlot->graph(0)->setData(x_inserted_pts, y_inserted_pts);
 
     ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::red, 2), QBrush(Qt::white), 8));
     ui->customPlot->graph(1)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(1)->setData(x1, y1);
+    ui->customPlot->graph(1)->setData(x_input_pts, y_input_pts);
 
     ui->customPlot->replot();
 
@@ -447,13 +448,13 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
     if(event->button()==Qt::LeftButton)
     {
         for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
-            if(fabs(x_val-x0[i])<0.2&&fabs(y_val-y0[i])<0.2){
+            if(fabs(x_val - x_all_pts[i]) < 0.2 && fabs(y_val - y_all_pts[i]) < 0.2){
                 x0_num=i;
                 break;
             }
         }
-        for(int i=0;i<x.size();i++){
-            if(fabs(x_val-x[i])<0.2&&fabs(y_val-y[i])<0.2){
+        for(int i=0; i < x_inserted_pts.size(); i++){
+            if(fabs(x_val - x_inserted_pts[i]) < 0.2 && fabs(y_val - y_inserted_pts[i]) < 0.2){
                 m_point=i;
                 curve=0;
                 //                qDebug()<<"left now is"<<i;
@@ -462,8 +463,8 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
         }
         if(m_point==-1)
         {
-            for(int i=0;i<x1.size();i++){
-                if(fabs(x_val-x1[i])<0.2&&fabs(y_val-y1[i])<0.2){
+            for(int i=0; i < x_input_pts.size(); i++){
+                if(fabs(x_val - x_input_pts[i]) < 0.2 && fabs(y_val - y_input_pts[i]) < 0.2){
                     m_point=i;
                     curve=1;
                     //                    qDebug()<<"left now is"<<i;
@@ -475,21 +476,21 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
     else if (event->button()==Qt::RightButton)
     {
         for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
-            if(fabs(x_val-x0[i])<0.2&&fabs(y_val-y0[i])<0.2){
+            if(fabs(x_val - x_all_pts[i]) < 0.2 && fabs(y_val - y_all_pts[i]) < 0.2){
                 x0_num=i;
                 break;
             }
         }
-        for(int i=0;i<x.size();i++){
-            if(fabs(x_val-x[i])<0.2&&fabs(y_val-y[i])<0.2){
+        for(int i=0; i < x_inserted_pts.size(); i++){
+            if(fabs(x_val - x_inserted_pts[i]) < 0.2 && fabs(y_val - y_inserted_pts[i]) < 0.2){
                 //                qDebug()<<"right now is"<<i;
                 n_point=i;
                 curve=0;
                 break;
             }
         }
-        for(int i=0;i<x1.size();i++){
-            if(fabs(x_val-x1[i])<0.2&&fabs(y_val-y1[i])<0.2){
+        for(int i=0; i < x_input_pts.size(); i++){
+            if(fabs(x_val - x_input_pts[i]) < 0.2 && fabs(y_val - y_input_pts[i]) < 0.2){
                 n_point=i;
                 curve=1;
                 //                qDebug()<<"right now is"<<i;
@@ -557,11 +558,11 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
     }
 
     for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
-        if(fabs(x_val-x0[i])<0.2&&fabs(y_val-y0[i])<0.2 && !(event->button()&Qt::LeftButton)){
+        if(fabs(x_val - x_all_pts[i]) < 0.2 && fabs(y_val - y_all_pts[i]) < 0.2 && !(event->button() & Qt::LeftButton)){
             QString str;
-            str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",i+1)).arg(QString::asprintf("%.3f", x0[i]))
-                    .arg(QString::asprintf("%.3f",y0[i]));
-            qDebug()<<"i"<<i<<"x"<<x0[i]<<"y"<<y0[i];
+            str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",i+1)).arg(QString::asprintf("%.3f", x_all_pts[i]))
+                    .arg(QString::asprintf("%.3f", y_all_pts[i]));
+            qDebug() << "i" << i << "x" << x_all_pts[i] << "y" << y_all_pts[i];
             QToolTip::showText(cursor().pos(), str, this);
             break;
         }
@@ -576,18 +577,18 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
            <<"point:"<<x_val<<y_val<<str;
     QToolTip::showText(cursor().pos(), str, this);
 
-    x0[x0_num]=x_val;
-    y0[x0_num]=y_val;
+    x_all_pts[x0_num]=x_val;
+    y_all_pts[x0_num]=y_val;
 
     if(curve==1)
     {
-        x1[m_point]=x_val;
-        y1[m_point]=y_val;
+        x_input_pts[m_point]=x_val;
+        y_input_pts[m_point]=y_val;
     }
     else if(curve==0)
     {
-        x[m_point]=x_val;
-        y[m_point]=y_val;
+        x_inserted_pts[m_point]=x_val;
+        y_inserted_pts[m_point]=y_val;
     }
 
     bezier_path[bezier_cnt].out_points[x0_num].X=x_val;
@@ -595,11 +596,11 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
 
     ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::green, 8));
     ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(0)->setData(x, y);
+    ui->customPlot->graph(0)->setData(x_inserted_pts, y_inserted_pts);
 
     ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::red, 2), QBrush(Qt::white), 8));
     ui->customPlot->graph(1)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(1)->setData(x1, y1);
+    ui->customPlot->graph(1)->setData(x_input_pts, y_input_pts);
 
     ui->customPlot->replot();
 
@@ -611,18 +612,18 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
  */
 void PagePath::on_actionScreen_triggered()
 {
-    x0.remove(x0_num);
-    y0.remove(x0_num);
+    x_all_pts.remove(x0_num);
+    y_all_pts.remove(x0_num);
 
     if(curve==0)
     {
-        x.remove(n_point);
-        y.remove(n_point);
+        x_inserted_pts.remove(n_point);
+        y_inserted_pts.remove(n_point);
     }
     else if(curve==1)
     {
-        x1.remove(n_point);
-        y1.remove(n_point);
+        x_input_pts.remove(n_point);
+        y_input_pts.remove(n_point);
     }
 
     for (int i=x0_num;i<bezier_path[bezier_cnt].out_num;i++)
@@ -632,8 +633,8 @@ void PagePath::on_actionScreen_triggered()
     }
     bezier_path[bezier_cnt].out_num-=1;
 
-    ui->customPlot->graph(0)->setData(x, y);
-    ui->customPlot->graph(1)->setData(x1, y1);
+    ui->customPlot->graph(0)->setData(x_inserted_pts, y_inserted_pts);
+    ui->customPlot->graph(1)->setData(x_input_pts, y_input_pts);
     ui->customPlot->replot();
 
     qDebug()<<"n_point"<<n_point<<"out_num"<<bezier_path[bezier_cnt].out_num;
@@ -758,28 +759,28 @@ void PagePath::on_Button_create_path_clicked()
     init_table_out();
     table_update();
 
-    x0.resize(bezier_path[bezier_cnt].out_num+1);
-    y0.resize(bezier_path[bezier_cnt].out_num+1);
-    x.resize(bezier_path[bezier_cnt].out_num+1 - bezier_path[bezier_cnt].input_num);
-    y.resize(bezier_path[bezier_cnt].out_num+1 - bezier_path[bezier_cnt].input_num);
-    x1.resize(bezier_path[bezier_cnt].input_num);
-    y1.resize(bezier_path[bezier_cnt].input_num);
+    x_all_pts.resize(bezier_path[bezier_cnt].out_num + 1);
+    y_all_pts.resize(bezier_path[bezier_cnt].out_num + 1);
+    x_inserted_pts.resize(bezier_path[bezier_cnt].out_num + 1 - bezier_path[bezier_cnt].input_num);
+    y_inserted_pts.resize(bezier_path[bezier_cnt].out_num + 1 - bezier_path[bezier_cnt].input_num);
+    x_input_pts.resize(bezier_path[bezier_cnt].input_num);
+    y_input_pts.resize(bezier_path[bezier_cnt].input_num);
     int num = 0;
     for (int j = 0; j <= bezier_path[bezier_cnt].out_num; j++)
     {
         if (j % bezier_path[bezier_cnt].num_btw_two == 0)
         {
-            x1[num] = bezier_path[bezier_cnt].out_points[j].X;
-            y1[num] = bezier_path[bezier_cnt].out_points[j].Y;
+            x_input_pts[num] = bezier_path[bezier_cnt].out_points[j].X;
+            y_input_pts[num] = bezier_path[bezier_cnt].out_points[j].Y;
             num++;
         }
         else
         {
-            x[j - num] = bezier_path[bezier_cnt].out_points[j].X;
-            y[j - num] = bezier_path[bezier_cnt].out_points[j].Y;
+            x_inserted_pts[j - num] = bezier_path[bezier_cnt].out_points[j].X;
+            y_inserted_pts[j - num] = bezier_path[bezier_cnt].out_points[j].Y;
         }
-        x0[j]=bezier_path[bezier_cnt].out_points[j].X;
-        y0[j]=bezier_path[bezier_cnt].out_points[j].Y;
+        x_all_pts[j]=bezier_path[bezier_cnt].out_points[j].X;
+        y_all_pts[j]=bezier_path[bezier_cnt].out_points[j].Y;
     }
     qDebug()<<"input_num"<<bezier_path[bezier_cnt].input_num<<"out_num"<<bezier_path[bezier_cnt].out_num;
 
