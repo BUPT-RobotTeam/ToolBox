@@ -36,7 +36,17 @@ DEFINES += HAS_SERIALPORT
 
 RESOURCES += res.qrc
 
+#Eigen 3.4.1
+INCLUDEPATH += ../eigen-3.4.0/
 
+#mosek 64_8_1
+win32: LIBS += -L$$PWD/time_optimizer/mosek8_1/ -lmosek64_8_1
+
+INCLUDEPATH += $$PWD/time_optimizer/mosek8_1
+DEPENDPATH += $$PWD/time_optimizer/mosek8_1
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/time_optimizer/mosek8_1/mosek64_8_1.lib
+else:win32-g++: PRE_TARGETDEPS += $$PWD/time_optimizer/mosek8_1/libmosek64_8_1.a
 
 # V-rep lib
 
@@ -114,7 +124,7 @@ SOURCES += main.cpp\
     utility.cpp \
     tcpserversimple.cpp \
     bezier.cpp \
-    bezier_label.cpp
+
 
 HEADERS  += mainwindow.h \
     mygraphics.h \
@@ -127,7 +137,7 @@ HEADERS  += mainwindow.h \
     utility.h \
     tcpserversimple.h \
     bezier.h \
-    bezier_label.h
+
 
 FORMS    += mainwindow.ui
 
@@ -138,11 +148,13 @@ contains(DEFINES, HAS_BLUETOOTH) {
 
 include(pages/pages.pri)
 include(widgets/widgets.pri)
-
-
+include(time_optimizer/time_optimizer.pri)
+INCLUDEPATH += './time_optimizer/'
 
 build_original {
     RESOURCES +=
     DEFINES += VER_ORIGINAL
 }
 #CONFIG += console
+
+

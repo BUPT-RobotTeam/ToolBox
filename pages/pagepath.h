@@ -6,31 +6,32 @@
 #include "bezier.h"
 #include <QStandardItemModel>
 #include "txtdialog.h"
-#include "bezier_label.h"
-#include "mychart.h"
+#include "trajectory_generator.h"
 #include <QLineEdit>
 #include <mygraphics.h>
+#include <QLabel>
 
 namespace Ui {
 class PagePath;
 }
 
-extern float map_width;
-extern float map_height;
-extern float map_width_pixel;
-extern float map_height_pixel;
+
+
+//extern float map_width;
+//extern float map_height;
+extern Bezier *bezier_path ;
+extern int toggle_x;
+extern int toggle_y;
 extern double translate_dx;
 extern double translate_dy;
 extern double translate_dangle;
-extern Bezier *bezier_path;
-extern int bezier_num;
-extern int bezier_cnt;
-extern int toggle_x;
-extern int toggle_y;
-extern QPointF *carpos;
-extern int carpos_cnt;
 extern float width_t;
 extern float height_t;
+extern int bezier_cnt;
+//extern int traj_num;
+//extern int traj_Edit_idx;
+//extern QPointF *carpos;
+//extern int carpos_cnt;
 extern QLabel *nowPointValueLabel;
 
 class PagePath : public QWidget
@@ -67,7 +68,7 @@ private slots:
 
     void on_Button_load_img_clicked();
 
-    void drawpos(float x, float y);
+    void drawCarPos(float x, float y);
 
     //    void on_Button_cmp_clicked();
 
@@ -84,17 +85,21 @@ private slots:
 private:
     Ui::PagePath *ui;
     int buttonLoadPathClickedNum;
+    QVector< QVector<QPointF> > input_ptsList{1},generated_ptsList{1};
+    QVector< QVector<double> > generated_angleList{1},generated_speedList{1},generated_dirList{1};
+    QVector<double> x_all_pts{5},y_all_pts{5};
+    QVector<double> x_inserted_pts, y_inserted_pts;
+    QVector<double> x_input_pts, y_input_pts;
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *model;
     QStandardItem *aItem;
-    Bezier_Label *bezier_label;
     QImage *img;
     QImage *newImg;
-    Mychart *mychart;
     QLineEdit *point;
     QLabel *xy;
     QLayout *point_line;
+    QVector<QSharedPointer<AbstractTrajGenerator> > traj_generators;
     QGraphicsView *MyGraphicsView;
     MyGraphicsScene *pointScene;
 };
