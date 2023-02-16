@@ -9,6 +9,7 @@
 #include "bezier_label.h"
 #include "mychart.h"
 #include <QLineEdit>
+#include <mygraphics.h>
 
 namespace Ui {
 class PagePath;
@@ -30,6 +31,7 @@ extern QPointF *carpos;
 extern int carpos_cnt;
 extern float width_t;
 extern float height_t;
+extern QLabel *nowPointValueLabel;
 
 class PagePath : public QWidget
 {
@@ -43,12 +45,9 @@ public:
     void setVesc(VescInterface *vesc);
     void init_table_out();
     void table_update();
+    void point_rotate(QVector<double> *x,QVector<double> *y, double angle);
+    QPointF cal_rotate_point(float x, float y);
 
-
-public slots:
-    void myMousePressEvent(QMouseEvent *event);
-    void myMouseReleaseEvent(QMouseEvent *event);
-    void myMouseMoveEvent(QMouseEvent *event);
 
 private slots:
 
@@ -70,13 +69,11 @@ private slots:
 
     void drawpos(float x, float y);
 
-    void on_Button_cmp_clicked();
+    //    void on_Button_cmp_clicked();
 
     void on_Button_add_point_clicked();
 
     void on_Button_delete_point_clicked();
-
-    void on_actionScreen_triggered();
 
     void on_Sampple_time_clicked(bool checked);
 
@@ -86,27 +83,20 @@ private slots:
 
 private:
     Ui::PagePath *ui;
-    int m_point;
-    int n_point;
-    int point_num;
-    int x_toggle;
-    int y_toggle;
-    int x2_toggle;
-    int y2_toggle;
-    QVector<double> x0,y0;
-    QVector<double> x, y; // 初始化向量x和y
-    QVector<double> x1, y1;// 初始化向量x和y
+    int buttonLoadPathClickedNum;
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *model;
     QStandardItem *aItem;
     Bezier_Label *bezier_label;
     QImage *img;
+    QImage *newImg;
     Mychart *mychart;
     QLineEdit *point;
     QLabel *xy;
     QLayout *point_line;
-    QAction *actionScreen;
+    QGraphicsView *MyGraphicsView;
+    MyGraphicsScene *pointScene;
 };
 
 #endif // PAGEPATH_H

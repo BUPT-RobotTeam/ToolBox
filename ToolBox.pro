@@ -105,6 +105,7 @@ release_macos {
 
 SOURCES += main.cpp\
         mainwindow.cpp \
+    mygraphics.cpp \
     packet.cpp \
     vbytearray.cpp \
     commands.cpp \
@@ -116,6 +117,7 @@ SOURCES += main.cpp\
     bezier_label.cpp
 
 HEADERS  += mainwindow.h \
+    mygraphics.h \
     packet.h \
     vbytearray.h \
     commands.h \
@@ -143,4 +145,4 @@ build_original {
     RESOURCES +=
     DEFINES += VER_ORIGINAL
 }
-CONFIG += console
+#CONFIG += console
