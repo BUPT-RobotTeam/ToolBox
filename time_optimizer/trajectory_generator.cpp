@@ -1,11 +1,13 @@
 #include <trajectory_generator.h>
-int _poly_num1D;
-
+#include <QMessageBox>
+#include <QString>
+#include <QTextStream>
+#include <QDebug>
 
 TimeOptimizerTraj::TimeOptimizerTraj(double max_vel,double max_acc,double max_d_acc,double d_s,
                   int dev_order,int min_order,double rho):
-        _MAX_Vel(max_vel),_MAX_Acc(max_acc),_MAX_d_Acc(max_d_acc),
-        _d_s(d_s),_rho(rho),_dev_order(dev_order),_min_order(min_order)
+        AbstractTrajGenerator(max_vel, max_acc, max_d_acc),
+        _rho(rho),_d_s(d_s),_dev_order(dev_order),_min_order(min_order)
 {
     _poly_num1D = 2 * _dev_order;
 };
@@ -19,14 +21,14 @@ TimeOptimizerTraj::TimeOptimizerTraj(double max_vel,double max_acc,double max_d_
  * @param _max_d_acc
  * @param _d_s
  */
-void TimeOptimizerTraj::trajGeneration(Eigen::MatrixXd path, double max_vel, double max_acc, double _max_d_acc, double _d_s)
+void TimeOptimizerTraj::trajGeneration(Eigen::MatrixXd path)
 {
     TrajectoryGeneratorWaypoint  trajectoryGeneratorWaypoint;
     MinimumTimeOptimizer time_optimizer;
     
     MatrixXd vel = MatrixXd::Zero(2,3); 
     MatrixXd acc = MatrixXd::Zero(2,3);
-
+    std::cout<< path <<std::endl;
     // give an arbitraty time allocation, all set all durations as 1 in the commented function.
     _polyTime  = timeAllocation(path); //_polyTime  = timeAllocationNaive(path); 
 
@@ -37,8 +39,8 @@ void TimeOptimizerTraj::trajGeneration(Eigen::MatrixXd path, double max_vel, dou
     _segment_num = _polyCoeff.rows();
 
     // visualize the spatial fixed trajectory
-    visWayPointPath(path);
-    visWayPointTraj( _polyCoeff, _polyTime);
+//    visWayPointPath(path);
+//    visWayPointTraj( _polyCoeff, _polyTime);
 
     // ROS_WARN("[TimeOptimizer DEMO] Spatial trajectory generated");
     // cout<<"[TimeOptimizer DEMO] time cunsume in spatial trajectory is: "<<(time_2 - time_1).toSec()<<endl;
@@ -73,18 +75,27 @@ void TimeOptimizerTraj::trajGeneration(Eigen::MatrixXd path, double max_vel, dou
     }
     else
     {
-        cout<<"[TimeOptimizer DEMO] temporal optimization fail"<<endl;
-        cout<<"[TimeOptimizer DEMO] possible resons : " << "\n" <<
-        "1 - please check the spatial trajectory,"     <<  "\n" <<
-        "2 - numerical issue of the solver, try setting a larger d_s"<<endl;
+        QString warningText;
+        warningText=QString::asprintf(
+                "[TimeOptimizer DEMO] possible resons :\n"
+                "1 - please check the spatial trajectory,\n"
+                "2 - numerical issue of the solver, try setting a larger d_s"
+        );
+        QMessageBox::warning(nullptr, "[TimeOptimizer DEMO] temporal optimization fail",
+                             warningText, QMessageBox::Ok  , QMessageBox::Ok);
+
+//        cout<<"[TimeOptimizer DEMO] temporal optimization fail"<<endl;
+//        cout<<"[TimeOptimizer DEMO] possible resons : " << "\n" <<
+//        "1 - please check the spatial trajectory,"     <<  "\n" <<
+//        "2 - numerical issue of the solver, try setting a larger d_s"<<endl;
     }
 }
 
-Matrix3d TimeOptimizerTraj::getCtrlVar(double t)
+Matrix3d TimeOptimizerTraj::getCtrlCmd(double t)
 {
     if( _has_traj == false || t > _traj_time_final )
     {   
-        return Matrix3d();
+        return {};
     }
     // if(_is_dump_data) t_result<<t<<endl;
 
@@ -300,6 +311,7 @@ Matrix3d TimeOptimizerTraj::getCtrlVar(double t)
     // }
     Matrix3d ret;
     ret << position , velocity , acceleration;
+    std::cout <<ret;
     return ret;
 }
 
@@ -463,7 +475,7 @@ VectorXd TimeOptimizerTraj::timeAllocation( MatrixXd Path)
     return time;
 }
 
-VectorXd TimeOptimizerTraj::timeAllocationNaive(MatrixXd Path)
+__attribute__((unused)) VectorXd TimeOptimizerTraj::timeAllocationNaive(MatrixXd Path)
 {   
     VectorXd time(Path.rows() - 1);
 
@@ -471,4 +483,23 @@ VectorXd TimeOptimizerTraj::timeAllocationNaive(MatrixXd Path)
         time(i) = 1.0;
 
     return time;
+}
+/**
+ * @brief 求某段轨迹的实际时间
+ * @param seg_idx 下标从0开始
+ * @return double 某段轨迹的实际时间，如果负数说明超过越界了
+ */
+double TimeOptimizerTraj::getTrajSegmentTime(int seg_idx) {
+    if(seg_idx>=_segment_num)
+    {return -1;}
+
+//    double ret;
+
+    int seg_k;
+    seg_k = (int)_time_allocator->K(seg_idx );
+    return _time_allocator->time(seg_idx ,seg_k-1);
+}
+
+TimeOptimizerTraj::~TimeOptimizerTraj() {
+    delete _time_allocator;
 }

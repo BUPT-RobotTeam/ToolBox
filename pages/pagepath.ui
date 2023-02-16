@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1216</width>
+    <width>1222</width>
     <height>915</height>
    </rect>
   </property>
@@ -559,6 +559,9 @@
               <property name="singleStep">
                <double>0.100000000000000</double>
               </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
              </widget>
             </item>
            </layout>
@@ -577,6 +580,9 @@
               <property name="singleStep">
                <double>0.100000000000000</double>
               </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
              </widget>
             </item>
            </layout>
@@ -594,6 +600,9 @@
              <widget class="QDoubleSpinBox" name="Edit_max_jerk">
               <property name="singleStep">
                <double>0.100000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
               </property>
              </widget>
             </item>
@@ -655,8 +664,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>233</width>
-                  <height>289</height>
+                  <width>229</width>
+                  <height>228</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">

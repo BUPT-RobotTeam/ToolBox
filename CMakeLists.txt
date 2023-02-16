@@ -153,7 +153,7 @@ endif()
 
 
 
-#QT5_WRAP_UI(UIS ${FORMS})
+QT5_WRAP_UI(UIS ${FORMS})
 
 include_directories(./ pages res time_optimizer v-rep widgets)
 link_directories( ${PROJECT_SOURCE_DIR}/time_optimizer/mosek8_1 )
@@ -168,7 +168,7 @@ set(
 QT5_ADD_TRANSLATION(TRS res/language/lang_Chinese.ts res/language/lang_English.ts)
 
 add_executable(tool_box_${PROJECT_VERSION}
-        ${SOURCES} ${FORMS}  ${RESOURCES} ${TRS} ${HEADERS}
+        ${SOURCES} ${FORMS} ${UIS} ${RESOURCES} ${TRS} ${HEADERS}
         )
 target_link_libraries(${PROJECT_NAME}_${PROJECT_VERSION}
     Qt5::Widgets

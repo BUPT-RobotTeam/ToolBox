@@ -59,7 +59,7 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
 
     int _inequ_tot_T_num = 1;
 
-    vector<VectorXd> s_list;
+    vector<VectorXd,Eigen::aligned_allocator<Eigen::VectorXd> > s_list;
     VectorXd k_list(_seg_num);
     for(int k = 0; k < _seg_num; k++)
     {
@@ -170,29 +170,29 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
     double primalobj;
 
     for(int i = 0; i < _equ_con_num; i ++)
-    {   
-        pair<MSKboundkeye, pair<double, double> > cb_eq = make_pair( MSK_BK_FX, make_pair(  0.0, 0.0 ) ); 
+    {
+        pair<MSKboundkeye, pair<double, double> > cb_eq = make_pair( MSK_BK_FX, make_pair(  0.0, 0.0 ) );
         con_bdk.push_back(cb_eq);
     }
 
     for(int i = 0; i < _equ_slack_num; i ++)
-    {   
+    {
         pair<MSKboundkeye, pair<double, double> > cb_eq;
-        
+
         if( i < num_e_n + num_f_n )
-            cb_eq = make_pair( MSK_BK_FX, make_pair( 0.0, 0.0 ) ); 
+            cb_eq = make_pair( MSK_BK_FX, make_pair( 0.0, 0.0 ) );
         else if( i < num_e_n + num_f_n + num_g_n)
-            cb_eq = make_pair( MSK_BK_FX, make_pair(-1.0, -1.0 ) ); 
+            cb_eq = make_pair( MSK_BK_FX, make_pair(-1.0, -1.0 ) );
         else
-            cb_eq = make_pair( MSK_BK_FX, make_pair( 1.0, 1.0 ) ); 
+            cb_eq = make_pair( MSK_BK_FX, make_pair( 1.0, 1.0 ) );
 
         con_bdk.push_back(cb_eq);
     }
 
     for(int i = 0; i < _inequ_acc_conti_num; i++)
     {
-        pair<MSKboundkeye, pair<double, double> > cb_ie = make_pair( MSK_BK_RA, make_pair( - maxJer_s, + maxJer_s ) ); 
-        con_bdk.push_back(cb_ie);   
+        pair<MSKboundkeye, pair<double, double> > cb_ie = make_pair( MSK_BK_RA, make_pair( - maxJer_s, + maxJer_s ) );
+        con_bdk.push_back(cb_ie);
     }
 
     for(int i = 0; i < _inequ_vel_num; i++)
@@ -273,8 +273,9 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
     } 
     
     // Stacking the constraints bounds.   
-    //   for i=1, ...,con_num : blc[i] <= constraint i <= buc[i] 
-    assert(_con_num == (int)con_bdk.size());
+    //   for i=1, ...,con_num : blc[i] <= constraint i <= buc[i]
+//    cout<<_con_num << "  " << (int)con_bdk.size() <<endl;
+    assert(_con_num+1 == (int)con_bdk.size());
 
     for( i = 0; i < _con_num && r == MSK_RES_OK; i++ ) 
     {
@@ -778,8 +779,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
     // Optimizing finish, now pull out of the solution
     VectorXd sol(_var_num);
  
-    vector<VectorXd> a_list, b_list, c_list, d_list;
-    vector<VectorXd> t_list, e_list, f_list, g_list, h_list;
+    vector<VectorXd,Eigen::aligned_allocator<Eigen::VectorXd>> a_list, b_list, c_list, d_list;
+    vector<VectorXd,Eigen::aligned_allocator<Eigen::VectorXd>> t_list, e_list, f_list, g_list, h_list;
 
     for(int i = 0; i < _var_num; i++)
         sol(i) = x_var[i];

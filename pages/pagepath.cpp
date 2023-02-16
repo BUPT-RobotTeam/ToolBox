@@ -29,11 +29,11 @@ float res_w,res_h;
 
 //TODO:: use abstract trajectory generator class;
 Bezier *bezier_path = new Bezier[10];
-QVector<TimeOptimizerTraj> traj_generators;
 
 
-int bezier_num = 1;
-int bezier_cnt = 0;
+
+int traj_num = 1;
+int traj_Edit_idx = 0;
 
 /***************************************************************
  *  @brief     主窗口初始化
@@ -48,7 +48,7 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 {
 
     ui->setupUi(this);
-    mVesc = 0;
+    mVesc = nullptr;
     //加载场地图
     img = new QImage;
     img->load(":/res/path_image/ground.png");
@@ -66,9 +66,12 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     ui->Edit_translate_dy->text().toDouble();
     ui->Edit_translate_dangle->text().toDouble() - 90;
 
-    connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),this,SLOT(myMousePressEvent(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mouseRelease(QMouseEvent*)),this,SLOT(myMouseReleaseEvent(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(myMouseMoveEvent(QMouseEvent*)));
+//    connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),this,SLOT(myMousePressEvent(QMouseEvent*)));
+//    connect(ui->customPlot,SIGNAL(mouseRelease(QMouseEvent*)),this,SLOT(myMouseReleaseEvent(QMouseEvent*)));
+//    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(myMouseMoveEvent(QMouseEvent*)));
+
+    QSharedPointer<AbstractTrajGenerator> traj_gen(new TimeOptimizerTraj(1,1));
+    traj_generators.push_back(traj_gen);
 
     ui->scrollArea->setWidget(ui->widget);
     ui->widget->setMinimumSize(500,1000);
@@ -138,6 +141,16 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 PagePath::~PagePath()
 {
     delete ui;
+    delete txtdialog;
+    delete mVesc;
+    delete model;
+    delete aItem;
+    delete img;
+    delete newImg;
+    delete point;
+    delete xy;
+    delete point_line;
+    delete actionScreen;
 }
 
 
@@ -172,8 +185,9 @@ void PagePath::init_table_out()
  */
 void PagePath::table_update()
 {
-//    if( !bezier_cnt ) {return;}
-    for (int i = 0; i <= bezier_path[bezier_cnt].out_num; i++)
+//    if( !traj_Edit_idx ) {return;}
+    if(!traj_generators[traj_Edit_idx]->isHasTraj()){return;}
+    for (int i = 0; i < generated_ptsList[traj_Edit_idx].size(); i++)
     {
         QString num = QString::asprintf("%d", i);
         aItem = new QStandardItem(num);            // 创建item对象
@@ -181,28 +195,28 @@ void PagePath::table_update()
         model->setItem(i, 0, aItem);               // 将item写入model指定位置
 
         //        QString x = QString::asprintf("%.3f", bezier_path->out_points[i].X-ui->Edit_translate_dy->text().toDouble());
-        QString x = QString::asprintf("%.3f", bezier_path[bezier_cnt].out_points[i].X);
+        QString x = QString::asprintf("%.3f",generated_ptsList[traj_Edit_idx][i].x());
         aItem = new QStandardItem(x);
         aItem->setTextAlignment(Qt::AlignHCenter);
         model->setItem(i, 1, aItem);
         //qDebug()<<"table"<<x<<y;
         //        QString y = QString::asprintf("%.3f", bezier_path->out_points[i].Y-ui->Edit_translate_dx->text().toDouble());
-        QString y = QString::asprintf("%.3f", bezier_path[bezier_cnt].out_points[i].Y);
+        QString y = QString::asprintf("%.3f", generated_ptsList[traj_Edit_idx][i].y());
         aItem = new QStandardItem(y);
         aItem->setTextAlignment(Qt::AlignHCenter);
         model->setItem(i, 2, aItem);
 
-        QString speed = QString::asprintf("%d", bezier_path[bezier_cnt].speed[i]);
+        QString speed = QString::asprintf("%.3f", generated_speedList[traj_Edit_idx][i]);
         aItem = new QStandardItem(speed);
         aItem->setTextAlignment(Qt::AlignHCenter);
         model->setItem(i, 3, aItem);
 
-        QString direct = QString::asprintf("%.3f", bezier_path[bezier_cnt].direct[i]);
+        QString direct = QString::asprintf("%.3f", generated_dirList[traj_Edit_idx][i]);
         aItem = new QStandardItem(direct);
         aItem->setTextAlignment(Qt::AlignHCenter);
         model->setItem(i, 4, aItem);
 
-        QString angle = QString::asprintf("%.3f", bezier_path[bezier_cnt].angle[i]);
+        QString angle = QString::asprintf("%.3f", generated_angleList[traj_Edit_idx][i]);
         aItem = new QStandardItem(angle);
         aItem->setTextAlignment(Qt::AlignHCenter);
         model->setItem(i, 5, aItem);
@@ -260,7 +274,13 @@ void PagePath::on_Button_bezier_num_clicked()
         QMessageBox::warning(NULL, "贝塞尔曲线数量不能为0", "请输入正确的数目", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         return;
     }
-    bezier_num = ui->Edit_bezier_num->text().toInt();
+    traj_num = ui->Edit_bezier_num->text().toInt();
+    input_ptsList.resize(traj_num);
+    generated_ptsList.resize(traj_num);
+    generated_angleList.resize(traj_num);
+    generated_speedList.resize(traj_num);
+    generated_dirList.resize(traj_num);
+    traj_generators.resize(traj_num);
 }
 
 
@@ -414,12 +434,13 @@ void PagePath::on_Button_load_path_clicked()
 
 
 /**
- * @brief PagePath::myMousePressEvent 配合移动或删除轨迹点
- * @param event
- */
+* @brief PagePath::myMousePressEvent 配合移动或删除轨迹点
+* @param event
+*/
+/*
 void PagePath::myMousePressEvent(QMouseEvent *event)
 {
-    qDebug()<<"mousePressEvent"<<bezier_path[bezier_cnt].out_num;
+    qDebug()<<"mousePressEvent"<<bezier_path[traj_Edit_idx].out_num;
     int x_pos = event->pos().x();
     int y_pos = event->pos().y();
     float x_val,y_val;
@@ -447,7 +468,7 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
 
     if(event->button()==Qt::LeftButton)
     {
-        for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
+        for(int i=0;i<=bezier_path[traj_Edit_idx].out_num;i++){
             if(fabs(x_val - x_all_pts[i]) < 0.2 && fabs(y_val - y_all_pts[i]) < 0.2){
                 x0_num=i;
                 break;
@@ -475,7 +496,7 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
     }
     else if (event->button()==Qt::RightButton)
     {
-        for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
+        for(int i=0;i<=bezier_path[traj_Edit_idx].out_num;i++){
             if(fabs(x_val - x_all_pts[i]) < 0.2 && fabs(y_val - y_all_pts[i]) < 0.2){
                 x0_num=i;
                 break;
@@ -515,21 +536,23 @@ void PagePath::myMousePressEvent(QMouseEvent *event)
     qDebug()<<"-----pressed"<<"x0_num"<<x0_num;
 }
 
-
+*/
 /**
  * @brief PagePath::myMouseReleaseEvent 配合移动或删除轨迹点
  * @param event
  */
+ /*
 void PagePath::myMouseReleaseEvent(QMouseEvent *event)
 {
     m_point=-1;
 }
-
+*/
 
 /**
  * @brief PagePath::myMouseMoveEvent 配合移动或删除轨迹点
  * @param event
  */
+ /*
 void PagePath::myMouseMoveEvent(QMouseEvent *event)
 {
     int x_pos = event->pos().x();
@@ -557,7 +580,7 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
         y_val = ui->customPlot->yAxis2->pixelToCoord(y_pos);
     }
 
-    for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
+    for(int i=0;i<=bezier_path[traj_Edit_idx].out_num;i++){
         if(fabs(x_val - x_all_pts[i]) < 0.2 && fabs(y_val - y_all_pts[i]) < 0.2 && !(event->button() & Qt::LeftButton)){
             QString str;
             str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",i+1)).arg(QString::asprintf("%.3f", x_all_pts[i]))
@@ -591,8 +614,8 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
         y_inserted_pts[m_point]=y_val;
     }
 
-    bezier_path[bezier_cnt].out_points[x0_num].X=x_val;
-    bezier_path[bezier_cnt].out_points[x0_num].Y=y_val;
+    bezier_path[traj_Edit_idx].out_points[x0_num].X=x_val;
+    bezier_path[traj_Edit_idx].out_points[x0_num].Y=y_val;
 
     ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::green, 8));
     ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
@@ -605,7 +628,7 @@ void PagePath::myMouseMoveEvent(QMouseEvent *event)
     ui->customPlot->replot();
 
 }
-
+*/
 
 /**
  * @brief PagePath::on_actionScreen_triggered 删除点槽函数
@@ -626,18 +649,18 @@ void PagePath::on_actionScreen_triggered()
         y_input_pts.remove(n_point);
     }
 
-    for (int i=x0_num;i<bezier_path[bezier_cnt].out_num;i++)
+    for (int i=x0_num;i<bezier_path[traj_Edit_idx].out_num; i++)
     {
-        bezier_path[bezier_cnt].out_points[i].X=bezier_path[bezier_cnt].out_points[i+1].X;
-        bezier_path[bezier_cnt].out_points[i].Y=bezier_path[bezier_cnt].out_points[i+1].Y;
+        bezier_path[traj_Edit_idx].out_points[i].X=bezier_path[traj_Edit_idx].out_points[i + 1].X;
+        bezier_path[traj_Edit_idx].out_points[i].Y=bezier_path[traj_Edit_idx].out_points[i + 1].Y;
     }
-    bezier_path[bezier_cnt].out_num-=1;
+    bezier_path[traj_Edit_idx].out_num-=1;
 
     ui->customPlot->graph(0)->setData(x_inserted_pts, y_inserted_pts);
     ui->customPlot->graph(1)->setData(x_input_pts, y_input_pts);
     ui->customPlot->replot();
 
-    qDebug()<<"n_point"<<n_point<<"out_num"<<bezier_path[bezier_cnt].out_num;
+    qDebug()<<"n_point"<<n_point<<"out_num"<<bezier_path[traj_Edit_idx].out_num;
 }
 
 
@@ -648,14 +671,18 @@ void PagePath::on_actionScreen_triggered()
  */
 void PagePath::on_Button_add_bezier_clicked()
 {
-    bezier_cnt = (bezier_cnt + 1) % bezier_num;
+    traj_Edit_idx = (traj_Edit_idx + 1) % traj_num;
 //    ui->Edit_bezier_cnt->clear();
     QString cnt = "";
-    cnt = QString::asprintf("%d", bezier_cnt);
+    cnt = QString::asprintf("%d", traj_Edit_idx);
     ui->Edit_bezier_cnt->setText(cnt);
 
     QMessageBox::information(NULL, "提示", "请输入过程点",
                              QMessageBox::Yes, QMessageBox::Yes);
+    if(traj_generators[ traj_Edit_idx ].isNull())
+    {
+        traj_generators[ traj_Edit_idx ].reset(new TimeOptimizerTraj(1,1));
+    }
 }
 
 
@@ -672,14 +699,29 @@ void PagePath::on_Button_create_path_clicked()
     //    }
 
     // 获取路径点
-    bezier_path[bezier_cnt].input_num = 0;
-    bezier_path[bezier_cnt].num_btw_two = ui->Edit_num_btw_two->text().toInt();
-    bezier_path[bezier_cnt].k_speed = ui->Slider_kspeed->value();
-    bezier_path[bezier_cnt].max_speed = ui->Edit_max_speed->text().toInt();
-    bezier_path[bezier_cnt].now_angle = ui->Edit_now_angle->text().toFloat();
-    bezier_path[bezier_cnt].target_angle = ui->Edit_target_angle->text().toFloat();
+//    bezier_path[traj_Edit_idx].input_num = 0;
+//    bezier_path[traj_Edit_idx].num_btw_two = ui->Edit_num_btw_two->text().toInt();
+//    bezier_path[traj_Edit_idx].k_speed = ui->Slider_kspeed->value();
+//    bezier_path[traj_Edit_idx].max_speed = ui->Edit_max_speed->text().toInt();
+//    bezier_path[traj_Edit_idx].now_angle = ui->Edit_now_angle->text().toFloat();
+//    bezier_path[traj_Edit_idx].target_angle = ui->Edit_target_angle->text().toFloat();
+
+    //运动学参数获取
+    double max_v,max_acc,max_jerk,target_angle;
+    max_v = ui->Edit_max_speed->text().toDouble();
+    max_acc = ui->Edit_max_acceleration->text().toDouble();
+    max_jerk = ui->Edit_max_jerk->text().toDouble();
+
+    traj_generators[traj_Edit_idx]->setMaxVel(max_v);
+    traj_generators[traj_Edit_idx]->setMaxAcc(max_acc);
+    traj_generators[traj_Edit_idx]->setMaxDAcc(max_jerk);
 
 
+    //input_path
+    QVector<QPointF> input_pts;
+//    int inputPtNum = 0 ;
+    x_input_pts.clear();
+    y_input_pts.clear();
     for(int i=0;i<point_num;i++)
     {
         QString p_name = "point" + QString::number(i);
@@ -687,102 +729,169 @@ void PagePath::on_Button_create_path_clicked()
         QList<QLineEdit *> items = p->findChildren<QLineEdit *>();
         if(!items[0]->text().isEmpty() && !items[1]->text().isEmpty())
         {
-            bezier_path[bezier_cnt].input_points[i].X =items[0]->text().toFloat();
-            bezier_path[bezier_cnt].input_points[i].Y =items[1]->text().toFloat();
-            bezier_path[bezier_cnt].input_num++;
+//            bezier_path[traj_Edit_idx].input_points[i].X =items[0]->text().toFloat();
+//            bezier_path[traj_Edit_idx].input_points[i].Y =items[1]->text().toFloat();
+//            bezier_path[traj_Edit_idx].input_num++;
+//            inputPtNum++;
+            x_input_pts.push_back(items[0]->text().toFloat());
+            y_input_pts.push_back(items[1]->text().toFloat());
+            input_pts.push_back(QPointF(items[0]->text().toFloat(),items[1]->text().toFloat()));
         }
 
     }
 
-    if (bezier_path[bezier_cnt].input_num==0)
+//    if (bezier_path[traj_Edit_idx].input_num == 0)
+    if(input_pts.empty())
     {
-        QMessageBox::warning(NULL, "过程点数量不能为0", "请输入正确的过程点", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::warning(NULL, "过程点数量不能为0", "请输入正确的过程点", QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
+    input_ptsList.resize(traj_num);
+    input_ptsList[traj_Edit_idx]=input_pts;
+    Eigen::MatrixXd input_waypoints_mat(input_pts.size(), 3);
+//    Eigen::Vector3d input_waypoint_vec;
+    for(int i=0 ;i<input_pts.size();i++)
+    {
+        QPointF pt = input_pts[i];
+//        input_waypoint_vec(0)=pt.x();
+//        input_waypoint_vec(1)=pt.y();
+//        input_waypoint_vec(2)=0;
+        input_waypoints_mat.row(i) <<  pt.x(),pt.y(),0 ;
+    }
+
+    traj_generators[traj_Edit_idx]->trajGeneration(input_waypoints_mat);
+    if ( !traj_generators[traj_Edit_idx]->isHasTraj()){return;}
+    // 采样
+    int samplePtNum_btw_wayPt;
+    samplePtNum_btw_wayPt = ui->Edit_num_btw_two->text().toInt();
+
+    int segment_num = traj_generators[traj_Edit_idx]->getSegmentNum();
+    double  traj_time_start = traj_generators[traj_Edit_idx]->getTrajTimeStart(),
+            traj_time_final = traj_generators[traj_Edit_idx]->getTrajTimeFinal(),
+            traj_time_now;
+    traj_time_now = traj_time_start;
+    QVector<double> traj_speed,traj_dir,traj_angle;
+    QVector<QPointF> traj_pos;
+    x_inserted_pts.clear();
+    y_inserted_pts.clear();
+    for(int i=0;i<segment_num;i++)
+    {
+        double seg_time = traj_generators[traj_Edit_idx]->getTrajSegmentTime(i);
+        double time_interval=seg_time / samplePtNum_btw_wayPt;
+        double seg_time_start = traj_time_now;
+        for(int j=0;j < samplePtNum_btw_wayPt;j++)
+        {
+            double t = seg_time_start + 1.0 * j * time_interval;
+            auto traj_cmd = traj_generators[traj_Edit_idx]->getCtrlCmd(t);
+            Eigen::Vector2d pos_cmd,vel_cmd;
+            pos_cmd = (traj_cmd.block(0,0,2,1));
+            vel_cmd = (traj_cmd.block(0,1,2,1));
+            double vel = vel_cmd.norm();
+            double dir = std::acos( vel_cmd.dot(Eigen::Vector2d(1,0)) / ( vel_cmd.norm()*1.0 ) );
+            traj_pos.push_back(QPointF(pos_cmd(0),pos_cmd(1)));
+            traj_speed.push_back(vel);
+            traj_dir.push_back(dir);
+            traj_angle.push_back(0);
+
+            x_inserted_pts.push_back(pos_cmd(0));
+            y_inserted_pts.push_back(pos_cmd(1));
+
+        }
+        traj_time_now +=seg_time;
+    }
+    generated_ptsList[traj_Edit_idx]=traj_pos;
+    generated_angleList[traj_Edit_idx]=traj_angle;
+    generated_dirList[traj_Edit_idx]=traj_dir;
+    generated_speedList[traj_Edit_idx]=traj_speed;
+    
 
     // 路径规划
-    //        for(int i=0;i<bezier_path[bezier_cnt].input_num;i++)
+    //        for(int i=0;i<bezier_path[traj_Edit_idx].input_num;i++)
     //        {
-    //            bezier_path[bezier_cnt].input_points[i].X=bezier_path[bezier_cnt].input_points[i].X+ui->Edit_translate_dy->text().toFloat();
-    //            bezier_path[bezier_cnt].input_points[i].Y=bezier_path[bezier_cnt].input_points[i].Y+ui->Edit_translate_dx->text().toFloat();
+    //            bezier_path[traj_Edit_idx].input_points[i].X=bezier_path[traj_Edit_idx].input_points[i].X+ui->Edit_translate_dy->text().toFloat();
+    //            bezier_path[traj_Edit_idx].input_points[i].Y=bezier_path[traj_Edit_idx].input_points[i].Y+ui->Edit_translate_dx->text().toFloat();
     //        }
-    bezier_path[bezier_cnt].out_num = (bezier_path[bezier_cnt].input_num - 1) * bezier_path[bezier_cnt].num_btw_two;
-
-    bezier_path[bezier_cnt].ctrlpoints_get();
-
-    bezier_path[bezier_cnt].outpoints_get();
-
-    bezier_path[bezier_cnt].calculate_length();
-
-    bezier_path[bezier_cnt].direct_planning();
-
-    bezier_path[bezier_cnt].angle_planning();
-
-    // 速度规划
-    if (bezier_path[bezier_cnt].input_num == 2)
-    {
-        bezier_path[bezier_cnt].strghtline_speed_plan();
-    }
-    else if (bezier_path[bezier_cnt].input_num > 2 && bezier_path[bezier_cnt].input_num < 7)
-    {
-        bezier_path[bezier_cnt].speed_planning();
-    }
-    else if (bezier_path[bezier_cnt].input_num == 7)
-    {
-        bezier_path[bezier_cnt].strghtline_speed_plan();
-    }
+//    bezier_path[traj_Edit_idx].out_num = (bezier_path[traj_Edit_idx].input_num - 1) * bezier_path[traj_Edit_idx].num_btw_two;
+//
+//    bezier_path[traj_Edit_idx].ctrlpoints_get();
+//
+//    bezier_path[traj_Edit_idx].outpoints_get();
+//
+//    bezier_path[traj_Edit_idx].calculate_length();
+//
+//    bezier_path[traj_Edit_idx].direct_planning();
+//
+//    bezier_path[traj_Edit_idx].angle_planning();
+//
+//    // 速度规划
+//    if (bezier_path[traj_Edit_idx].input_num == 2)
+//    {
+//        bezier_path[traj_Edit_idx].strghtline_speed_plan();
+//    }
+//    else if (bezier_path[traj_Edit_idx].input_num > 2 && bezier_path[traj_Edit_idx].input_num < 7)
+//    {
+//        bezier_path[traj_Edit_idx].speed_planning();
+//    }
+//    else if (bezier_path[traj_Edit_idx].input_num == 7)
+//    {
+//        bezier_path[traj_Edit_idx].strghtline_speed_plan();
+//    }
 
     /*输入点提醒*/
     ui->plainTextEdit_input->clear();
-    QString input_warning = "";
-    input_warning.sprintf("第%d条贝塞尔曲线\r\n", bezier_cnt);
-    ui->plainTextEdit_input->insertPlainText(input_warning);
-    for (int i = 0; i < bezier_path[bezier_cnt].input_num; i++)
+    QString inputPtInfo = "";
+    inputPtInfo=QString::asprintf("第%d条贝塞尔曲线\r\n", traj_Edit_idx);
+    ui->plainTextEdit_input->insertPlainText(inputPtInfo);
+    for (int i = 0; i < input_ptsList[traj_Edit_idx].size(); i++)
     {
-        input_warning.sprintf("第%d个点,(%.3f,%.3f)\r\n", i, bezier_path[bezier_cnt].input_points[i].X, bezier_path[bezier_cnt].input_points[i].Y);
-        ui->plainTextEdit_input->insertPlainText(input_warning);
+        inputPtInfo=QString::asprintf(
+                "第%d个点,(%.3f,%.3f)\r\n",
+                i,input_ptsList[traj_Edit_idx][i].x(),
+                input_ptsList[traj_Edit_idx][i].y()
+                );
+        ui->plainTextEdit_input->insertPlainText(inputPtInfo);
     }
 
     /*输出点个数*/
     ui->Edit_point_num->clear();
-    QString bezier_num = "";
-    bezier_num.sprintf("%d", bezier_path[bezier_cnt].out_num + 1);
-    ui->Edit_point_num->setText(bezier_num);
+    QString outputPtNum = "";
+    outputPtNum=QString::asprintf("%d", generated_ptsList[traj_Edit_idx].size());
+    ui->Edit_point_num->setText(outputPtNum);
 
     /*路径长度*/
-    ui->Edit_bezier_length->clear();
-    QString bezier_length = "";
-    bezier_length.sprintf("%.3f", bezier_path[bezier_cnt].length);
-    ui->Edit_bezier_length->setText(bezier_length);
+//    ui->Edit_bezier_length->clear();
+//    QString bezier_length = "";
+//    bezier_length.sprintf("%.3f", bezier_path[traj_Edit_idx].length);
+//    ui->Edit_bezier_length->setText(bezier_length);
 
     /*输出点提醒*/
     init_table_out();
     table_update();
 
-    x_all_pts.resize(bezier_path[bezier_cnt].out_num + 1);
-    y_all_pts.resize(bezier_path[bezier_cnt].out_num + 1);
-    x_inserted_pts.resize(bezier_path[bezier_cnt].out_num + 1 - bezier_path[bezier_cnt].input_num);
-    y_inserted_pts.resize(bezier_path[bezier_cnt].out_num + 1 - bezier_path[bezier_cnt].input_num);
-    x_input_pts.resize(bezier_path[bezier_cnt].input_num);
-    y_input_pts.resize(bezier_path[bezier_cnt].input_num);
-    int num = 0;
-    for (int j = 0; j <= bezier_path[bezier_cnt].out_num; j++)
-    {
-        if (j % bezier_path[bezier_cnt].num_btw_two == 0)
-        {
-            x_input_pts[num] = bezier_path[bezier_cnt].out_points[j].X;
-            y_input_pts[num] = bezier_path[bezier_cnt].out_points[j].Y;
-            num++;
-        }
-        else
-        {
-            x_inserted_pts[j - num] = bezier_path[bezier_cnt].out_points[j].X;
-            y_inserted_pts[j - num] = bezier_path[bezier_cnt].out_points[j].Y;
-        }
-        x_all_pts[j]=bezier_path[bezier_cnt].out_points[j].X;
-        y_all_pts[j]=bezier_path[bezier_cnt].out_points[j].Y;
-    }
-    qDebug()<<"input_num"<<bezier_path[bezier_cnt].input_num<<"out_num"<<bezier_path[bezier_cnt].out_num;
+//    x_all_pts.resize(bezier_path[traj_Edit_idx].out_num + 1);
+//    y_all_pts.resize(bezier_path[traj_Edit_idx].out_num + 1);
+//    x_inserted_pts.resize(bezier_path[traj_Edit_idx].out_num + 1 - bezier_path[traj_Edit_idx].input_num);
+//    y_inserted_pts.resize(bezier_path[traj_Edit_idx].out_num + 1 - bezier_path[traj_Edit_idx].input_num);
+//    x_input_pts.resize(bezier_path[traj_Edit_idx].input_num);
+//    y_input_pts.resize(bezier_path[traj_Edit_idx].input_num);
+//    int num = 0;
+//    for (int j = 0; j <= bezier_path[traj_Edit_idx].out_num; j++)
+//    {
+//        if (j % bezier_path[traj_Edit_idx].num_btw_two == 0)
+//        {
+//            x_input_pts[num] = bezier_path[traj_Edit_idx].out_points[j].X;
+//            y_input_pts[num] = bezier_path[traj_Edit_idx].out_points[j].Y;
+//            num++;
+//        }
+//        else
+//        {
+//            x_inserted_pts[j - num] = bezier_path[traj_Edit_idx].out_points[j].X;
+//            y_inserted_pts[j - num] = bezier_path[traj_Edit_idx].out_points[j].Y;
+//        }
+//        x_all_pts[j]=bezier_path[traj_Edit_idx].out_points[j].X;
+//        y_all_pts[j]=bezier_path[traj_Edit_idx].out_points[j].Y;
+//    }
+    qDebug() << "input_num" << input_ptsList[traj_Edit_idx].size() << "out_num" <<  generated_ptsList[traj_Edit_idx].size();
 
     //    qDebug()<<"-----sure---"<<ui->customPlot->width()<<ui->customPlot->height();
 }
@@ -810,7 +919,7 @@ void PagePath::on_Button_create_file_clicked()
         QByteArray ba = "#include<point.h>\r\n";
         ba.append("/*X    Y   SPEED   DIRECT  ANGLE*/ \r\n");
 
-        for (int i = 0; i < bezier_num; i++)
+        for (int i = 0; i < traj_num; i++)
         {
             code.sprintf("/*No.%d Bezier path has %d points in total.*/", i, bezier_path[i].out_num + 1);
             code.append("\r\n");
@@ -892,8 +1001,8 @@ void PagePath::on_Button_clear_clicked()
         delete bezier_path;
         Bezier *bezier_path = new Bezier[10];
     }
-    bezier_cnt = 0;
-    bezier_num = 1;
+    traj_Edit_idx = 0;
+    traj_num = 1;
 }
 
 

@@ -1,5 +1,5 @@
-FORMS += \
 
+FORMS += \
     $$PWD/pageconnection.ui \
     $$PWD/pagedebugprint.ui \
 #    $$PWD/pageterminal.ui \
@@ -17,8 +17,9 @@ FORMS += \
 #    $$PWD/pagevreprudderbase.ui \
 #    $$PWD/pageomniwheel.ui
 
-HEADERS += \
 
+
+HEADERS += \
     $$PWD/pageconnection.h \
     $$PWD/pagedebugprint.h \
 #    $$PWD/pageterminal.h \
@@ -37,7 +38,6 @@ HEADERS += \
 #    $$PWD/pageomniwheel.h
 
 SOURCES += \
-
     $$PWD/pageconnection.cpp \
     $$PWD/pagedebugprint.cpp \
 #    $$PWD/pageterminal.cpp \

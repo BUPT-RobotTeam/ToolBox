@@ -6,6 +6,7 @@
 #include "bezier.h"
 #include <QStandardItemModel>
 #include "txtdialog.h"
+#include "trajectory_generator.h"
 #include <QLineEdit>
 #include <QLabel>
 
@@ -13,15 +14,13 @@ namespace Ui {
 class PagePath;
 }
 
-struct ctrl_cmd{
 
-};
 
 //extern float map_width;
 //extern float map_height;
 //extern Bezier *bezier_path ;
-//extern int bezier_num;
-//extern int bezier_cnt;
+//extern int traj_num;
+//extern int traj_Edit_idx;
 //extern QPointF *carpos;
 //extern int carpos_cnt;
 class PagePath : public QWidget
@@ -38,10 +37,10 @@ public:
     void table_update();
 
 
-public slots:
-    void myMousePressEvent(QMouseEvent *event);
-    void myMouseReleaseEvent(QMouseEvent *event);
-    void myMouseMoveEvent(QMouseEvent *event);
+//public slots:
+//    void myMousePressEvent(QMouseEvent *event);
+//    void myMouseReleaseEvent(QMouseEvent *event);
+//    void myMouseMoveEvent(QMouseEvent *event);
 
 private slots:
 
@@ -79,9 +78,11 @@ private slots:
 
 private:
     Ui::PagePath *ui;
-    QVector<double> x_all_pts{10},y_all_pts{10};
-    QVector<double> x_inserted_pts{10}, y_inserted_pts{10};
-    QVector<double> x_input_pts{10}, y_input_pts{10};
+    QVector< QVector<QPointF> > input_ptsList{1},generated_ptsList{1};
+    QVector< QVector<double> > generated_angleList{1},generated_speedList{1},generated_dirList{1};
+    QVector<double> x_all_pts{5},y_all_pts{5};
+    QVector<double> x_inserted_pts, y_inserted_pts;
+    QVector<double> x_input_pts, y_input_pts;
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *model;
@@ -92,6 +93,7 @@ private:
     QLabel *xy;
     QLayout *point_line;
     QAction *actionScreen;
+    QVector<QSharedPointer<AbstractTrajGenerator> > traj_generators;
 //    QPushButton *pushButton;
 };
 
