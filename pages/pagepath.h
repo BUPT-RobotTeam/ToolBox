@@ -9,7 +9,7 @@
 #include "bezier_label.h"
 #include "mychart.h"
 #include <QLineEdit>
-#include <widgets/qcustomplot.h>
+#include <mygraphics.h>
 
 namespace Ui {
 class PagePath;
@@ -31,6 +31,7 @@ extern QPointF *carpos;
 extern int carpos_cnt;
 extern float width_t;
 extern float height_t;
+extern QLabel *nowPointValueLabel;
 
 class PagePath : public QWidget
 {
@@ -45,12 +46,8 @@ public:
     void init_table_out();
     void table_update();
     void point_rotate(QVector<double> *x,QVector<double> *y, double angle);
+    QPointF cal_rotate_point(float x, float y);
 
-
-public slots:
-    void myMousePressEvent(QMouseEvent *event);
-    void myMouseReleaseEvent(QMouseEvent *event);
-    void myMouseMoveEvent(QMouseEvent *event);
 
 private slots:
 
@@ -78,8 +75,6 @@ private slots:
 
     void on_Button_delete_point_clicked();
 
-    void on_actionScreen_triggered();
-
     void on_Sampple_time_clicked(bool checked);
 
     void on_Sample_distance_clicked(bool checked);
@@ -88,9 +83,7 @@ private slots:
 
 private:
     Ui::PagePath *ui;
-    QVector<double> x0,y0;
-    QVector<double> x, y;
-    QVector<double> x1, y1;
+    int buttonLoadPathClickedNum;
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *model;
@@ -102,12 +95,8 @@ private:
     QLineEdit *point;
     QLabel *xy;
     QLayout *point_line;
-    QAction *actionScreen;
-    // rotate coordinate system
-    QCPItemLine *arrow_x;
-    QCPItemText *textLabel_x;
-    QCPItemLine *arrow_y;
-    QCPItemText *textLabel_y;
+    QGraphicsView *MyGraphicsView;
+    MyGraphicsScene *pointScene;
 };
 
 #endif // PAGEPATH_H

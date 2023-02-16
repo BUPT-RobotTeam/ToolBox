@@ -6,12 +6,9 @@
 #include <QBoxLayout>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QChart>
-#include <QVector>
-#include <QMenu>
-#include <QTransform>
-#include <math.h>
-#define PI                      3.141592654
+#include <cmath>
+#include <QGraphicsEllipseItem>
+#include <QPainterPath>
 
 float map_width = 0;
 float map_height = 0;
@@ -24,20 +21,16 @@ int toggle_x = 1;
 int toggle_y = 1;
 QPointF *carpos = new QPointF[1000];
 int carpos_cnt = 0;
-int m_point=-1;
-int n_point=-1;
-int x0_num=-1;
 int point_num;
-int x_toggle=1;
-int y_toggle=1;
-int x2_toggle=1;
-int y2_toggle=1;
-int curve=-1;
-float res_w,res_h;
+QLabel *nowPointValueLabel;
 
 Bezier *bezier_path = new Bezier[10];
 int bezier_num = 1;
 int bezier_cnt = 0;
+float res_w=0;
+float res_h=0;
+float width_t=0;
+float height_t=0;
 
 /***************************************************************
  *  @brief     主窗口初始化
@@ -63,73 +56,23 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     translate_dy = ui->Edit_translate_dy->text().toDouble();
     translate_dangle = ui->Edit_translate_dangle->text().toDouble();
 
-    connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),this,SLOT(myMousePressEvent(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mouseRelease(QMouseEvent*)),this,SLOT(myMouseReleaseEvent(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(myMouseMoveEvent(QMouseEvent*)));
-
     ui->scrollArea->setWidget(ui->widget);
     ui->widget->setMinimumSize(500,1000);
 
     init_table_out();
     table_update();
 
-    actionScreen = new QAction();
-    connect(ui->spinBox_kspeed, SIGNAL(valueChanged(int)), ui->Slider_kspeed, SLOT(setValue(int)));
-    connect(ui->Slider_kspeed, SIGNAL(valueChanged(int)), ui->spinBox_kspeed, SLOT(setValue(int)));
-    connect(actionScreen,SIGNAL(triggered()),this,SLOT(on_actionScreen_triggered()));
+    MyGraphicsView=ui->graphicsView;
+    MyGraphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    MyGraphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    MyGraphicsView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    pointScene=new MyGraphicsScene(this);
+    MyGraphicsView->setScene(pointScene);
 
-    ui->customPlot->xAxis->setBasePen(QPen(Qt::blue,3));
-    ui->customPlot->yAxis->setBasePen(QPen(Qt::blue,3));
-    ui->customPlot->xAxis2->setBasePen(QPen(Qt::blue,3));
-    ui->customPlot->yAxis2->setBasePen(QPen(Qt::blue,3));
+    buttonLoadPathClickedNum=0;
+    setMouseTracking(true);
 
-    ui->customPlot->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
-    ui->customPlot->xAxis2->setUpperEnding(QCPLineEnding::esSpikeArrow);
-    ui->customPlot->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
-    ui->customPlot->yAxis2->setUpperEnding(QCPLineEnding::esSpikeArrow);
-
-    ui->customPlot->xAxis->setLabel("X");
-    ui->customPlot->xAxis2->setLabel("X");
-    ui->customPlot->yAxis->setLabel("Y");
-    ui->customPlot->yAxis2->setLabel("Y");
-
-    ui->customPlot->xAxis->setTickPen(QPen(Qt::black,2));
-    ui->customPlot->xAxis->setTickLength(7);
-    ui->customPlot->xAxis->setSubTickPen(QPen(Qt::black,1.3));
-    ui->customPlot->xAxis->setSubTickLength(4);
-    ui->customPlot->xAxis->setNumberFormat("g");
-
-    ui->customPlot->xAxis2->setTickPen(QPen(Qt::black,2));
-    ui->customPlot->xAxis2->setTickLength(7);
-    ui->customPlot->xAxis2->setSubTickPen(QPen(Qt::black,1.3));
-    ui->customPlot->xAxis2->setSubTickLength(4);
-    ui->customPlot->xAxis2->setNumberFormat("g");
-
-    ui->customPlot->yAxis->setTickPen(QPen(Qt::black,2));
-    ui->customPlot->yAxis->setTickLength(7);
-    ui->customPlot->yAxis->setSubTickPen(QPen(Qt::black,1.3));
-    ui->customPlot->yAxis->setSubTickLength(4);
-    ui->customPlot->yAxis->setNumberFormat("g");
-
-    ui->customPlot->yAxis2->setTickPen(QPen(Qt::black,2));
-    ui->customPlot->yAxis2->setTickLength(7);
-    ui->customPlot->yAxis2->setSubTickPen(QPen(Qt::black,1.3));
-    ui->customPlot->yAxis2->setSubTickLength(4);
-    ui->customPlot->yAxis2->setNumberFormat("g");
-
-    ui->customPlot->addGraph();
-    ui->customPlot->addGraph();
-
-
-    // 旋转坐标系
-    arrow_x = new QCPItemLine(ui->customPlot);
-    textLabel_x = new QCPItemText(ui->customPlot);
-    arrow_y = new QCPItemLine(ui->customPlot);
-    textLabel_y = new QCPItemText(ui->customPlot);
-    arrow_x->setVisible(false);
-    arrow_y->setVisible(false);
-    textLabel_x->setVisible(false);
-    textLabel_y->setVisible(false);
+    nowPointValueLabel=ui->nowPoint;
 }
 
 
@@ -137,7 +80,6 @@ PagePath::~PagePath()
 {
     delete ui;
 }
-
 
 /**
  * @brief 初始化输出表
@@ -177,13 +119,10 @@ void PagePath::table_update()
         aItem->setTextAlignment(Qt::AlignHCenter); // 设置item值，居中对齐
         model->setItem(i, 0, aItem);               // 将item写入model指定位置
 
-        //        QString x = QString::asprintf("%.3f", bezier_path->out_points[i].X-ui->Edit_translate_dy->text().toDouble());
         QString x = QString::asprintf("%.3f", bezier_path[bezier_cnt].out_points[i].X);
         aItem = new QStandardItem(x);
         aItem->setTextAlignment(Qt::AlignHCenter);
         model->setItem(i, 1, aItem);
-        //qDebug()<<"table"<<x<<y;
-        //        QString y = QString::asprintf("%.3f", bezier_path->out_points[i].Y-ui->Edit_translate_dx->text().toDouble());
         QString y = QString::asprintf("%.3f", bezier_path[bezier_cnt].out_points[i].Y);
         aItem = new QStandardItem(y);
         aItem->setTextAlignment(Qt::AlignHCenter);
@@ -260,430 +199,111 @@ void PagePath::on_Button_bezier_num_clicked()
 }
 
 
+QPointF PagePath::cal_rotate_point(float x,float y)
+{
+    if(translate_dangle==0)
+    {
+        return QPointF((translate_dy+toggle_x*x)*width_t,(translate_dx+toggle_y*y)*height_t);
+    }
+    else
+    {
+        float x_val=x*cos(translate_dangle * M_PI / 180.0) - y*sin(translate_dangle * M_PI / 180.0);
+        float y_val=y*cos(translate_dangle * M_PI / 180.0) + x*sin(translate_dangle * M_PI / 180.0);
+        return  QPointF((translate_dy+toggle_x*x_val)*width_t, (translate_dx+toggle_y*y_val)*height_t);
+    }
+}
+
 /**
  * @brief 点击加载曲线按钮
  *
  */
 void PagePath::on_Button_load_path_clicked()
 {
-
-    map_width = ui->Edit_map_width->text().toFloat();
-    map_height = ui->Edit_map_heigh->text().toFloat();
-
-    res_w=float(ui->customPlot->width());
-    res_h=float(ui->customPlot->width())/float(img->size().width())*float(img->size().height());
-    ui->customPlot->resize(int(res_w),int(res_h));
-    *newImg = img->scaled(int(res_w),int(res_h));
-    QLinearGradient plotGradient;
-    plotGradient.setColorAt(0, QColor(255, 255, 255, 0));
-    ui->customPlot->axisRect()->setBackground(plotGradient);
-    ui->customPlot->axisRect()->setBackground(QPixmap::fromImage(*newImg));
-    ui->customPlot->axisRect()->setBackgroundScaledMode(Qt::AspectRatioMode::IgnoreAspectRatio);
-
-    if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==1)
+    if(buttonLoadPathClickedNum!=0)
     {
-        ui->customPlot->xAxis->setRange(-ui->Edit_translate_dy->text().toFloat(), map_width-ui->Edit_translate_dy->text().toFloat());
-        ui->customPlot->yAxis->setRange(-ui->Edit_translate_dx->text().toFloat(), map_height-ui->Edit_translate_dx->text().toFloat());
-        ui->customPlot->xAxis->setVisible(true);
-        ui->customPlot->xAxis2->setVisible(false);
-        ui->customPlot->yAxis->setVisible(true);
-        ui->customPlot->yAxis2->setVisible(false);
-        if(x_toggle==-1)
-        {
-            ui->customPlot->xAxis->setRangeReversed(false);
-        }
-        if(y_toggle==-1)
-        {
-            ui->customPlot->yAxis->setRangeReversed(false);
-        }
-        x_toggle=1;
-        y_toggle=1;
-        ui->customPlot->graph(0)->setKeyAxis(ui->customPlot->xAxis);
-        ui->customPlot->graph(0)->setValueAxis(ui->customPlot->yAxis);
-        ui->customPlot->graph(1)->setKeyAxis(ui->customPlot->xAxis);
-        ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis);
-        ui->customPlot->xAxis->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
-        ui->customPlot->yAxis->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
-
-        // 选择旋转坐标系坐标轴1
-        arrow_x->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
-        arrow_x->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
-        arrow_y->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
-        arrow_y->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis);
-
-    }
-    else if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==-1)
-    {
-        ui->customPlot->xAxis2->setRange(-ui->Edit_translate_dy->text().toFloat(), map_width-ui->Edit_translate_dy->text().toFloat());
-        ui->customPlot->yAxis->setRange(-ui->Edit_translate_dx->text().toFloat(), map_height-ui->Edit_translate_dx->text().toFloat());
-        ui->customPlot->xAxis2->setVisible(true);
-        ui->customPlot->xAxis->setVisible(false);
-        ui->customPlot->yAxis->setVisible(true);
-        ui->customPlot->yAxis2->setVisible(false);
-        if(x2_toggle==-1)
-        {
-            ui->customPlot->xAxis2->setRangeReversed(false);
-        }
-        if(y_toggle==1)
-        {
-            ui->customPlot->yAxis->setRangeReversed(true);
-        }
-        x2_toggle=1;
-        y_toggle=-1;
-        ui->customPlot->graph(0)->setKeyAxis(ui->customPlot->xAxis2);
-        ui->customPlot->graph(0)->setValueAxis(ui->customPlot->yAxis);
-        ui->customPlot->graph(1)->setKeyAxis(ui->customPlot->xAxis2);
-        ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis);
-        ui->customPlot->xAxis2->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
-        ui->customPlot->yAxis->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
-
-        arrow_x->start->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis);
-        arrow_x->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis);
-        arrow_y->start->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis);
-        arrow_y->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis);
-    }
-    else if(ui->Edit_x_toggle->text().toInt()==-1 && ui->Edit_y_toggle->text().toInt()==1)
-    {
-        ui->customPlot->xAxis->setRange(-ui->Edit_translate_dy->text().toFloat(), map_width-ui->Edit_translate_dy->text().toFloat());
-        ui->customPlot->yAxis2->setRange(-ui->Edit_translate_dx->text().toFloat(), map_height-ui->Edit_translate_dx->text().toFloat());
-        ui->customPlot->yAxis2->setVisible(true);
-        ui->customPlot->yAxis->setVisible(false);
-        ui->customPlot->xAxis->setVisible(true);
-        ui->customPlot->xAxis2->setVisible(false);
-        if(x_toggle==1)
-        {
-            ui->customPlot->xAxis->setRangeReversed(true);
-        }
-        if(y2_toggle==-1)
-        {
-            ui->customPlot->yAxis2->setRangeReversed(false);
-        }
-        x_toggle=-1;
-        y2_toggle=1;
-        ui->customPlot->graph(0)->setKeyAxis(ui->customPlot->xAxis);
-        ui->customPlot->graph(0)->setValueAxis(ui->customPlot->yAxis2);
-        ui->customPlot->graph(1)->setKeyAxis(ui->customPlot->xAxis);
-        ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis2);
-        ui->customPlot->xAxis->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
-        ui->customPlot->yAxis2->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
-
-        arrow_x->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis2);
-        arrow_x->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis2);
-        arrow_y->start->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis2);
-        arrow_y->end->setAxes(ui->customPlot->xAxis,ui->customPlot->yAxis2);
-    }
-    else if(ui->Edit_x_toggle->text().toInt()==-1 && ui->Edit_y_toggle->text().toInt()==-1)
-    {
-        ui->customPlot->xAxis2->setRange(-ui->Edit_translate_dy->text().toFloat(), map_width-ui->Edit_translate_dy->text().toFloat());
-        ui->customPlot->yAxis2->setRange(-ui->Edit_translate_dx->text().toFloat(), map_height-ui->Edit_translate_dx->text().toFloat());
-        ui->customPlot->yAxis2->setVisible(true);
-        ui->customPlot->yAxis->setVisible(false);
-        ui->customPlot->xAxis2->setVisible(true);
-        ui->customPlot->xAxis->setVisible(false);
-        if(x2_toggle==1)
-        {
-            ui->customPlot->xAxis2->setRangeReversed(true);
-        }
-        if(y2_toggle==1)
-        {
-            ui->customPlot->yAxis2->setRangeReversed(true);
-        }
-        x2_toggle=-1;
-        y2_toggle=-1;
-        ui->customPlot->graph(0)->setKeyAxis(ui->customPlot->xAxis2);
-        ui->customPlot->graph(0)->setValueAxis(ui->customPlot->yAxis2);
-        ui->customPlot->graph(1)->setKeyAxis(ui->customPlot->xAxis2);
-        ui->customPlot->graph(1)->setValueAxis(ui->customPlot->yAxis2);
-        ui->customPlot->xAxis2->setOffset(-int(ui->Edit_translate_dx->text().toDouble()/ui->Edit_map_heigh->text().toDouble()*(ui->customPlot->height()-32)));
-        ui->customPlot->yAxis2->setOffset(-int(ui->Edit_translate_dy->text().toDouble()/ui->Edit_map_width->text().toDouble()*(ui->customPlot->width()-27.5)));
-
-        arrow_x->start->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
-        arrow_x->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
-        arrow_y->start->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
-        arrow_y->end->setAxes(ui->customPlot->xAxis2,ui->customPlot->yAxis2);
-    }
-
-
-    // 旋转坐标系绘制坐标轴
-    if(translate_dangle!=0)
-    {
-        ui->customPlot->yAxis2->setVisible(false);
-        ui->customPlot->yAxis->setVisible(false);
-        ui->customPlot->xAxis->setVisible(false);
-        ui->customPlot->xAxis2->setVisible(false);
-
-        arrow_x->setPen(QPen(Qt::blue,3,Qt::PenStyle::SolidLine));
-        arrow_x->start->setCoords(0,0);
-        arrow_x->end->setCoords((double(2))*cos(translate_dangle*PI/180.0) - 0*sin(translate_dangle*PI/180.0), 0*cos(translate_dangle*PI/180.0) + (double(2))*sin(translate_dangle*PI/180.0));
-        arrow_x->setHead(QCPLineEnding::esSpikeArrow);
-        arrow_x->setVisible(true);
-
-        textLabel_x->setPositionAlignment(Qt::AlignTop|Qt::AlignLeft);
-        textLabel_x->position->setType(QCPItemPosition::ptAxisRectRatio);
-        textLabel_x->position->setParentAnchor(arrow_x->end);
-        textLabel_x->setText("X");
-        textLabel_x->setFont(QFont(font().family(), 16,Qt::black));
-        textLabel_x->setVisible(true);
-
-        arrow_y->setPen(QPen(Qt::blue,3,Qt::PenStyle::SolidLine));
-        arrow_y->start->setCoords(0,0);
-        arrow_y->end->setCoords(0*cos(translate_dangle*PI/180.0) - (double(2))*sin(translate_dangle*PI/180.0), (double(2))*cos(translate_dangle*PI/180.0) + 0*sin(translate_dangle*PI/180.0));
-        arrow_y->setHead(QCPLineEnding::esSpikeArrow);
-        arrow_y->setVisible(true);
-
-        textLabel_y->setPositionAlignment(Qt::AlignTop|Qt::AlignLeft);
-        textLabel_y->position->setType(QCPItemPosition::ptAxisRectRatio);
-        textLabel_y->position->setParentAnchor(arrow_y->end);
-        textLabel_y->setText("Y");
-        textLabel_y->setFont(QFont(font().family(), 16,Qt::black));
-        textLabel_y->setVisible(true);
-    }
-    else
-    {
-        arrow_x->setVisible(false);
-        arrow_y->setVisible(false);
-        textLabel_x->setVisible(false);
-        textLabel_y->setVisible(false);
-    }
-
-    ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::green, 8));
-    ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(0)->setData(x, y);
-
-    ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::red, 2), QBrush(Qt::white), 8));
-    ui->customPlot->graph(1)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(1)->setData(x1, y1);
-
-    ui->customPlot->replot();
-}
-
-
-/**
- * @brief PagePath::myMousePressEvent 配合移动或删除轨迹点
- * @param event
- */
-void PagePath::myMousePressEvent(QMouseEvent *event)
-{
-    qDebug()<<"mousePressEvent"<<bezier_path[bezier_cnt].out_num;
-    int x_pos = event->pos().x();
-    int y_pos = event->pos().y();
-    float x_val,y_val;
-
-    if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==1)
-    {
-        x_val = ui->customPlot->xAxis->pixelToCoord(x_pos);
-        y_val = ui->customPlot->yAxis->pixelToCoord(y_pos);
-    }
-    else if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==-1)
-    {
-        x_val = ui->customPlot->xAxis2->pixelToCoord(x_pos);
-        y_val = ui->customPlot->yAxis->pixelToCoord(y_pos);
-    }
-    else if(ui->Edit_x_toggle->text().toInt()==-1 && ui->Edit_y_toggle->text().toInt()==1)
-    {
-        x_val = ui->customPlot->xAxis->pixelToCoord(x_pos);
-        y_val = ui->customPlot->yAxis2->pixelToCoord(y_pos);
-    }
-    else
-    {
-        x_val = ui->customPlot->xAxis2->pixelToCoord(x_pos);
-        y_val = ui->customPlot->yAxis2->pixelToCoord(y_pos);
-    }
-
-    if(event->button()==Qt::LeftButton)
-    {
-        for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
-            if(fabs(x_val-x0[i])<0.2&&fabs(y_val-y0[i])<0.2){
-                x0_num=i;
-                break;
-            }
-        }
-        for(int i=0;i<x.size();i++){
-            if(fabs(x_val-x[i])<0.2&&fabs(y_val-y[i])<0.2){
-                m_point=i;
-                curve=0;
-                break;
-            }
-        }
-        if(m_point==-1)
-        {
-            for(int i=0;i<x1.size();i++){
-                if(fabs(x_val-x1[i])<0.2&&fabs(y_val-y1[i])<0.2){
-                    m_point=i;
-                    curve=1;
-                    break;
-                }
-            }
-        }
-    }
-    else if (event->button()==Qt::RightButton)
-    {
-        for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
-            if(fabs(x_val-x0[i])<0.2&&fabs(y_val-y0[i])<0.2){
-                x0_num=i;
-                break;
-            }
-        }
-        for(int i=0;i<x.size();i++){
-            if(fabs(x_val-x[i])<0.2&&fabs(y_val-y[i])<0.2){
-                n_point=i;
-                curve=0;
-                break;
-            }
-        }
-        for(int i=0;i<x1.size();i++){
-            if(fabs(x_val-x1[i])<0.2&&fabs(y_val-y1[i])<0.2){
-                n_point=i;
-                curve=1;
-                break;
-            }
-        }
-        if(n_point!=-1)
-        {
-            QMenuBar *menubar=new QMenuBar(ui->customPlot);
-            QMenu *menu = new QMenu(menubar);
-            actionScreen->setText(tr("刪除"));
-            menu->addAction(actionScreen);
-            QPoint *p=new QPoint(cursor().pos());
-            p->setX(p->x()+5);
-            p->setY(p->y()+5);
-            menu->exec(*p);
-            n_point=-1;
-            x0_num=-1;
-            curve=-1;
-        }
-    }
-}
-
-
-/**
- * @brief PagePath::myMouseReleaseEvent 配合移动或删除轨迹点
- * @param event
- */
-void PagePath::myMouseReleaseEvent(QMouseEvent *event)
-{
-    m_point=-1;
-}
-
-
-/**
- * @brief PagePath::myMouseMoveEvent 配合移动或删除轨迹点
- * @param event
- */
-void PagePath::myMouseMoveEvent(QMouseEvent *event)
-{
-    int x_pos = event->pos().x();
-    int y_pos = event->pos().y();
-    float x_val,y_val;
-
-    if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==1)
-    {
-        x_val = ui->customPlot->xAxis->pixelToCoord(x_pos);
-        y_val = ui->customPlot->yAxis->pixelToCoord(y_pos);
-    }
-    else if(ui->Edit_x_toggle->text().toInt()==1 && ui->Edit_y_toggle->text().toInt()==-1)
-    {
-        x_val = ui->customPlot->xAxis2->pixelToCoord(x_pos);
-        y_val = ui->customPlot->yAxis->pixelToCoord(y_pos);
-    }
-    else if(ui->Edit_x_toggle->text().toInt()==-1 && ui->Edit_y_toggle->text().toInt()==1)
-    {
-        x_val = ui->customPlot->xAxis->pixelToCoord(x_pos);
-        y_val = ui->customPlot->yAxis2->pixelToCoord(y_pos);
-    }
-    else
-    {
-        x_val = ui->customPlot->xAxis2->pixelToCoord(x_pos);
-        y_val = ui->customPlot->yAxis2->pixelToCoord(y_pos);
-    }
-
-    // 旋转坐标系游标值
-    for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++){
-        if(fabs(x_val-x0[i])<0.2&&fabs(y_val-y0[i])<0.2 && !(event->button()&Qt::LeftButton)){
-            QString str;
-            str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",i+1)).
-                    arg(QString::asprintf("%.3f", bezier_path[bezier_cnt].out_points[i].X))
-                    .arg(QString::asprintf("%.3f",bezier_path[bezier_cnt].out_points[i].Y));
-            qDebug()<<"i"<<i<<"x"<<bezier_path[bezier_cnt].out_points[i].X
-                   <<"y"<<bezier_path[bezier_cnt].out_points[i].Y;
-            QToolTip::showText(cursor().pos(), str, this);
-            break;
-        }
-    }
-
-    if(m_point==-1)
         return;
-
-    x0[x0_num]=x_val;
-    y0[x0_num]=y_val;
-
-    if(curve==1)
-    {
-        x1[m_point]=x_val;
-        y1[m_point]=y_val;
     }
-    else if(curve==0)
+    buttonLoadPathClickedNum++;
+    pointScene->clear();
+    translate_dx=ui->Edit_translate_dx->text().toDouble();
+    translate_dy=ui->Edit_translate_dy->text().toDouble();
+    toggle_x=ui->Edit_x_toggle->text().toInt();
+    toggle_y=ui->Edit_y_toggle->text().toInt();
+
+    map_width=ui->Edit_map_width->text().toFloat();
+    map_height=ui->Edit_map_heigh->text().toFloat();
+    map_width_pixel=img->width();
+    map_height_pixel=img->height();
+    res_w=ui->graphicsView->width();
+    res_h=res_w*(map_height_pixel/map_width_pixel);
+    MyGraphicsView->resize(res_w,res_h);
+    MyGraphicsView->setFixedSize(res_w,res_h);
+    pointScene->setSceneRect(0,0,res_w,res_h);
+    width_t=float(res_w)/map_width;
+    height_t=res_h/map_height;
+    *newImg=img->scaled(res_w,res_h);
+    pointScene->addPixmap(QPixmap::fromImage(*newImg));
+
+    // 绘制坐标系
+    // 绘制箭头
+    QVector<QPointF> xAxisArrowheadPolygon(3);
+    QVector<QPointF> yAxisArrowheadPolygon(3);
+    xAxisArrowheadPolygon[0].setX(cal_rotate_point(2,0.1).x());
+    xAxisArrowheadPolygon[0].setY(cal_rotate_point(2,0.1).y());
+    xAxisArrowheadPolygon[1].setX(cal_rotate_point(2,-0.1).x());
+    xAxisArrowheadPolygon[1].setY(cal_rotate_point(2,-0.1).y());
+    xAxisArrowheadPolygon[2].setX(cal_rotate_point(2.2,0).x());
+    xAxisArrowheadPolygon[2].setY(cal_rotate_point(2.2,0).y());
+
+    yAxisArrowheadPolygon[0].setX(cal_rotate_point(0.1,2).x());
+    yAxisArrowheadPolygon[0].setY(cal_rotate_point(0.1,2).y());
+    yAxisArrowheadPolygon[1].setX(cal_rotate_point(-0.1,2).x());
+    yAxisArrowheadPolygon[1].setY(cal_rotate_point(-0.1,2).y());
+    yAxisArrowheadPolygon[2].setX(cal_rotate_point(0,2.2).x());
+    yAxisArrowheadPolygon[2].setY(cal_rotate_point(0,2.2).y());
+
+    QPolygonF xAxisArrowhead=QPolygonF(xAxisArrowheadPolygon);
+    QPolygonF yAxisArrowhead=QPolygonF(yAxisArrowheadPolygon);
+    pointScene->addPolygon(xAxisArrowhead,QPen(QBrush(Qt::blue), 1), QBrush(Qt::blue));
+    pointScene->addPolygon(yAxisArrowhead,QPen(QBrush(Qt::blue), 1), QBrush(Qt::blue));
+
+    // 绘制坐标轴标签
+    QPainterPath xAixs;
+    QPainterPath yAixs;
+    QFont axisFont;
+    axisFont.setPixelSize(16);
+    axisFont.setBold(false);
+    xAixs.addText(cal_rotate_point(2.5,0).x(),cal_rotate_point(2.5,0).y(),axisFont,"X");
+    yAixs.addText(cal_rotate_point(0,2.5).x(),cal_rotate_point(0,2.5).y(),axisFont,"Y");
+    pointScene->addPath(xAixs,QPen(QBrush(Qt::blue), 1), QBrush(Qt::blue));
+    pointScene->addPath(yAixs,QPen(QBrush(Qt::blue), 1), QBrush(Qt::blue));
+
+    // 绘制坐标轴
+    pointScene->addLine(cal_rotate_point(0,0).x(),cal_rotate_point(0,0).y(),cal_rotate_point(2,0).x(),cal_rotate_point(2,0).y(),QPen(QBrush(Qt::blue), 3));
+    pointScene->addLine(cal_rotate_point(0,0).x(),cal_rotate_point(0,0).y(),cal_rotate_point(0,2).x(),cal_rotate_point(0,2).y(),QPen(QBrush(Qt::blue), 3));
+
+    // 绘制点
+    for(int i=0;i<=bezier_path[bezier_cnt].out_num;i++)
     {
-        x[m_point]=x_val;
-        y[m_point]=y_val;
+        QPointF point;
+        point.setX(cal_rotate_point(bezier_path[bezier_cnt].out_points[i].X,bezier_path[bezier_cnt].out_points[i].Y).x());
+        point.setY(cal_rotate_point(bezier_path[bezier_cnt].out_points[i].X,bezier_path[bezier_cnt].out_points[i].Y).y());
+        MyGraphicsItem *pointItem;
+        if(i%bezier_path[bezier_cnt].num_btw_two==0)
+        {
+            pointItem=new MyGraphicsItem(QColor(Qt::red));
+        }
+        else
+        {
+            pointItem=new MyGraphicsItem(QColor(Qt::green));
+        }
+
+        pointItem->setRect(0,0,4,4);
+        pointItem->setPos(point.x(),point.y());
+        qDebug()<<point.x()<<point.y();
+        pointScene->addItem(pointItem);
+        MyGraphicsView->show();
     }
-
-    // 旋转坐标系游标值
-    float x0_val=x_val*cos(-translate_dangle * PI / 180.0) - y_val*sin(-translate_dangle* PI / 180.0);
-    float y0_val=y_val*cos(-translate_dangle * PI / 180.0) + x_val*sin(-translate_dangle * PI / 180.0);
-    QString str;
-    str = QString("第%1个点\nx: %2\ny: %3").arg(QString::asprintf("%d",x0_num+1)).arg(QString::asprintf("%.3f", x0_val))
-            .arg(QString::asprintf("%.3f",y0_val));
-    qDebug()<<"x0_num"<<x0_num
-           <<"point:"<<x0_val<<y0_val<<str;
-    QToolTip::showText(cursor().pos(), str, this);
-
-    // 更改输出值
-    bezier_path[bezier_cnt].out_points[x0_num].X=x0_val;
-    bezier_path[bezier_cnt].out_points[x0_num].Y=y0_val;
-
-    ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::green, 8));
-    ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(0)->setData(x, y);
-
-    ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::red, 2), QBrush(Qt::white), 8));
-    ui->customPlot->graph(1)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(1)->setData(x1, y1);
-
-    ui->customPlot->replot();
-
-}
-
-
-/**
- * @brief PagePath::on_actionScreen_triggered 删除点槽函数
- */
-void PagePath::on_actionScreen_triggered()
-{
-    x0.remove(x0_num);
-    y0.remove(x0_num);
-
-    if(curve==0)
-    {
-        x.remove(n_point);
-        y.remove(n_point);
-    }
-    else if(curve==1)
-    {
-        x1.remove(n_point);
-        y1.remove(n_point);
-    }
-
-    for (int i=x0_num;i<bezier_path[bezier_cnt].out_num;i++)
-    {
-        bezier_path[bezier_cnt].out_points[i].X=bezier_path[bezier_cnt].out_points[i+1].X;
-        bezier_path[bezier_cnt].out_points[i].Y=bezier_path[bezier_cnt].out_points[i+1].Y;
-    }
-    bezier_path[bezier_cnt].out_num-=1;
-
-    ui->customPlot->graph(0)->setData(x, y);
-    ui->customPlot->graph(1)->setData(x1, y1);
-    ui->customPlot->replot();
 }
 
 
@@ -711,14 +331,10 @@ void PagePath::on_Button_add_bezier_clicked()
  */
 void PagePath::on_Button_create_path_clicked()
 {
-    //    if (ui->Edit_x0->text().isEmpty())
-    //    {
-    //        QMessageBox::warning(NULL, "过程点数量不能为0", "请输入正确的过程点", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-    //        return;
-    //    }
-
+    buttonLoadPathClickedNum=0;
     // 获取坐标系旋转角度
     translate_dangle = ui->Edit_translate_dangle->text().toDouble();
+
 
     // 获取路径点
     bezier_path[bezier_cnt].input_num = 0;
@@ -801,38 +417,6 @@ void PagePath::on_Button_create_path_clicked()
     /*输出点提醒*/
     init_table_out();
     table_update();
-
-    x0.resize(bezier_path[bezier_cnt].out_num+1);
-    y0.resize(bezier_path[bezier_cnt].out_num+1);
-    x.resize(bezier_path[bezier_cnt].out_num+1 - bezier_path[bezier_cnt].input_num);
-    y.resize(bezier_path[bezier_cnt].out_num+1 - bezier_path[bezier_cnt].input_num);
-    x1.resize(bezier_path[bezier_cnt].input_num);
-    y1.resize(bezier_path[bezier_cnt].input_num);
-    int num = 0;
-    for (int j = 0; j <= bezier_path[bezier_cnt].out_num; j++)
-    {
-        if (j % bezier_path[bezier_cnt].num_btw_two == 0)
-        {
-            x1[num] = bezier_path[bezier_cnt].out_points[j].X;
-            y1[num] = bezier_path[bezier_cnt].out_points[j].Y;
-            num++;
-        }
-        else
-        {
-            x[j - num] = bezier_path[bezier_cnt].out_points[j].X;
-            y[j - num] = bezier_path[bezier_cnt].out_points[j].Y;
-        }
-        x0[j]=bezier_path[bezier_cnt].out_points[j].X;
-        y0[j]=bezier_path[bezier_cnt].out_points[j].Y;
-    }
-
-    // 计算旋转坐标系后坐标
-    if(translate_dangle!=0)
-    {
-        point_rotate(&x,&y,translate_dangle);
-        point_rotate(&x1,&y1,translate_dangle);
-        point_rotate(&x0,&y0,translate_dangle);
-    }
 }
 
 
@@ -989,28 +573,22 @@ void PagePath::on_Button_load_img_clicked()
     }
     ui->Edit_img_location->setText(tempFilename);
     img->load(tempFilename);
-    res_w=float(ui->customPlot->width());
-    res_h=float(ui->customPlot->width())/float(img->size().width())*float(img->size().height());
-    ui->customPlot->resize(int(res_w),int(res_h));
-    *newImg = img->scaled(int(res_w),int(res_h));
-    QLinearGradient plotGradient;
-    plotGradient.setColorAt(0, QColor(255, 255, 255, 0));
-    ui->customPlot->axisRect()->setBackground(plotGradient);
-    ui->customPlot->axisRect()->setBackground(QPixmap::fromImage(*newImg));
-    ui->customPlot->axisRect()->setBackgroundScaledMode(Qt::AspectRatioMode::IgnoreAspectRatio);
-    ui->customPlot->replot();
+
+    pointScene->clear();
+    map_width=ui->Edit_map_width->text().toFloat();
+    map_height=ui->Edit_map_heigh->text().toFloat();
+    map_width_pixel=img->width();
+    map_height_pixel=img->height();
+    res_w=ui->graphicsView->width();
+    res_h=res_w*(map_height_pixel/map_width_pixel);
+    MyGraphicsView->resize(res_w,res_h);
+    MyGraphicsView->setFixedSize(res_w,res_h);
+    pointScene->setSceneRect(0,0,res_w,res_h);
+    width_t=float(res_w)/map_width;
+    height_t=res_h/map_height;
+    *newImg=img->scaled(res_w,res_h);
+    pointScene->addPixmap(QPixmap::fromImage(*newImg));
 }
-
-
-///**
-// * @brief 点击“曲线对比”按钮
-// *
-// */
-//void PagePath::on_Button_cmp_clicked()
-//{
-//    mychart = new Mychart;
-//    mychart->show();
-//}
 
 
 /**
@@ -1100,18 +678,3 @@ void PagePath::on_Button_update_point_clicked()
     table_update();
 }
 
-/**
- * @brief PagePath::point_rotate 计算坐标点旋转后坐标值
- * @param x
- * @param y
- * @param angle
- */
-void PagePath::point_rotate(QVector<double> *x,QVector<double> *y, double angle)
-{
-    for (int i=0;i<x->size();i++)
-    {
-        double x_val=(*x)[i],y_val=(*y)[i];
-        (*x)[i]=x_val*cos(angle * PI / 180.0) - y_val*sin(angle * PI / 180.0);
-        (*y)[i]=y_val*cos(angle * PI / 180.0) + x_val*sin(angle * PI / 180.0);
-    }
-}
