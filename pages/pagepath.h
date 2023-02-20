@@ -25,13 +25,32 @@ extern int toggle_y;
 extern double translate_dx;
 extern double translate_dy;
 extern double translate_dangle;
-extern float width_t;
-extern float height_t;
+extern double width_t;
+extern double height_t;
 extern int bezier_cnt;
 //extern int traj_num;
 //extern int traj_Edit_idx;
 //extern QPointF *carpos;
 //extern int carpos_cnt;
+
+struct CtrlCmd_s{
+    CtrlCmd_s(const QPointF &pos,
+              const QPointF &vel,
+              double speed,
+              double dir,
+              double angle,
+              double time)
+              : pos(pos),
+             vel(vel),
+             speed(speed),
+             dir(dir),
+             angle(angle),
+             time(time) {};
+
+    QPointF pos{},vel{};
+    double speed{},dir{},angle{};
+    double time{};
+};
 extern QLabel *nowPointValueLabel;
 
 class PagePath : public QWidget
@@ -47,16 +66,16 @@ public:
     void init_table_out();
     void table_update();
     void point_rotate(QVector<double> *x,QVector<double> *y, double angle);
-    QPointF cal_rotate_point(float x, float y);
+
 
 
 private slots:
 
-    void on_Button_bezier_num_clicked();
+//    void on_Button_bezier_num_clicked();
 
     void on_Button_load_path_clicked();
 
-    void on_Button_add_bezier_clicked();
+//    void on_Button_add_bezier_clicked();
 
     void on_Button_create_path_clicked();
 
@@ -83,10 +102,16 @@ private slots:
     void on_Button_update_point_clicked();
 
 private:
+
+    enum {POS_X_COL = 2 , POS_Y_COL = 3};
+
     Ui::PagePath *ui;
     int buttonLoadPathClickedNum;
-    QVector< QVector<QPointF> > input_ptsList{1},generated_ptsList{1};
-    QVector< QVector<double> > generated_angleList{1},generated_speedList{1},generated_dirList{1};
+    QVector<QPointF> input_ptsList;
+    // 按段存储
+    QVector< QVector<CtrlCmd_s> >generated_ptsSegList{1};
+    int segment_num{0},generated_ptsNnum{0};
+    QVector< WayPtGraphicsItem* > plotKeyPt,plotWayPt;
     QVector<double> x_all_pts{5},y_all_pts{5};
     QVector<double> x_inserted_pts, y_inserted_pts;
     QVector<double> x_input_pts, y_input_pts;
@@ -99,10 +124,14 @@ private:
     QLineEdit *point;
     QLabel *xy;
     QLayout *point_line;
-    QVector<QSharedPointer<AbstractTrajGenerator> > traj_generators;
-    QGraphicsView *MyGraphicsView;
-    MyGraphicsScene *pointScene;
-};
+    QSharedPointer<AbstractTrajGenerator>  traj_generator;
+    TrajectoryPlotGraphicsView *trajPlotView;
+    void showEvent(QShowEvent *event) override;
 
+
+
+};
+QPointF cal_rotate_point(double x, double y, double dangle, double dx, double dy, int toggle_x, int toggle_y, double w,
+                         double h);
 #endif // PAGEPATH_H
 

@@ -42,6 +42,7 @@ set(
         datatypes.h
         digitalfiltering.h
         mainwindow.h
+        mygraphics.h
         tcpserversimple.h
         utility.h
         vbytearray.h
@@ -80,6 +81,7 @@ set(
         time_optimizer/trajectory_base.h
         time_optimizer/trajectory_generator.h
         time_optimizer/trajectory_generator_waypoint.h
+#        spinboxDelegate.h
 )
 
 set(
@@ -109,6 +111,7 @@ set(
         packet.cpp
         vbytearray.cpp
         commands.cpp
+        mygraphics.cpp
         vescinterface.cpp
         digitalfiltering.cpp
         utility.cpp
@@ -142,6 +145,7 @@ set(
         widgets/superslider.cpp
 
         time_optimizer/time_optimizer.cpp time_optimizer/trajectory_generator.cpp time_optimizer/trajectory_generator_waypoint.cpp
+#        spinboxDelegate.cpp
 )
 option(HAS_SERIALPORT "use serial port" on)
 

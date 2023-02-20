@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1222</width>
-    <height>915</height>
+    <height>773</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,24 +49,17 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QGraphicsView" name="graphicsView">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QWidget" name="widget_2" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
            </property>
-          </widget>
+          </spacer>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_11">
@@ -75,6 +68,12 @@
            </property>
            <item>
             <widget class="QLabel" name="label">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>27</height>
+              </size>
+             </property>
              <property name="text">
               <string>当前坐标点(索引从0开始)</string>
              </property>
@@ -82,6 +81,12 @@
            </item>
            <item>
             <widget class="QLabel" name="nowPoint">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>27</height>
+              </size>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -92,7 +97,7 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_9">
            <property name="sizeConstraint">
-            <enum>QLayout::SetFixedSize</enum>
+            <enum>QLayout::SetMinimumSize</enum>
            </property>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -101,6 +106,12 @@
              </property>
              <item>
               <widget class="QLabel" name="label_14">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>37</height>
+                </size>
+               </property>
                <property name="text">
                 <string>水平长度</string>
                </property>
@@ -118,7 +129,7 @@
                 <double>2.000000000000000</double>
                </property>
                <property name="value">
-                <double>13.300000000000001</double>
+                <double>10.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -131,6 +142,12 @@
              </property>
              <item>
               <widget class="QLabel" name="label_15">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>37</height>
+                </size>
+               </property>
                <property name="text">
                 <string>竖直长度</string>
                </property>
@@ -161,6 +178,12 @@
              </property>
              <item>
               <widget class="QLabel" name="label_12">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>37</height>
+                </size>
+               </property>
                <property name="text">
                 <string>X轴方向</string>
                </property>
@@ -203,6 +226,12 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>37</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Y轴方向</string>
                </property>
@@ -238,15 +267,12 @@
               <number>7</number>
              </property>
              <property name="sizeConstraint">
-              <enum>QLayout::SetMinimumSize</enum>
+              <enum>QLayout::SetFixedSize</enum>
              </property>
-             <item>
+             <item alignment="Qt::AlignVCenter">
               <widget class="QLabel" name="label_30">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+               <property name="enabled">
+                <bool>true</bool>
                </property>
                <property name="text">
                 <string>平移、旋转坐标系(逆时针为旋转正方向)</string>
@@ -256,16 +282,22 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
                <property name="sizeConstraint">
-                <enum>QLayout::SetMinimumSize</enum>
+                <enum>QLayout::SetFixedSize</enum>
                </property>
-               <item>
+               <item alignment="Qt::AlignVCenter">
                 <widget class="QLabel" name="label_33">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>37</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>dX</string>
                  </property>
                 </widget>
                </item>
-               <item>
+               <item alignment="Qt::AlignVCenter">
                 <widget class="QDoubleSpinBox" name="Edit_translate_dx">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -278,14 +310,20 @@
                  </property>
                 </widget>
                </item>
-               <item>
+               <item alignment="Qt::AlignVCenter">
                 <widget class="QLabel" name="label_31">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>37</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>dY</string>
                  </property>
                 </widget>
                </item>
-               <item>
+               <item alignment="Qt::AlignVCenter">
                 <widget class="QDoubleSpinBox" name="Edit_translate_dy">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -298,14 +336,20 @@
                  </property>
                 </widget>
                </item>
-               <item>
+               <item alignment="Qt::AlignVCenter">
                 <widget class="QLabel" name="label_32">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>37</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>d°</string>
                  </property>
                 </widget>
                </item>
-               <item>
+               <item alignment="Qt::AlignVCenter">
                 <widget class="QDoubleSpinBox" name="Edit_translate_dangle">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -338,37 +382,6 @@
           <string>Initialization</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>输入曲线数量:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="Edit_bezier_num">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>10</number>
-              </property>
-              <property name="value">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="Button_bezier_num">
-              <property name="text">
-               <string>确定</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
@@ -452,6 +465,9 @@
             </item>
             <item>
              <widget class="QDoubleSpinBox" name="Edit_now_angle">
+              <property name="suffix">
+               <string>°</string>
+              </property>
               <property name="minimum">
                <double>-180.000000000000000</double>
               </property>
@@ -469,6 +485,9 @@
             </item>
             <item>
              <widget class="QDoubleSpinBox" name="Edit_target_angle">
+              <property name="suffix">
+               <string>°</string>
+              </property>
               <property name="minimum">
                <double>-180.000000000000000</double>
               </property>
@@ -476,7 +495,7 @@
                <double>180.000000000000000</double>
               </property>
               <property name="value">
-               <double>90.000000000000000</double>
+               <double>0.000000000000000</double>
               </property>
              </widget>
             </item>
@@ -500,7 +519,7 @@
                <number>200</number>
               </property>
               <property name="value">
-               <number>40</number>
+               <number>8</number>
               </property>
              </widget>
             </item>
@@ -543,53 +562,7 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QLabel" name="label_16">
-              <property name="toolTip">
-               <string>只是代表快慢程度，并非实际大小</string>
-              </property>
-              <property name="text">
-               <string>速度快慢:</string>
-              </property>
-              <property name="buddy">
-               <cstring>Slider_kspeed</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_kspeed">
-              <property name="toolTip">
-               <string>只是代表快慢程度，并非实际大小</string>
-              </property>
-              <property name="maximum">
-               <number>1200</number>
-              </property>
-              <property name="value">
-               <number>400</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="Slider_kspeed">
-              <property name="toolTip">
-               <string>只是代表快慢程度，并非实际大小</string>
-              </property>
-              <property name="maximum">
-               <number>1200</number>
-              </property>
-              <property name="value">
-               <number>400</number>
-              </property>
-              <property name="sliderPosition">
-               <number>400</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <layout class="QHBoxLayout" name="horizontalLayout_6"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_13">
@@ -655,37 +628,6 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_14">
-            <item>
-             <widget class="QLabel" name="label_34">
-              <property name="text">
-               <string>NO.</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="Edit_bezier_cnt">
-              <property name="toolTip">
-               <string>曲线计数(不可编辑)</string>
-              </property>
-              <property name="text">
-               <string>0</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_35">
-              <property name="text">
-               <string>第几条Bezier曲线</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <widget class="QWidget" name="point_area_2" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -710,8 +652,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>229</width>
-                  <height>228</height>
+                  <width>265</width>
+                  <height>180</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -826,96 +768,23 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="label_17">
-              <property name="text">
-               <string>轨迹总长</string>
-              </property>
-              <property name="buddy">
-               <cstring>Edit_bezier_length</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="Edit_bezier_length">
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_18">
-              <property name="text">
-               <string>轨迹点数</string>
-              </property>
-              <property name="buddy">
-               <cstring>Edit_point_num</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="Edit_point_num">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QLabel" name="label_23">
-              <property name="text">
-               <string>carposX:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="Edit_posx">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_24">
-              <property name="text">
-               <string>carposY:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="Edit_posy">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <widget class="QLabel" name="label_27">
             <property name="text">
              <string>输入</string>
             </property>
-            <property name="buddy">
-             <cstring>plainTextEdit_input</cstring>
-            </property>
            </widget>
           </item>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_input">
-            <property name="documentTitle">
-             <string>input_points</string>
+           <widget class="QTableView" name="table_input">
+            <property name="contextMenuPolicy">
+             <enum>Qt::DefaultContextMenu</enum>
             </property>
-            <property name="readOnly">
+            <property name="autoFillBackground">
              <bool>true</bool>
             </property>
+            <attribute name="horizontalHeaderDefaultSectionSize">
+             <number>60</number>
+            </attribute>
            </widget>
           </item>
           <item>
@@ -955,8 +824,6 @@
   <tabstop>Edit_translate_dx</tabstop>
   <tabstop>Edit_translate_dy</tabstop>
   <tabstop>Edit_translate_dangle</tabstop>
-  <tabstop>Edit_bezier_num</tabstop>
-  <tabstop>Button_bezier_num</tabstop>
   <tabstop>Edit_img_location</tabstop>
   <tabstop>Button_load_img</tabstop>
   <tabstop>Edit_file_location</tabstop>
@@ -964,16 +831,10 @@
   <tabstop>Edit_now_angle</tabstop>
   <tabstop>Edit_target_angle</tabstop>
   <tabstop>Edit_num_btw_two</tabstop>
-  <tabstop>spinBox_kspeed</tabstop>
-  <tabstop>Slider_kspeed</tabstop>
   <tabstop>Edit_max_speed</tabstop>
-  <tabstop>Edit_bezier_cnt</tabstop>
   <tabstop>Button_create_path</tabstop>
   <tabstop>Button_load_path</tabstop>
   <tabstop>Button_add_bezier</tabstop>
-  <tabstop>Edit_bezier_length</tabstop>
-  <tabstop>Edit_point_num</tabstop>
-  <tabstop>plainTextEdit_input</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources>

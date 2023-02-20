@@ -28,7 +28,7 @@ void TimeOptimizerTraj::trajGeneration(Eigen::MatrixXd path)
     
     MatrixXd vel = MatrixXd::Zero(2,3); 
     MatrixXd acc = MatrixXd::Zero(2,3);
-    std::cout<< path <<std::endl;
+//    std::cout<< path <<std::endl;
     // give an arbitraty time allocation, all set all durations as 1 in the commented function.
     _polyTime  = timeAllocation(path); //_polyTime  = timeAllocationNaive(path); 
 
@@ -311,7 +311,7 @@ Matrix3d TimeOptimizerTraj::getCtrlCmd(double t)
     // }
     Matrix3d ret;
     ret << position , velocity , acceleration;
-    std::cout <<ret;
+//    std::cout <<ret;
     return ret;
 }
 
