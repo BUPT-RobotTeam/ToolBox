@@ -172,17 +172,17 @@ void TrajectoryPlotGraphicsView::mouseMoveEvent(QMouseEvent *event)
  */
 QPointF ret_rotate_point(float x,float y)
 {
-    if(translate_dangle==0)
-    {
-        return QPointF((x/width_t-translate_dy)/toggle_x,(y/height_t-translate_dx)/toggle_y);
-    }
-    else
-    {
-        float x_val=(x/width_t-translate_dy)/toggle_x;
-        float y_val=(y/height_t-translate_dx)/toggle_y;
-        return  QPointF(x_val*cos(-translate_dangle * M_PI / 180.0) - y_val*sin(-translate_dangle * M_PI / 180.0),
-                        y_val*cos(-translate_dangle * M_PI / 180.0) + x_val*sin(-translate_dangle * M_PI / 180.0));
-    }
+//    if(translate_dangle==0)
+//    {
+//        return QPointF((x/width_t-translate_dy)/toggle_x,(y/height_t-translate_dx)/toggle_y);
+//    }
+//    else
+//    {
+//        float x_val=(x/width_t-translate_dy)/toggle_x;
+//        float y_val=(y/height_t-translate_dx)/toggle_y;
+//        return  QPointF(x_val*cos(-translate_dangle * M_PI / 180.0) - y_val*sin(-translate_dangle * M_PI / 180.0),
+//                        y_val*cos(-translate_dangle * M_PI / 180.0) + x_val*sin(-translate_dangle * M_PI / 180.0));
+//    }
 }
 
 

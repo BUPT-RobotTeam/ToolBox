@@ -7,6 +7,7 @@
 #include <QStandardItemModel>
 #include "txtdialog.h"
 #include "trajectory_generator.h"
+#include "spinboxDelegate.h"
 #include <QLineEdit>
 #include <mygraphics.h>
 #include <QLabel>
@@ -17,21 +18,21 @@ class PagePath;
 
 
 
-//extern float map_width;
-//extern float map_height;
-extern Bezier *bezier_path ;
-extern int toggle_x;
-extern int toggle_y;
-extern double translate_dx;
-extern double translate_dy;
-extern double translate_dangle;
-extern double width_t;
-extern double height_t;
-extern int bezier_cnt;
-//extern int traj_num;
-//extern int traj_Edit_idx;
-//extern QPointF *carpos;
-//extern int carpos_cnt;
+////extern float map_width;
+////extern float map_height;
+//extern Bezier *bezier_path ;
+//extern int toggle_x;
+//extern int toggle_y;
+//extern double translate_dx;
+//extern double translate_dy;
+//extern double translate_dangle;
+//extern double width_t;
+//extern double height_t;
+//extern int bezier_cnt;
+////extern int traj_num;
+////extern int traj_Edit_idx;
+////extern QPointF *carpos;
+////extern int carpos_cnt;
 
 struct CtrlCmd_s{
     CtrlCmd_s(const QPointF &pos,
@@ -51,7 +52,6 @@ struct CtrlCmd_s{
     double speed{},dir{},angle{};
     double time{};
 };
-extern QLabel *nowPointValueLabel;
 
 class PagePath : public QWidget
 {
@@ -64,6 +64,7 @@ public:
     VescInterface *vesc() const;
     void setVesc(VescInterface *vesc);
     void init_table_out();
+    void init_table_input();
     void table_update();
     void point_rotate(QVector<double> *x,QVector<double> *y, double angle);
 
@@ -72,6 +73,16 @@ public:
 private slots:
 
 //    void on_Button_bezier_num_clicked();
+    void scenePointSelected(int idx);
+
+    void scenePointReleased(int idx);
+
+    void scenePointDeleted(int idx);
+
+    void scenePointPosChanged(int idx,QPointF nowPos,int type);
+
+
+
 
     void on_Button_load_path_clicked();
 
@@ -103,21 +114,20 @@ private slots:
 
 private:
 
-    enum {POS_X_COL = 2 , POS_Y_COL = 3};
-
     Ui::PagePath *ui;
     int buttonLoadPathClickedNum;
     QVector<QPointF> input_ptsList;
     // 按段存储
     QVector< QVector<CtrlCmd_s> >generated_ptsSegList{1};
     int segment_num{0},generated_ptsNnum{0};
-    QVector< WayPtGraphicsItem* > plotKeyPt,plotWayPt;
+    int selKeyPtIdx{-1};
+    QVector< WayPtGraphicsItem* > plotWayPt;
     QVector<double> x_all_pts{5},y_all_pts{5};
     QVector<double> x_inserted_pts, y_inserted_pts;
     QVector<double> x_input_pts, y_input_pts;
     txtDialog *txtdialog;
     VescInterface *mVesc;
-    QStandardItemModel *model;
+    QStandardItemModel *outputModel , *inputModel;
     QStandardItem *aItem;
     QImage *img;
     QImage *newImg;
@@ -126,7 +136,9 @@ private:
     QLayout *point_line;
     QSharedPointer<AbstractTrajGenerator>  traj_generator;
     TrajectoryPlotGraphicsView *trajPlotView;
+    SpinBoxDelegate * xDelegate,*yDelegate,*genNumDelegate;
     void showEvent(QShowEvent *event) override;
+    void addKeypt();
 
 
 

@@ -62,7 +62,7 @@
           </spacer>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="0,1">
            <property name="sizeConstraint">
             <enum>QLayout::SetFixedSize</enum>
            </property>
@@ -554,6 +554,9 @@
             </item>
             <item>
              <widget class="QDoubleSpinBox" name="Sample_interval">
+              <property name="decimals">
+               <number>2</number>
+              </property>
               <property name="singleStep">
                <double>0.100000000000000</double>
               </property>

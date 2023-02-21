@@ -81,7 +81,7 @@ set(
         time_optimizer/trajectory_base.h
         time_optimizer/trajectory_generator.h
         time_optimizer/trajectory_generator_waypoint.h
-#        spinboxDelegate.h
+        spinboxDelegate.h
 )
 
 set(
@@ -145,7 +145,7 @@ set(
         widgets/superslider.cpp
 
         time_optimizer/time_optimizer.cpp time_optimizer/trajectory_generator.cpp time_optimizer/trajectory_generator_waypoint.cpp
-#        spinboxDelegate.cpp
+        spinboxDelegate.cpp
 )
 option(HAS_SERIALPORT "use serial port" on)
 

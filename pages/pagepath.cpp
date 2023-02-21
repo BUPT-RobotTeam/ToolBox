@@ -26,7 +26,6 @@ int toggle_y = 1;
 QPointF *carpos = new QPointF[1000];
 int carpos_cnt = 0;
 int point_num;
-QLabel *nowPointValueLabel;
 
 Bezier *bezier_path = new Bezier[1];
 
@@ -62,14 +61,24 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     translate_dx = ui->Edit_translate_dx->text().toDouble();
     translate_dy = ui->Edit_translate_dy->text().toDouble();
     translate_dangle = ui->Edit_translate_dangle->text().toDouble();
+    map_width=ui->Edit_map_width->text().toFloat();
+    map_height=ui->Edit_map_heigh->text().toFloat();
 
     ui->scrollArea->setWidget(ui->widget);
     ui->widget->setMinimumSize(500,1000);
     traj_generator.reset(new TimeOptimizerTraj( ui->Edit_max_speed->text().toDouble(),
                                                 ui->Edit_max_acceleration->text().toDouble()));
-    model = new QStandardItemModel();
+    outputModel = new QStandardItemModel();
+    inputModel = new QStandardItemModel();
+    xDelegate = new SpinBoxDelegate(this,- map_width ,map_width , 0.01   );
+    yDelegate = new SpinBoxDelegate(this,- map_height ,map_height , 0.01   );
+    genNumDelegate = new SpinBoxDelegate(this,1 ,99 , 1,1,0);
+
     init_table_out();
+    init_table_input();
     table_update();
+    addKeypt();
+    addKeypt();
 
     trajPlotView = new TrajectoryPlotGraphicsView(this);
     trajPlotView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -84,16 +93,14 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     buttonLoadPathClickedNum=0;
     setMouseTracking(true);
 
-    nowPointValueLabel=ui->nowPoint;
-
 
 }
 
 
 PagePath::~PagePath()
 {
-    plotKeyPt.clear();
     plotWayPt.clear();
+
     trajPlotView->scene()->clear();
     delete trajPlotView;
     delete ui;
@@ -107,8 +114,8 @@ PagePath::~PagePath()
  */
 void PagePath::init_table_out()
 {
-    model->clear();
-//    model->setRowCount(1);
+    outputModel->clear();
+//    outputModel->setRowCount(1);
     QStringList headerList;
     headerList << "Time"
                << "X"
@@ -116,16 +123,47 @@ void PagePath::init_table_out()
                << "Speed"
                << "Direct"
                << "Angle";
-    model->setHorizontalHeaderLabels(headerList);
-    ui->table_out->setModel(model);
-    ui->table_out->setColumnWidth(0, 50); // 设置列的宽度
+    outputModel->setHorizontalHeaderLabels(headerList);
+    ui->table_out->setModel(outputModel);
+    ui->table_out->setColumnWidth(0, 70); // 设置列的宽度
+    ui->table_out->setColumnWidth(1, 70);
+    ui->table_out->setColumnWidth(2, 70);
+    ui->table_out->setColumnWidth(3, 70);
+    ui->table_out->setColumnWidth(4, 70);
+    ui->table_out->setColumnWidth(5, 70);
+}
+
+/**
+ * @brief 初始化输入表
+ *
+ */
+void PagePath::init_table_input()
+{
+    inputModel->clear();
+//    outputModel->setRowCount(1);
+    QStringList headerList;
+    headerList << "X"
+               << "Y"
+//               << "Speed"
+//               << "Direct"
+//               << "Angle"
+               << "生成点数量";
+    inputModel->setHorizontalHeaderLabels(headerList);
+    ui->table_input->setModel(inputModel);
+    ui->table_input->setColumnWidth(0, 80); // 设置列的宽度
+    ui->table_input->setColumnWidth(1, 80); // 设置列的宽度
+    ui->table_input->setColumnWidth(2, 150); // 设置列的宽度
+
+    ui->table_input->setItemDelegateForColumn(0,xDelegate);
+    ui->table_input->setItemDelegateForColumn(1,yDelegate);
+    ui->table_input->setItemDelegateForColumn(2,genNumDelegate);
+
     /*ui->table_out->setColumnWidth(1, 50);
     ui->table_out->setColumnWidth(2, 50);
     ui->table_out->setColumnWidth(3, 50);
     ui->table_out->setColumnWidth(4, 50);
     ui->table_out->setColumnWidth(5, 50);*/
 }
-
 
 /**
  * @brief 更新输出表
@@ -147,40 +185,46 @@ void PagePath::table_update()
             QString time = QString::asprintf("%.3f",ctrlCmd.time);
             aItem = new QStandardItem(time);
             aItem->setTextAlignment(Qt::AlignHCenter);
+            aItem->setEditable(false);
             rowList.push_back(aItem);
 
             QString x = QString::asprintf("%.3f", ctrlCmd.pos.x());
             aItem = new QStandardItem(x);
             aItem->setTextAlignment(Qt::AlignHCenter);
+            aItem->setEditable(false);
             rowList.push_back(aItem);
 
             QString y = QString::asprintf("%.3f", ctrlCmd.pos.y());
             aItem = new QStandardItem(y);
             aItem->setTextAlignment(Qt::AlignHCenter);
+            aItem->setEditable(false);
             rowList.push_back(aItem);
 
             QString speed = QString::asprintf("%.3f", ctrlCmd.speed);
             aItem = new QStandardItem(speed);
             aItem->setTextAlignment(Qt::AlignHCenter);
+            aItem->setEditable(false);
             rowList.push_back(aItem);
 
             QString direct = QString::asprintf("%.3f", ctrlCmd.dir);
             aItem = new QStandardItem(direct);
             aItem->setTextAlignment(Qt::AlignHCenter);
+            aItem->setEditable(false);
             rowList.push_back(aItem);
 
             QString angle = QString::asprintf("%.3f",ctrlCmd.angle);
             aItem = new QStandardItem(angle);
             aItem->setTextAlignment(Qt::AlignHCenter);
+            aItem->setEditable(false);
             rowList.push_back(aItem);
 
-            model->appendRow(rowList);
+            outputModel->appendRow(rowList);
             rowcnt++;
         }
 
     }
 
-    ui->table_out->setModel(model);
+    ui->table_out->setModel(outputModel);
 //    ui->table_out->verticalHeader()->hide();
 }
 
@@ -246,7 +290,7 @@ void PagePath::on_Button_load_path_clicked()
     }
     buttonLoadPathClickedNum++;
     trajPlotView->scene()->clear();
-    plotKeyPt.clear();plotWayPt.clear();
+    plotWayPt.clear();
     translate_dx=ui->Edit_translate_dx->text().toDouble();
     translate_dy=ui->Edit_translate_dy->text().toDouble();
     toggle_x=ui->Edit_x_toggle->text().toInt();
@@ -334,13 +378,12 @@ void PagePath::on_Button_load_path_clicked()
             if(ptIter == segment.begin() || ptCnt==generated_ptsNnum)
             {
                 pointItem = new WayPtGraphicsItem(WayPtGraphicsItem::KEY_POINT);
-                plotKeyPt.push_back(pointItem);
             }
             else
             {
                 pointItem= new WayPtGraphicsItem(WayPtGraphicsItem::WAY_POINT);
-                plotWayPt.push_back(pointItem);
             }
+            plotWayPt.push_back(pointItem);
             pointItem->setPointIndex(ptCnt);
             pointItem->setPointTime(ptIter->time);
             QPointF plotPoint;
@@ -352,6 +395,8 @@ void PagePath::on_Button_load_path_clicked()
             pointItem->setRect(0,0,4,4);
             pointItem->setPos(plotPoint);
             trajPlotView->TrajectoryPlotGraphicsScene->addItem(pointItem);
+            connect(pointItem,&WayPtGraphicsItem::pointSelected,this, &PagePath::scenePointSelected);
+            connect(pointItem,&WayPtGraphicsItem::pointPosChanged,this, &PagePath::scenePointPosChanged);
 
             ptCnt++;
         }
@@ -372,15 +417,6 @@ void PagePath::on_Button_create_path_clicked()
     buttonLoadPathClickedNum=0;
     // 获取坐标系旋转角度
     translate_dangle = ui->Edit_translate_dangle->text().toDouble();
-
-
-    // 获取路径点
-//    bezier_path[traj_Edit_idx].input_num = 0;
-//    bezier_path[traj_Edit_idx].num_btw_two = ui->Edit_num_btw_two->text().toInt();
-//    bezier_path[traj_Edit_idx].k_speed = ui->Slider_kspeed->value();
-//    bezier_path[traj_Edit_idx].max_speed = ui->Edit_max_speed->text().toInt();
-//    bezier_path[traj_Edit_idx].now_angle = ui->Edit_now_angle->text().toFloat();
-//    bezier_path[traj_Edit_idx].target_angle = ui->Edit_target_angle->text().toFloat();
 
     //运动学参数获取
     double max_v,max_acc,max_jerk,target_angle;
@@ -417,9 +453,9 @@ void PagePath::on_Button_create_path_clicked()
     }
 
 //    if (bezier_path[traj_Edit_idx].input_num == 0)
-    if(input_pts.empty())
+    if(input_pts.size() < 2)
     {
-        QMessageBox::warning(NULL, "过程点数量不能为0", "请输入正确的过程点", QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::warning(NULL, "过程点数量不能小于2", "请输入正确的过程点", QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
 
@@ -449,7 +485,6 @@ void PagePath::on_Button_create_path_clicked()
     x_inserted_pts.clear();
     y_inserted_pts.clear();
     trajPlotView->scene()->clear();
-    plotKeyPt.clear();
     plotWayPt.clear();
     generated_ptsSegList.clear();
     generated_ptsNnum = 0 ;
@@ -508,87 +543,9 @@ void PagePath::on_Button_create_path_clicked()
         y_inserted_pts.push_back(pos_cmd(1));
     }
 
-    // 路径规划
-    //        for(int i=0;i<bezier_path[traj_Edit_idx].input_num;i++)
-    //        {
-    //            bezier_path[traj_Edit_idx].input_points[i].X=bezier_path[traj_Edit_idx].input_points[i].X+ui->Edit_translate_dy->text().toFloat();
-    //            bezier_path[traj_Edit_idx].input_points[i].Y=bezier_path[traj_Edit_idx].input_points[i].Y+ui->Edit_translate_dx->text().toFloat();
-    //        }
-//    bezier_path[traj_Edit_idx].out_num = (bezier_path[traj_Edit_idx].input_num - 1) * bezier_path[traj_Edit_idx].num_btw_two;
-//
-//    bezier_path[traj_Edit_idx].ctrlpoints_get();
-//
-//    bezier_path[traj_Edit_idx].outpoints_get();
-//
-//    bezier_path[traj_Edit_idx].calculate_length();
-//
-//    bezier_path[traj_Edit_idx].direct_planning();
-//
-//    bezier_path[traj_Edit_idx].angle_planning();
-//
-//    // 速度规划
-//    if (bezier_path[traj_Edit_idx].input_num == 2)
-//    {
-//        bezier_path[traj_Edit_idx].strghtline_speed_plan();
-//    }
-//    else if (bezier_path[traj_Edit_idx].input_num > 2 && bezier_path[traj_Edit_idx].input_num < 7)
-//    {
-//        bezier_path[traj_Edit_idx].speed_planning();
-//    }
-//    else if (bezier_path[traj_Edit_idx].input_num == 7)
-//    {
-//        bezier_path[traj_Edit_idx].strghtline_speed_plan();
-//    }
-
-    /*输入点提醒*/
-//    ui->plainTextEdit_input->clear();
-//    QString inputPtInfo = "";
-//    inputPtInfo=QString::asprintf("第%d条贝塞尔曲线\r\n", traj_Edit_idx);
-//    ui->plainTextEdit_input->insertPlainText(inputPtInfo);
-//    for (int i = 0; i < input_ptsList[traj_Edit_idx].size(); i++)
-//    {
-//        inputPtInfo=QString::asprintf(
-//                "第%d个点,(%.3f,%.3f)\r\n",
-//                i,input_ptsList[traj_Edit_idx][i].x(),
-//                input_ptsList[traj_Edit_idx][i].y()
-//                );
-//        ui->plainTextEdit_input->insertPlainText(inputPtInfo);
-//    }
-//
-//    /*输出点个数*/
-//    ui->Edit_point_num->clear();
-//    QString outputPtNum = "";
-//    outputPtNum=QString::asprintf("%d", generated_ptsSegList[traj_Edit_idx].size());
-//    ui->Edit_point_num->setText(outputPtNum);
-
-
     /*输出点提醒*/
     init_table_out();
     table_update();
-
-//    x_all_pts.resize(bezier_path[traj_Edit_idx].out_num + 1);
-//    y_all_pts.resize(bezier_path[traj_Edit_idx].out_num + 1);
-//    x_inserted_pts.resize(bezier_path[traj_Edit_idx].out_num + 1 - bezier_path[traj_Edit_idx].input_num);
-//    y_inserted_pts.resize(bezier_path[traj_Edit_idx].out_num + 1 - bezier_path[traj_Edit_idx].input_num);
-//    x_input_pts.resize(bezier_path[traj_Edit_idx].input_num);
-//    y_input_pts.resize(bezier_path[traj_Edit_idx].input_num);
-//    int num = 0;
-//    for (int j = 0; j <= bezier_path[traj_Edit_idx].out_num; j++)
-//    {
-//        if (j % bezier_path[traj_Edit_idx].num_btw_two == 0)
-//        {
-//            x_input_pts[num] = bezier_path[traj_Edit_idx].out_points[j].X;
-//            y_input_pts[num] = bezier_path[traj_Edit_idx].out_points[j].Y;
-//            num++;
-//        }
-//        else
-//        {
-//            x_inserted_pts[j - num] = bezier_path[traj_Edit_idx].out_points[j].X;
-//            y_inserted_pts[j - num] = bezier_path[traj_Edit_idx].out_points[j].Y;
-//        }
-//        x_all_pts[j]=bezier_path[traj_Edit_idx].out_points[j].X;
-//        y_all_pts[j]=bezier_path[traj_Edit_idx].out_points[j].Y;
-//    }
 
 }
 
@@ -683,7 +640,6 @@ void PagePath::on_Button_clear_clicked()
     input_ptsList.clear();
     generated_ptsSegList.clear();
     plotWayPt.clear();
-    plotKeyPt.clear();
     for(int i=0;i<point_num;i++)
     {
         QString p_name = "point" + QString::number(i);
@@ -764,12 +720,10 @@ void PagePath::on_Button_load_img_clicked()
     trajPlotView->setBackgroundBrush(QPixmap::fromImage(*newImg));
 }
 
-
 /**
- * @brief PagePath::on_Button_add_point_clicked 点击“加点”按钮
+ * @brief PagePath::addKeypt() 添加关键点
  */
-void PagePath::on_Button_add_point_clicked()
-{
+void PagePath::addKeypt() {
     point_line = new QHBoxLayout();
     point_line->setMargin(0);
 
@@ -791,7 +745,36 @@ void PagePath::on_Button_add_point_clicked()
     p->setObjectName("point" + QString::number(point_num));
     p->setLayout(point_line);
     ui->point_area_3->addWidget(p);
+    if (point_num>0) {
+        auto lastRowNumItem = new QStandardItem(QString::asprintf("%d", 1));
+        lastRowNumItem->setTextAlignment(Qt::AlignHCenter);
+//    rowList.push_back(aItem);
+        inputModel->setItem(point_num-1, 2, lastRowNumItem);
+    }
+    QList<QStandardItem*> rowList;
+
+    auto xItem = new QStandardItem(QString::asprintf("%d", 1));
+    xItem->setTextAlignment(Qt::AlignHCenter);
+    auto yItem = new QStandardItem(QString::asprintf("%d", 1));
+    yItem->setTextAlignment(Qt::AlignHCenter);
+    auto rowNumItem = new QStandardItem();
+    rowNumItem->setTextAlignment(Qt::AlignHCenter);
+    rowNumItem->setEditable(false);
+    rowList.push_back(xItem);
+    rowList.push_back(yItem);
+    rowList.push_back(rowNumItem);
+
+
+    inputModel->appendRow(rowList);
+
     point_num++;
+}
+/**
+ * @brief PagePath::on_Button_add_point_clicked 点击“加点”按钮
+ */
+void PagePath::on_Button_add_point_clicked()
+{
+    addKeypt();
 }
 
 
@@ -800,7 +783,7 @@ void PagePath::on_Button_add_point_clicked()
  */
 void PagePath::on_Button_delete_point_clicked()
 {
-    if (point_num > 0)
+    if (point_num > 2 )
     {
         QString p_name = "point" + QString::number(point_num - 1);
         QWidget *p = ui->groupBox_2->findChild<QWidget *>(p_name);
@@ -810,6 +793,8 @@ void PagePath::on_Button_delete_point_clicked()
             delete item;
         }
         delete p;
+        inputModel->removeRow(point_num-1);
+
         point_num--;
     }
 }
@@ -867,4 +852,62 @@ void PagePath::showEvent(QShowEvent *event) {
     *newImg=img->scaled(res_w,res_h);
     trajPlotView->setBackgroundBrush(QPixmap::fromImage(*newImg));
 }
+
+void PagePath::scenePointSelected(int idx) {
+
+
+    WayPtGraphicsItem * selPoint= plotWayPt[idx];
+    int keyptidx = 0 ,tmp = idx;
+    while(tmp >=generated_ptsSegList[keyptidx].size())
+    {
+        tmp -= generated_ptsSegList[keyptidx].size();
+        keyptidx ++ ;
+    }
+
+
+    selKeyPtIdx = keyptidx + (tmp>0);
+
+    auto retPt = cal_rotate_point(
+            selPoint->scenePos().x(),selPoint->scenePos().y(),
+            -translate_dangle,
+            -translate_dx, -translate_dy,
+            toggle_x, toggle_y,
+            1/width_t, 1/height_t
+    );
+    auto nowPointValue=QString::asprintf("第%d个点,第%d个关键点\tx: %.3f,y: %.3f",idx,selKeyPtIdx,retPt.x(),retPt.y());
+
+    ui->nowPoint->setText(nowPointValue);
+    ui->nowPoint->update();
+}
+
+void PagePath::scenePointReleased(int idx) {
+    selKeyPtIdx = -1;
+}
+
+void PagePath::scenePointDeleted(int idx) {
+
+}
+
+void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int type) {
+    WayPtGraphicsItem * selPoint= plotWayPt[idx];
+
+    auto retPt = cal_rotate_point(
+            selPoint->scenePos().x(),selPoint->scenePos().y(),
+            -translate_dangle,
+            -translate_dx, -translate_dy,
+            toggle_x, toggle_y,
+            1/width_t, 1/height_t
+    );
+    auto nowPointValue=QString::asprintf("第%d个点,第%d个关键点\tx: %.3f,y: %.3f",idx,selKeyPtIdx,retPt.x(),retPt.y());
+    if (selKeyPtIdx >= 0)
+    {
+        auto modelXIdx = inputModel->index(selKeyPtIdx,0);
+        auto modelYIdx = inputModel->index(selKeyPtIdx,1);
+        inputModel->setData(modelXIdx,retPt.x());
+        inputModel->setData(modelYIdx,retPt.y());
+    }
+    ui->nowPoint->setText(nowPointValue);
+    ui->nowPoint->update();
+}
+
 
