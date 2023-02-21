@@ -18,14 +18,17 @@ public:
     WayPtGraphicsItem(int type, QGraphicsItem *parent = 0);
     WayPtGraphicsItem(QColor color, QGraphicsItem *parent = 0);
     void setPointIndex(int pointIndex);
+    void setKeyIndex(int keyIndex);
     void setPointTime(double pointTime);
+    void remove();
+    int getPointType() const;
     enum {KEY_POINT,WAY_POINT};
 
 signals:
-    void deletePointItem(int idx,int type);
-    void pointPosChanged(int idx,QPointF nowPos,int type);
-    void pointSelected(int idx);
-    void pointReleased(int idx);
+    void deletePointItem(int idx,int keyIdx);
+    void pointPosChanged(int idx,QPointF nowPos,int keyIdx);
+    void pointSelected(int idx,int keyIdx);
+    void pointReleased(int idx,int keyIdx);
 
 public slots:
 
@@ -34,10 +37,15 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     int type() const override;
-    void remove();
+
 private:
     QColor m_color;
-    int point_index{},pointType{};
+    //全局列表索引
+    int global_index{-1};
+    //点类型
+    int pointType{};
+    //关键点列表索引
+    int key_index{-1};
     double point_time{};
     QAction *deleteAction,*transferAction ;
     QMenu *editMenu ;
@@ -54,8 +62,8 @@ class TrajectoryPlotGraphicsView : public QGraphicsView
     Q_OBJECT
 public:
     explicit TrajectoryPlotGraphicsView(QWidget *parent);
-    QVector<WayPtGraphicsItem *> plotPoint(QVector<QPointF> plotKeyPt,QVector<QPointF> plotWayPt);
-    WayPtGraphicsItem * plotPoint(QPointF polopt);
+//    QVector<WayPtGraphicsItem *> plotPoint(QVector<QPointF> plotKeyPt,QVector<QPointF> plotWayPt);
+//    WayPtGraphicsItem * plotPoint(QPointF polopt);
     QGraphicsScene* TrajectoryPlotGraphicsScene;
 
 

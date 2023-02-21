@@ -69,8 +69,7 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     init_table_out();
     init_table_input();
     table_update();
-    addKeypt();
-    addKeypt();
+
 
     trajPlotView = new TrajectoryPlotGraphicsView(this);
     trajPlotView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -277,10 +276,13 @@ void PagePath::on_Button_load_path_clicked()
 {
     if(buttonLoadPathClickedNum!=0)
     {
-        return;
+        buttonLoadPathClickedNum=0;
+//        return;
     }
     buttonLoadPathClickedNum++;
-    trajPlotView->scene()->clear();
+//    trajPlotView->scene()->clear();
+    clear_axis();
+    clearWayPt();
     plotWayPt.clear();
     translate_dx=ui->Edit_translate_dx->text().toDouble();
     translate_dy=ui->Edit_translate_dy->text().toDouble();
@@ -289,91 +291,36 @@ void PagePath::on_Button_load_path_clicked()
 
     map_width=ui->Edit_map_width->text().toFloat();
     map_height=ui->Edit_map_heigh->text().toFloat();
+    draw_axis();
 
-
-    // 绘制坐标系
-    // 绘制箭头
-    QVector<QPointF> xAxisArrowheadPolygon(3);
-    QVector<QPointF> yAxisArrowheadPolygon(3);
-    xAxisArrowheadPolygon[0]=(cal_rotate_point(2,0.1,translate_dangle,translate_dx,translate_dy,
-                                               toggle_x,toggle_y,width_t,height_t));
-    xAxisArrowheadPolygon[1]=(cal_rotate_point(2,-0.1,translate_dangle,translate_dx,translate_dy,
-                                               toggle_x,toggle_y,width_t,height_t));
-    xAxisArrowheadPolygon[2]=(cal_rotate_point(2.2,0,translate_dangle,translate_dx,translate_dy,
-                                               toggle_x,toggle_y,width_t,height_t));
-
-    yAxisArrowheadPolygon[0]=(cal_rotate_point(0.1,2,translate_dangle,translate_dx,translate_dy,
-                                               toggle_x,toggle_y,width_t,height_t));
-    yAxisArrowheadPolygon[1]=(cal_rotate_point(-0.1,2,translate_dangle,translate_dx,translate_dy,
-                                               toggle_x,toggle_y,width_t,height_t));
-    yAxisArrowheadPolygon[2]=(cal_rotate_point(0,2.2,translate_dangle,translate_dx,translate_dy,
-                                               toggle_x,toggle_y,width_t,height_t));
-
-    QPolygonF xAxisArrowhead=QPolygonF(xAxisArrowheadPolygon);
-    QPolygonF yAxisArrowhead=QPolygonF(yAxisArrowheadPolygon);
-    trajPlotView->TrajectoryPlotGraphicsScene->addPolygon(xAxisArrowhead,
-                                                          QPen(QBrush(Qt::blue), 1),
-                                                          QBrush(Qt::blue)
-                                                          );
-    trajPlotView->TrajectoryPlotGraphicsScene->addPolygon(yAxisArrowhead,
-                                                          QPen(QBrush(Qt::blue), 1),
-                                                          QBrush(Qt::blue)
-                                                          );
-
-    // 绘制坐标轴标签
-    QPainterPath xAixs;
-    QPainterPath yAixs;
-    QFont axisFont;
-    axisFont.setPixelSize(16);
-    axisFont.setBold(false);
-    xAixs.addText(cal_rotate_point(2.5,0,translate_dangle,
-                                   translate_dx,translate_dy,
-                                   toggle_x,toggle_y,
-                                   width_t,height_t),axisFont,"X");
-    yAixs.addText(cal_rotate_point(0,2.5,translate_dangle,
-                                   translate_dx,translate_dy,
-                                   toggle_x,toggle_y,
-                                   width_t,height_t),axisFont,"Y");
-    trajPlotView->TrajectoryPlotGraphicsScene->addPath(xAixs,
-                                                       QPen(QBrush(Qt::blue), 1),
-                                                       QBrush(Qt::blue)
-                                                       );
-    trajPlotView->TrajectoryPlotGraphicsScene->addPath(yAixs,
-                                                       QPen(QBrush(Qt::blue), 1),
-                                                       QBrush(Qt::blue)
-                                                       );
-
-    // 绘制坐标轴
-    QPointF originPt = cal_rotate_point(0,0,translate_dangle,
-                                        translate_dx,translate_dy,
-                                        toggle_x,toggle_y,
-                                        width_t,height_t);
-    QPointF yaxisPt = cal_rotate_point(0,2,translate_dangle,
-                                        translate_dx,translate_dy,
-                                        toggle_x,toggle_y,
-                                        width_t,height_t);
-    QPointF xaxisPt = cal_rotate_point(2,0,translate_dangle,
-                                       translate_dx,translate_dy,
-                                       toggle_x,toggle_y,
-                                       width_t,height_t);
-    trajPlotView->TrajectoryPlotGraphicsScene->addLine({originPt,xaxisPt}, QPen(QBrush(Qt::blue), 3));
-    trajPlotView->TrajectoryPlotGraphicsScene->addLine({originPt,yaxisPt}, QPen(QBrush(Qt::blue), 3));
 
     // 绘制点
-    int ptCnt=0;
+    int ptCnt=0,segCnt=0;
     for(const auto& segment : generated_ptsSegList)
     {
         WayPtGraphicsItem* pointItem;
-        for(auto ptIter=segment.begin();ptIter!=segment.end();ptIter++)
+
+        pointItem = plotKeyPt[segCnt];
+        pointItem->setKeyIndex(segCnt);
+        pointItem->setPointIndex(ptCnt);
+        auto plotPoint = cal_rotate_point(segment[0].pos.x(), segment[0].pos.y(),
+                                     translate_dangle,
+                                     translate_dx, translate_dy,
+                                     toggle_x, toggle_y,
+                                     width_t, height_t);
+        pointItem->setPos(plotPoint);
+        plotWayPt.push_back(pointItem);
+
+        ptCnt++;
+
+        for(auto ptIter=segment.begin()+1;ptIter!=segment.end();ptIter++)
         {
-            if(ptIter == segment.begin() || ptCnt==generated_ptsNnum)
+            if (ptCnt==generated_ptsNnum)
             {
-                pointItem = new WayPtGraphicsItem(WayPtGraphicsItem::KEY_POINT);
+                break;
             }
-            else
-            {
-                pointItem= new WayPtGraphicsItem(WayPtGraphicsItem::WAY_POINT);
-            }
+            pointItem= new WayPtGraphicsItem(WayPtGraphicsItem::WAY_POINT);
+
             plotWayPt.push_back(pointItem);
             pointItem->setPointIndex(ptCnt);
             pointItem->setPointTime(ptIter->time);
@@ -391,11 +338,110 @@ void PagePath::on_Button_load_path_clicked()
 
             ptCnt++;
         }
-
+        segCnt++;
 //        plotPoint.setY(cal_rotate_point(bezier_path[bezier_cnt].out_points[i].X, bezier_path[bezier_cnt].out_points[i].Y).y());
 
     }
+
+    WayPtGraphicsItem* pointItem;
+
+    pointItem = plotKeyPt[segCnt];
+    pointItem->setKeyIndex(segCnt);
+    pointItem->setPointIndex(ptCnt);
+    auto ptIter = ( (generated_ptsSegList.end()-1)->end() ) - 1;
+    auto plotPoint = cal_rotate_point((ptIter)->pos.x(), ptIter->pos.y(),
+                                      translate_dangle,
+                                      translate_dx, translate_dy,
+                                      toggle_x, toggle_y,
+                                      width_t, height_t);
+    pointItem->setPos(plotPoint);
+    plotWayPt.push_back(pointItem);
+
     trajPlotView->show();
+
+
+}
+void PagePath::clear_axis()
+{
+    trajPlotView->scene()->removeItem(xAxisArrowItem);
+    trajPlotView->scene()->removeItem(yAxisArrowItem);
+
+    trajPlotView->scene()->removeItem(xAxisPathItem);
+    trajPlotView->scene()->removeItem(yAxisPathItem);
+
+    trajPlotView->scene()->removeItem(xAxisLineItem);
+    trajPlotView->scene()->removeItem(yAxisLineItem);
+
+}
+void PagePath::draw_axis() {// 绘制坐标系
+
+
+    // 绘制箭头
+    QVector<QPointF> xAxisArrowheadPolygon{3}, yAxisArrowheadPolygon{3};
+
+    xAxisArrowheadPolygon[0]=(cal_rotate_point(2,0.1,translate_dangle,translate_dx,translate_dy,
+                                               toggle_x,toggle_y,width_t,height_t));
+    xAxisArrowheadPolygon[1]=(cal_rotate_point(2,-0.1,translate_dangle,translate_dx,translate_dy,
+                                               toggle_x,toggle_y,width_t,height_t));
+    xAxisArrowheadPolygon[2]=(cal_rotate_point(2.2,0,translate_dangle,translate_dx,translate_dy,
+                                               toggle_x,toggle_y,width_t,height_t));
+
+    yAxisArrowheadPolygon[0]=(cal_rotate_point(0.1,2,translate_dangle,translate_dx,translate_dy,
+                                               toggle_x,toggle_y,width_t,height_t));
+    yAxisArrowheadPolygon[1]=(cal_rotate_point(-0.1,2,translate_dangle,translate_dx,translate_dy,
+                                               toggle_x,toggle_y,width_t,height_t));
+    yAxisArrowheadPolygon[2]=(cal_rotate_point(0,2.2,translate_dangle,translate_dx,translate_dy,
+                                               toggle_x,toggle_y,width_t,height_t));
+    QPolygonF xAxisArrowhead(xAxisArrowheadPolygon),yAxisArrowhead(yAxisArrowheadPolygon);
+
+    xAxisArrowItem = trajPlotView->TrajectoryPlotGraphicsScene->addPolygon(xAxisArrowhead,
+                                                          QPen(QBrush(Qt::blue), 1),
+                                                          QBrush(Qt::blue)
+                                                          );
+    yAxisArrowItem = trajPlotView->TrajectoryPlotGraphicsScene->addPolygon(yAxisArrowhead,
+                                                          QPen(QBrush(Qt::blue), 1),
+                                                          QBrush(Qt::blue)
+                                                          );
+
+    // 绘制坐标轴标签
+
+    QPainterPath xAxis,yAxis;
+    QFont axisFont;
+    axisFont.setPixelSize(16);
+    axisFont.setBold(false);
+    xAxis.addText(cal_rotate_point(2.5, 0, translate_dangle,
+                                   translate_dx, translate_dy,
+                                   toggle_x, toggle_y,
+                                   width_t, height_t), axisFont, "X");
+    yAxis.addText(cal_rotate_point(0, 2.5, translate_dangle,
+                                   translate_dx, translate_dy,
+                                   toggle_x, toggle_y,
+                                   width_t, height_t), axisFont, "Y");
+    xAxisPathItem = trajPlotView->TrajectoryPlotGraphicsScene->addPath(xAxis,
+                                                       QPen(QBrush(Qt::blue), 1),
+                                                       QBrush(Qt::blue)
+                                                       );
+
+    yAxisPathItem = trajPlotView->TrajectoryPlotGraphicsScene->addPath(yAxis,
+                                                       QPen(QBrush(Qt::blue), 1),
+                                                       QBrush(Qt::blue)
+                                                       );
+
+    // 绘制坐标轴
+    QPointF originPt = cal_rotate_point(0,0,translate_dangle,
+                                        translate_dx,translate_dy,
+                                        toggle_x,toggle_y,
+                                        width_t,height_t);
+    QPointF yaxisPt = cal_rotate_point(0,2,translate_dangle,
+                                        translate_dx,translate_dy,
+                                        toggle_x,toggle_y,
+                                        width_t,height_t);
+    QPointF xaxisPt = cal_rotate_point(2,0,translate_dangle,
+                                       translate_dx,translate_dy,
+                                       toggle_x,toggle_y,
+                                       width_t,height_t);
+    xAxisLineItem = trajPlotView->TrajectoryPlotGraphicsScene->addLine({originPt, xaxisPt}, QPen(QBrush(Qt::blue), 3));
+    yAxisLineItem = trajPlotView->TrajectoryPlotGraphicsScene->addLine({originPt, yaxisPt}, QPen(QBrush(Qt::blue), 3));
 }
 
 
@@ -475,9 +521,6 @@ void PagePath::on_Button_create_path_clicked()
     traj_time_now = traj_time_start;
 
 
-
-    trajPlotView->scene()->clear();
-    plotWayPt.clear();
     generated_ptsSegList.clear();
     generated_ptsNnum = 0 ;
     for(int i=0;i<segment_num;i++)
@@ -542,7 +585,7 @@ void PagePath::on_Button_create_path_clicked()
 
 /**
  * @brief 点击“生成文件”按钮
- *
+ * @todo 使用tabletView的数据
  */
 void PagePath::on_Button_create_file_clicked()
 {
@@ -623,23 +666,16 @@ void PagePath::on_Button_create_file_clicked()
 void PagePath::on_Button_clear_clicked()
 {
     init_table_out();
+    init_table_input();
 //    ui->plainTextEdit_input->clear();
 //    ui->Edit_bezier_length->clear();
 //    ui->Edit_point_num->clear();
     trajPlotView->scene()->clear();
     input_ptsList.clear();
+    //清零轨迹生成器时要全部清空
     generated_ptsSegList.clear();
     plotWayPt.clear();
-    for(int i=0; i < inputPoint_num; i++)
-    {
-        QString p_name = "point" + QString::number(i);
-        QWidget *p = ui->groupBox_2->findChild<QWidget *>(p_name);
-        QList<QLineEdit *> items = p->findChildren<QLineEdit *>();
-        for (QLineEdit *item : items)
-        {
-            item->clear();
-        }
-    }
+    plotKeyPt.clear();
 
 //    ui->Edit_bezier_cnt->setText("0");
 
@@ -713,11 +749,13 @@ void PagePath::on_Button_load_img_clicked()
  */
 void PagePath::addKeypt() {
 
+    //在列表中添加spinbox便于编辑
     if (inputPoint_num > 0) {
         auto lastRowNumItem = new QStandardItem(QString::asprintf("%d", 1));
         lastRowNumItem->setTextAlignment(Qt::AlignHCenter);
 //    rowList.push_back(aItem);
         inputModel->setItem(inputPoint_num - 1, 2, lastRowNumItem);
+        //特殊处理最后一段的点
     }
     QList<QStandardItem*> rowList;
 
@@ -735,6 +773,23 @@ void PagePath::addKeypt() {
 
     inputModel->appendRow(rowList);
 
+    //在场景中添加关键点
+
+    auto pointItem =  new WayPtGraphicsItem(WayPtGraphicsItem::KEY_POINT);
+
+    pointItem->setKeyIndex(inputPoint_num);
+    auto plotPoint = cal_rotate_point(1, 1,
+                                 translate_dangle,
+                                 translate_dx, translate_dy,
+                                 toggle_x, toggle_y,
+                                 width_t, height_t);
+    pointItem->setRect(0,0,4,4);
+    pointItem->setPos(plotPoint);
+    connect(pointItem,&WayPtGraphicsItem::pointSelected,this, &PagePath::scenePointSelected);
+    connect(pointItem,&WayPtGraphicsItem::pointPosChanged,this, &PagePath::scenePointPosChanged);
+    plotKeyPt.push_back(pointItem);
+
+    trajPlotView->scene()->addItem(pointItem);
     inputPoint_num++;
 }
 /**
@@ -799,6 +854,7 @@ void PagePath::on_Button_update_point_clicked()
 }
 void PagePath::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
+    //设置图片背景
     map_width=ui->Edit_map_width->text().toFloat();
     map_height=ui->Edit_map_heigh->text().toFloat();
     map_width_pixel=img->width();
@@ -812,21 +868,27 @@ void PagePath::showEvent(QShowEvent *event) {
     height_t=res_h/map_height;
     *newImg=img->scaled(res_w,res_h);
     trajPlotView->setBackgroundBrush(QPixmap::fromImage(*newImg));
+
+    //绘制坐标轴
+    draw_axis();
+    addKeypt();
+    addKeypt();
+    trajPlotView->show();
+
 }
 
-void PagePath::scenePointSelected(int idx) {
+void PagePath::scenePointSelected(int idx,int keyIdx) {
 
 
-    WayPtGraphicsItem * selPoint= plotWayPt[idx];
-    int keyptidx = 0 ,tmp = idx;
-    while(tmp >=generated_ptsSegList[keyptidx].size())
+    WayPtGraphicsItem * selPoint = nullptr;
+    if(keyIdx>=0)
     {
-        tmp -= generated_ptsSegList[keyptidx].size();
-        keyptidx ++ ;
+        selPoint= plotKeyPt[keyIdx];
     }
-
-
-    selKeyPtIdx = keyptidx + (tmp>0);
+    else
+    {
+        selPoint= plotWayPt[idx];
+    }
 
     auto retPt = cal_rotate_point(
             selPoint->scenePos().x(),selPoint->scenePos().y(),
@@ -835,22 +897,29 @@ void PagePath::scenePointSelected(int idx) {
             toggle_x, toggle_y,
             1/width_t, 1/height_t
     );
-    auto nowPointValue=QString::asprintf("第%d个点,第%d个关键点\tx: %.3f,y: %.3f",idx,selKeyPtIdx,retPt.x(),retPt.y());
+    auto nowPointValue=QString::asprintf("第%d个点,第%d个关键点\tx: %.3f,y: %.3f",idx,keyIdx,retPt.x(),retPt.y());
 
     ui->nowPoint->setText(nowPointValue);
     ui->nowPoint->update();
 }
 
-void PagePath::scenePointReleased(int idx) {
-    selKeyPtIdx = -1;
+void PagePath::scenePointReleased(int idx,int keyIdx) {
 }
 
-void PagePath::scenePointDeleted(int idx) {
+void PagePath::scenePointDeleted(int idx,int keyIdx) {
 
 }
 
-void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int type) {
-    WayPtGraphicsItem * selPoint= plotWayPt[idx];
+void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int keyIdx) {
+    WayPtGraphicsItem * selPoint = nullptr;
+    if(keyIdx>=0)
+    {
+        selPoint= plotKeyPt[keyIdx];
+    }
+    else
+    {
+        selPoint= plotWayPt[idx];
+    }
 
     auto retPt = cal_rotate_point(
             selPoint->scenePos().x(),selPoint->scenePos().y(),
@@ -859,16 +928,26 @@ void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int type) {
             toggle_x, toggle_y,
             1/width_t, 1/height_t
     );
-    auto nowPointValue=QString::asprintf("第%d个点,第%d个关键点\tx: %.3f,y: %.3f",idx,selKeyPtIdx,retPt.x(),retPt.y());
-    if (selKeyPtIdx >= 0)
+    auto nowPointValue=QString::asprintf("第%d个点,第%d个关键点\tx: %.3f,y: %.3f",idx,keyIdx,retPt.x(),retPt.y());
+    if (keyIdx >= 0)
     {
-        auto modelXIdx = inputModel->index(selKeyPtIdx,0);
-        auto modelYIdx = inputModel->index(selKeyPtIdx,1);
+        auto modelXIdx = inputModel->index(keyIdx,0);
+        auto modelYIdx = inputModel->index(keyIdx,1);
         inputModel->setData(modelXIdx,retPt.x());
         inputModel->setData(modelYIdx,retPt.y());
     }
     ui->nowPoint->setText(nowPointValue);
     ui->nowPoint->update();
+}
+
+void PagePath::clearWayPt() {
+    for(auto x :plotWayPt)
+    {
+        if(x->getPointType() == WayPtGraphicsItem::WAY_POINT)
+        {
+            x->remove();
+        }
+    }
 }
 
 

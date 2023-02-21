@@ -73,13 +73,13 @@ public:
 private slots:
 
 //    void on_Button_bezier_num_clicked();
-    void scenePointSelected(int idx);
+    void scenePointSelected(int idx,int keyIdx);
 
-    void scenePointReleased(int idx);
+    void scenePointReleased(int idx,int keyIdx);
 
-    void scenePointDeleted(int idx);
+    void scenePointDeleted(int idx,int keyIdx);
 
-    void scenePointPosChanged(int idx,QPointF nowPos,int type);
+    void scenePointPosChanged(int idx,QPointF nowPos,int keyIdx);
 
 
 
@@ -112,7 +112,7 @@ private slots:
 
     void on_Button_update_point_clicked();
 
-private:
+private://变量
 
     Ui::PagePath *ui;
     int buttonLoadPathClickedNum;
@@ -121,8 +121,7 @@ private:
     QVector< QVector<CtrlCmd_s> >generated_ptsSegList{1};
     int segment_num{0},generated_ptsNnum{0};
     int inputPoint_num {0};
-    int selKeyPtIdx{-1};
-    QVector< WayPtGraphicsItem* > plotWayPt;
+    QVector< WayPtGraphicsItem* > plotWayPt,plotKeyPt;
     QVector<double> x_all_pts{5},y_all_pts{5};
     txtDialog *txtdialog;
     VescInterface *mVesc;
@@ -131,16 +130,19 @@ private:
     QImage *img;
     QImage *newImg;
     QLineEdit *point;
-    QLabel *xy;
-    QLayout *point_line;
     QSharedPointer<AbstractTrajGenerator>  traj_generator;
     TrajectoryPlotGraphicsView *trajPlotView;
     SpinBoxDelegate * xDelegate,*yDelegate,*genNumDelegate;
+    QGraphicsItem   *xAxisArrowItem, *yAxisArrowItem,
+                    *xAxisPathItem,*yAxisPathItem,
+                    *xAxisLineItem,*yAxisLineItem;
+
+private: //function
     void showEvent(QShowEvent *event) override;
     void addKeypt();
-
-
-
+    void clearWayPt();
+    void draw_axis();
+    void clear_axis();
 };
 QPointF cal_rotate_point(double x, double y, double dangle, double dx, double dy, int toggle_x, int toggle_y, double w,
                          double h);

@@ -45,7 +45,7 @@ void WayPtGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
         setSelected(true);
-        emit pointSelected(this->point_index);
+        emit pointSelected(this->global_index,this->key_index);
 //        if(selPoint==-1)
 //        {
 //            QPointF LeftButtonClickedPoint(ret_rotate_point(scenePos().x(),scenePos().y()));
@@ -70,7 +70,7 @@ void WayPtGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if(this->pointType == KEY_POINT)
     {
-        emit pointPosChanged(this->point_index,event->pos(),this->pointType);
+        emit pointPosChanged(this->global_index, event->pos(), this->key_index);
     }
     QGraphicsItem::mouseMoveEvent(event);
 }
@@ -91,7 +91,7 @@ void WayPtGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //    bezier_path[bezier_cnt].out_points[selPoint].X=ret_rotate_point(scenePos().x(),scenePos().y()).x();
 //    bezier_path[bezier_cnt].out_points[selPoint].Y=ret_rotate_point(scenePos().x(),scenePos().y()).y();
     selPoint=-1;
-    emit pointReleased(this->point_index);
+    emit pointReleased(this->global_index,this->key_index);
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -102,7 +102,7 @@ int WayPtGraphicsItem::type() const
 }
 
 void WayPtGraphicsItem::setPointIndex(int pointIndex) {
-    point_index = pointIndex;
+    global_index = pointIndex;
 }
 
 void WayPtGraphicsItem::setPointTime(double pointTime) {
@@ -111,8 +111,16 @@ void WayPtGraphicsItem::setPointTime(double pointTime) {
 
 void WayPtGraphicsItem::remove() {
     scene()->removeItem(this);
-    emit deletePointItem(point_index,KEY_POINT);
+    emit deletePointItem(global_index, key_index);
     this->deleteLater();
+}
+
+void WayPtGraphicsItem::setKeyIndex(int keyIndex) {
+    key_index = keyIndex;
+}
+
+int WayPtGraphicsItem::getPointType() const {
+    return pointType;
 }
 
 // 自定义graphicView
