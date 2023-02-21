@@ -120,11 +120,10 @@ private:
     // 按段存储
     QVector< QVector<CtrlCmd_s> >generated_ptsSegList{1};
     int segment_num{0},generated_ptsNnum{0};
+    int inputPoint_num {0};
     int selKeyPtIdx{-1};
     QVector< WayPtGraphicsItem* > plotWayPt;
     QVector<double> x_all_pts{5},y_all_pts{5};
-    QVector<double> x_inserted_pts, y_inserted_pts;
-    QVector<double> x_input_pts, y_input_pts;
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *outputModel , *inputModel;

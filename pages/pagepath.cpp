@@ -23,16 +23,8 @@ double translate_dy = 0;
 double translate_dangle = 0;
 int toggle_x = 1;
 int toggle_y = 1;
-QPointF *carpos = new QPointF[1000];
-int carpos_cnt = 0;
-int point_num;
 
-Bezier *bezier_path = new Bezier[1];
 
-int traj_num = 1;
-int traj_Edit_idx = 0;
-int bezier_num = 1;
-int bezier_cnt = 0;
 double res_w=0;
 double res_h=0;
 double width_t=0;
@@ -64,8 +56,8 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
     map_width=ui->Edit_map_width->text().toFloat();
     map_height=ui->Edit_map_heigh->text().toFloat();
 
-    ui->scrollArea->setWidget(ui->widget);
-    ui->widget->setMinimumSize(500,1000);
+
+
     traj_generator.reset(new TimeOptimizerTraj( ui->Edit_max_speed->text().toDouble(),
                                                 ui->Edit_max_acceleration->text().toDouble()));
     outputModel = new QStandardItemModel();
@@ -171,7 +163,6 @@ void PagePath::init_table_input()
  */
 void PagePath::table_update()
 {
-//    if( !traj_Edit_idx ) {return;}
     if(!traj_generator->isHasTraj()){return;}
     int rowcnt=0;
     QStringList headerList;
@@ -432,30 +423,32 @@ void PagePath::on_Button_create_path_clicked()
     //input_path
     QVector<QPointF> input_pts;
 //    int inputPtNum = 0 ;
-    x_input_pts.clear();
-    y_input_pts.clear();
-    for(int i=0;i<point_num;i++)
+
+    for(int i=0; i < inputPoint_num; i++)
     {
-        QString p_name = "point" + QString::number(i);
-        QWidget *p = ui->groupBox_2->findChild<QWidget *>(p_name);
-        QList<QLineEdit *> items = p->findChildren<QLineEdit *>();
-        if(!items[0]->text().isEmpty() && !items[1]->text().isEmpty())
+        auto inputXIdx = inputModel->index(i,0);
+        auto inputYIdx = inputModel->index(i,1);
+        auto inputNumIdx = inputModel->index(i,2);
+
+        auto xData=inputModel->data(inputXIdx);
+        auto yData=inputModel->data(inputYIdx);
+        auto numData=inputModel->data(inputNumIdx);
+        if(xData.canConvert<double>() && yData.canConvert<double>() && (i==inputPoint_num-1 ||numData.canConvert<int>()))
         {
-//            bezier_path[traj_Edit_idx].input_points[i].X =items[0]->text().toFloat();
-//            bezier_path[traj_Edit_idx].input_points[i].Y =items[1]->text().toFloat();
-//            bezier_path[traj_Edit_idx].input_num++;
-//            inputPtNum++;
-            x_input_pts.push_back(items[0]->text().toFloat());
-            y_input_pts.push_back(items[1]->text().toFloat());
-            input_pts.push_back(QPointF(items[0]->text().toFloat(),items[1]->text().toFloat()));
+            input_pts.push_back(QPointF(xData.toDouble(),yData.toDouble()));
+        }
+        else
+        {
+            QMessageBox::warning(nullptr, "请输入正确的关键点", "关键点输入非法类型", QMessageBox::Ok , QMessageBox::Ok);
+            return;
         }
 
     }
 
-//    if (bezier_path[traj_Edit_idx].input_num == 0)
+
     if(input_pts.size() < 2)
     {
-        QMessageBox::warning(NULL, "过程点数量不能小于2", "请输入正确的过程点", QMessageBox::Ok , QMessageBox::Ok);
+        QMessageBox::warning(nullptr, "请输入正确的关键点", "关键点数量不能小于2", QMessageBox::Ok , QMessageBox::Ok);
         return;
     }
 
@@ -482,8 +475,7 @@ void PagePath::on_Button_create_path_clicked()
     traj_time_now = traj_time_start;
 
 
-    x_inserted_pts.clear();
-    y_inserted_pts.clear();
+
     trajPlotView->scene()->clear();
     plotWayPt.clear();
     generated_ptsSegList.clear();
@@ -513,8 +505,7 @@ void PagePath::on_Button_create_path_clicked()
                      QPointF(vel_cmd(0),vel_cmd(1)),
                      vel,dir,0.00,t}
                     );
-            x_inserted_pts.push_back(pos_cmd(0));
-            y_inserted_pts.push_back(pos_cmd(1));
+
             generated_ptsNnum++;
 
         }
@@ -539,8 +530,7 @@ void PagePath::on_Button_create_path_clicked()
                  QPointF(vel_cmd(0),vel_cmd(1)),
                  vel,dir,0.00,t}
         );
-        x_inserted_pts.push_back(pos_cmd(0));
-        y_inserted_pts.push_back(pos_cmd(1));
+
     }
 
     /*输出点提醒*/
@@ -558,7 +548,7 @@ void PagePath::on_Button_create_file_clicked()
 {
     if (ui->Edit_file_location->text().isEmpty())
     {
-        QMessageBox::warning(NULL, "无路径", "请输入生成文件路径", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::warning(nullptr, "无路径", "请输入生成文件路径", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         return;
     }
 
@@ -640,7 +630,7 @@ void PagePath::on_Button_clear_clicked()
     input_ptsList.clear();
     generated_ptsSegList.clear();
     plotWayPt.clear();
-    for(int i=0;i<point_num;i++)
+    for(int i=0; i < inputPoint_num; i++)
     {
         QString p_name = "point" + QString::number(i);
         QWidget *p = ui->groupBox_2->findChild<QWidget *>(p_name);
@@ -653,8 +643,6 @@ void PagePath::on_Button_clear_clicked()
 
 //    ui->Edit_bezier_cnt->setText("0");
 
-    traj_Edit_idx = 0;
-    traj_num = 1;
 }
 
 
@@ -675,7 +663,7 @@ void PagePath::on_Button_open_folder_clicked()
     }
     else
     {
-        QMessageBox::information(NULL, "error", "No Directory",
+        QMessageBox::information(nullptr, "error", "No Directory",
                                  QMessageBox::Yes, QMessageBox::Yes);
         return;
     }
@@ -697,7 +685,7 @@ void PagePath::on_Button_load_img_clicked()
     }
     else
     {
-        QMessageBox::information(NULL, "error", "No such file",
+        QMessageBox::information(nullptr, "error", "No such file",
                                  QMessageBox::Yes, QMessageBox::Yes);
         return;
     }
@@ -724,32 +712,12 @@ void PagePath::on_Button_load_img_clicked()
  * @brief PagePath::addKeypt() 添加关键点
  */
 void PagePath::addKeypt() {
-    point_line = new QHBoxLayout();
-    point_line->setMargin(0);
 
-    xy = new QLabel();
-    xy->setText("x" + QString::number(point_num) + ":");
-    point_line->addWidget(xy);
-    point = new QLineEdit();
-    point->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    point_line->addWidget(point);
-
-    xy = new QLabel();
-    xy->setText("y" + QString::number(point_num) + ":");
-    point_line->addWidget(xy);
-    point = new QLineEdit();
-    point->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    point_line->addWidget(point);
-
-    QWidget *p = new QWidget;
-    p->setObjectName("point" + QString::number(point_num));
-    p->setLayout(point_line);
-    ui->point_area_3->addWidget(p);
-    if (point_num>0) {
+    if (inputPoint_num > 0) {
         auto lastRowNumItem = new QStandardItem(QString::asprintf("%d", 1));
         lastRowNumItem->setTextAlignment(Qt::AlignHCenter);
 //    rowList.push_back(aItem);
-        inputModel->setItem(point_num-1, 2, lastRowNumItem);
+        inputModel->setItem(inputPoint_num - 1, 2, lastRowNumItem);
     }
     QList<QStandardItem*> rowList;
 
@@ -767,7 +735,7 @@ void PagePath::addKeypt() {
 
     inputModel->appendRow(rowList);
 
-    point_num++;
+    inputPoint_num++;
 }
 /**
  * @brief PagePath::on_Button_add_point_clicked 点击“加点”按钮
@@ -783,19 +751,12 @@ void PagePath::on_Button_add_point_clicked()
  */
 void PagePath::on_Button_delete_point_clicked()
 {
-    if (point_num > 2 )
+    if (inputPoint_num > 2 )
     {
-        QString p_name = "point" + QString::number(point_num - 1);
-        QWidget *p = ui->groupBox_2->findChild<QWidget *>(p_name);
-        QList<QWidget *> items = p->findChildren<QWidget *>();
-        for (QWidget *item : items)
-        {
-            delete item;
-        }
-        delete p;
-        inputModel->removeRow(point_num-1);
 
-        point_num--;
+        inputModel->removeRow(inputPoint_num - 1);
+
+        inputPoint_num--;
     }
 }
 
