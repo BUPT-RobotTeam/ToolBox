@@ -122,6 +122,9 @@ void PagePath::init_table_out()
     ui->table_out->setColumnWidth(3, 70);
     ui->table_out->setColumnWidth(4, 70);
     ui->table_out->setColumnWidth(5, 70);
+
+    ui->table_out->setSelectionMode(QTableView::SingleSelection);
+    ui->table_out->setSelectionBehavior(QTableView::SelectRows );
 }
 
 /**
@@ -132,6 +135,7 @@ void PagePath::init_table_input()
 {
     inputModel->clear();
 //    outputModel->setRowCount(1);
+    disconnect(inputModel,nullptr,this,nullptr);
     QStringList headerList;
     headerList << "X"
                << "Y"
@@ -149,6 +153,10 @@ void PagePath::init_table_input()
     ui->table_input->setItemDelegateForColumn(1,yDelegate);
     ui->table_input->setItemDelegateForColumn(2,genNumDelegate);
 
+    ui->table_input->setSelectionMode(QTableView::SingleSelection);
+    ui->table_input->setSelectionBehavior(QTableView::SelectRows);
+
+    connect(inputModel,&QStandardItemModel::itemChanged,this,&PagePath::inputModelChanged);
     /*ui->table_out->setColumnWidth(1, 50);
     ui->table_out->setColumnWidth(2, 50);
     ui->table_out->setColumnWidth(3, 50);
@@ -947,6 +955,26 @@ void PagePath::clearWayPt() {
         {
             x->remove();
         }
+    }
+}
+
+void PagePath::inputModelChanged(QStandardItem *item) {
+    int rowNum = item->row();
+
+    auto inputXIdx = inputModel->index(rowNum,0);
+    auto inputYIdx = inputModel->index(rowNum,1);
+    auto xData=inputModel->data(inputXIdx);
+    auto yData=inputModel->data(inputYIdx);
+
+    if(xData.canConvert<double>() && yData.canConvert<double>() )
+    {
+        auto plotPoint = cal_rotate_point(xData.toDouble(), yData.toDouble(),
+                                          translate_dangle,
+                                          translate_dx, translate_dy,
+                                          toggle_x, toggle_y,
+                                          width_t, height_t);
+        auto plotPointitem = plotKeyPt[rowNum];
+        plotPointitem->setPos(plotPoint);
     }
 }
 

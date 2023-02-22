@@ -81,8 +81,7 @@ private slots:
 
     void scenePointPosChanged(int idx,QPointF nowPos,int keyIdx);
 
-
-
+    void inputModelChanged(QStandardItem * item);
 
     void on_Button_load_path_clicked();
 
