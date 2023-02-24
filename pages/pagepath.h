@@ -83,7 +83,6 @@ private slots:
 
     void inputModelChanged(QStandardItem * item);
 
-    void on_Button_load_path_clicked();
 
 //    void on_Button_add_bezier_clicked();
 
@@ -97,8 +96,6 @@ private slots:
 
     void on_Button_load_img_clicked();
 
-    void drawCarPos(float x, float y);
-
     //    void on_Button_cmp_clicked();
 
     void on_Button_add_point_clicked();
@@ -109,7 +106,9 @@ private slots:
 
     void on_Sample_distance_clicked(bool checked);
 
-    void on_Button_update_point_clicked();
+    void on_table_output_CustomContextMenuRequested(QPoint pos);
+
+    void on_table_input_CustomContextMenuRequested(QPoint pos);
 
 private://变量
 
@@ -121,7 +120,6 @@ private://变量
     int segment_num{0},generated_ptsNnum{0};
     int inputPoint_num {0};
     QVector< WayPtGraphicsItem* > plotWayPt,plotKeyPt;
-    QVector<double> x_all_pts{5},y_all_pts{5};
     txtDialog *txtdialog;
     VescInterface *mVesc;
     QStandardItemModel *outputModel , *inputModel;
@@ -135,13 +133,19 @@ private://变量
     QGraphicsItem   *xAxisArrowItem, *yAxisArrowItem,
                     *xAxisPathItem,*yAxisPathItem,
                     *xAxisLineItem,*yAxisLineItem;
+    int user_knownDeleteInfo = false ;
 
+    QMenu *input_view_Menu{nullptr} , *output_view_Menu{nullptr};
 private: //function
     void showEvent(QShowEvent *event) override;
     void addKeypt();
     void clearWayPt();
     void draw_axis();
     void clear_axis();
+    void removePt(int wayidx, int keyidx);
+    void updatePlotIdx();
+    void plotTrajectory();
+
 };
 QPointF cal_rotate_point(double x, double y, double dangle, double dx, double dy, int toggle_x, int toggle_y, double w,
                          double h);

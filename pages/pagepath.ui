@@ -378,6 +378,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_2">
+         <property name="maximumSize">
+          <size>
+           <width>360</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="title">
           <string>Initialization</string>
          </property>
@@ -664,42 +670,6 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_21">
             <item>
-             <widget class="QPushButton" name="Button_create_path">
-              <property name="text">
-               <string>确定</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="Button_load_path">
-              <property name="text">
-               <string>加载曲线</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_22">
-            <item>
-             <widget class="QPushButton" name="Button_add_bezier">
-              <property name="text">
-               <string>输入下一条</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="Button_update_point">
-              <property name="text">
-               <string>更新输出</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_23">
-            <item>
              <widget class="QPushButton" name="Button_clear">
               <property name="text">
                <string>清空</string>
@@ -710,6 +680,17 @@
              <widget class="QPushButton" name="Button_create_file">
               <property name="text">
                <string>生成文件</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_23">
+            <item>
+             <widget class="QPushButton" name="Button_create_path">
+              <property name="text">
+               <string>确定</string>
               </property>
              </widget>
             </item>
@@ -734,7 +715,7 @@
           <item>
            <widget class="QTableView" name="table_input">
             <property name="contextMenuPolicy">
-             <enum>Qt::DefaultContextMenu</enum>
+             <enum>Qt::CustomContextMenu</enum>
             </property>
             <property name="autoFillBackground">
              <bool>true</bool>
@@ -754,7 +735,7 @@
           <item>
            <widget class="QTableView" name="table_out">
             <property name="contextMenuPolicy">
-             <enum>Qt::DefaultContextMenu</enum>
+             <enum>Qt::CustomContextMenu</enum>
             </property>
             <property name="autoFillBackground">
              <bool>true</bool>
@@ -789,9 +770,6 @@
   <tabstop>Edit_target_angle</tabstop>
   <tabstop>Edit_num_btw_two</tabstop>
   <tabstop>Edit_max_speed</tabstop>
-  <tabstop>Button_create_path</tabstop>
-  <tabstop>Button_load_path</tabstop>
-  <tabstop>Button_add_bezier</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources>

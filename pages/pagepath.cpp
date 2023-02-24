@@ -125,6 +125,21 @@ void PagePath::init_table_out()
 
     ui->table_out->setSelectionMode(QTableView::SingleSelection);
     ui->table_out->setSelectionBehavior(QTableView::SelectRows );
+    disconnect(outputModel,nullptr,this,nullptr);
+    disconnect(ui->table_out,nullptr,this,nullptr);
+
+    delete output_view_Menu;
+    output_view_Menu = new QMenu(this);
+    output_view_Menu->addAction("删除",this,[=]{
+        int wayidx = ui->table_out->currentIndex().row();
+        int keyidx = -1;
+        auto waypt = plotWayPt[wayidx];
+        keyidx = waypt->getKeyIndex();
+        removePt(wayidx,keyidx);
+
+    });
+    connect(ui->table_out,&QTableView::customContextMenuRequested,this,&PagePath::on_table_output_CustomContextMenuRequested);
+
 }
 
 /**
@@ -136,6 +151,8 @@ void PagePath::init_table_input()
     inputModel->clear();
 //    outputModel->setRowCount(1);
     disconnect(inputModel,nullptr,this,nullptr);
+    disconnect(ui->table_input,nullptr,this,nullptr);
+
     QStringList headerList;
     headerList << "X"
                << "Y"
@@ -156,7 +173,23 @@ void PagePath::init_table_input()
     ui->table_input->setSelectionMode(QTableView::SingleSelection);
     ui->table_input->setSelectionBehavior(QTableView::SelectRows);
 
+    //删除菜单初始化并连接信号
+    delete input_view_Menu;
+    input_view_Menu = new QMenu(this);
+    input_view_Menu->addAction("删除",this,[=]{
+        int keyidx = ui->table_input->currentIndex().row();
+        int wayidx = -1;
+        if (!plotWayPt.isEmpty())
+        {
+            auto keypt = plotKeyPt[keyidx];
+            wayidx = keypt->getPointIndex();
+        }
+        removePt(wayidx,keyidx);
+
+    });
     connect(inputModel,&QStandardItemModel::itemChanged,this,&PagePath::inputModelChanged);
+    connect(ui->table_input,&QTableView::customContextMenuRequested,this,&PagePath::on_table_input_CustomContextMenuRequested);
+
     /*ui->table_out->setColumnWidth(1, 50);
     ui->table_out->setColumnWidth(2, 50);
     ui->table_out->setColumnWidth(3, 50);
@@ -244,24 +277,6 @@ void PagePath::setVesc(VescInterface *vesc)
 }
 
 
-/**
- * @brief 打印小车轨迹点
- *
- * @param x
- * @param y
- */
-void PagePath::drawCarPos(float x, float y)
-{
-//    carpos[carpos_cnt++].setX(x);
-//    carpos[carpos_cnt++].setY(y);
-//    QString pos_ = "";
-//    pos_=QString::asprintf("%.3f", x);
-//    ui->Edit_posx->setText(pos_);
-//    pos_=QString::asprintf("%.3f", y);
-//    ui->Edit_posy->setText(pos_);
-}
-
-
 QPointF cal_rotate_point(double x,double y,double dangle,double dx,double dy,int toggle_x,int toggle_y,double w,double h)
 {
     if(dangle==0)
@@ -280,7 +295,7 @@ QPointF cal_rotate_point(double x,double y,double dangle,double dx,double dy,int
  * @brief 点击加载曲线按钮
  *
  */
-void PagePath::on_Button_load_path_clicked()
+void PagePath::plotTrajectory()
 {
     if(buttonLoadPathClickedNum!=0)
     {
@@ -323,7 +338,7 @@ void PagePath::on_Button_load_path_clicked()
 
         for(auto ptIter=segment.begin()+1;ptIter!=segment.end();ptIter++)
         {
-            if (ptCnt==generated_ptsNnum)
+            if (ptCnt + 1 == generated_ptsNnum)
             {
                 break;
             }
@@ -343,6 +358,7 @@ void PagePath::on_Button_load_path_clicked()
             trajPlotView->TrajectoryPlotGraphicsScene->addItem(pointItem);
             connect(pointItem,&WayPtGraphicsItem::pointSelected,this, &PagePath::scenePointSelected);
             connect(pointItem,&WayPtGraphicsItem::pointPosChanged,this, &PagePath::scenePointPosChanged);
+            connect(pointItem,&WayPtGraphicsItem::deletePointItem,this, &PagePath::scenePointDeleted);
 
             ptCnt++;
         }
@@ -581,12 +597,14 @@ void PagePath::on_Button_create_path_clicked()
                  QPointF(vel_cmd(0),vel_cmd(1)),
                  vel,dir,0.00,t}
         );
+        generated_ptsNnum++;
 
     }
 
     /*输出点提醒*/
     init_table_out();
     table_update();
+    plotTrajectory();
 
 }
 
@@ -617,21 +635,33 @@ void PagePath::on_Button_create_file_clicked()
         code.sprintf("const Points points_pos[%d]{\r\n", 0);
         ba.append(code);
         int pointCnt = 0;
-        for (const auto& segment : generated_ptsSegList)
-        {
-            for(const auto& ctrlCmd : segment)
-            {
-                code.sprintf("{%.5f,\t%.5f,\t%.5f,\t%.5f,\t%.5f},",
-                             ctrlCmd.pos.x(),ctrlCmd.pos.y(),
-                             ctrlCmd.speed,ctrlCmd.dir,
-                             ctrlCmd.angle);
 
-                ba.append(code);
-                code.sprintf("      /*point ranks %d*/", pointCnt++);
-                code.append("\r\n");
-                ba.append(code);
-            }
+        for(int i=0;i<generated_ptsNnum;i++)
+        {
+            auto outputTimeIdx = outputModel->index(i,0);
+            auto outputXIdx = outputModel->index(i,1);
+            auto outputYIdx = outputModel->index(i,2);
+            auto outputSpeedIdx = outputModel->index(i,3);
+            auto outputDirIdx = outputModel->index(i,4);
+            auto outputAngleIdx = outputModel->index(i,5);
+
+            auto timeData=outputModel->data(outputTimeIdx);
+            auto xData=outputModel->data(outputXIdx);
+            auto yData=outputModel->data(outputYIdx);
+            auto speedData=outputModel->data(outputSpeedIdx);
+            auto dirData=outputModel->data(outputDirIdx);
+            auto angleData=outputModel->data(outputAngleIdx);
+            code.sprintf("{%.5f,\t%.5f,\t%.5f,\t%.5f,\t%.5f},",
+                         xData.toDouble(), yData.toDouble(),
+                         speedData.toDouble(), dirData.toDouble(),
+                         angleData.toDouble());
+
+            ba.append(code);
+            code.sprintf("      /*point ranks %d*/", pointCnt++);
+            code.append("\r\n");
+            ba.append(code);
         }
+
         code.sprintf("};\r\n");
         ba.append(code);
 
@@ -678,8 +708,15 @@ void PagePath::on_Button_clear_clicked()
 //    ui->plainTextEdit_input->clear();
 //    ui->Edit_bezier_length->clear();
 //    ui->Edit_point_num->clear();
+    inputPoint_num=0;
+    generated_ptsNnum=0;
+    segment_num=0;
     trajPlotView->scene()->clear();
     input_ptsList.clear();
+    draw_axis();
+    addKeypt();
+    addKeypt();
+    trajPlotView->show();
     //清零轨迹生成器时要全部清空
     generated_ptsSegList.clear();
     plotWayPt.clear();
@@ -795,6 +832,8 @@ void PagePath::addKeypt() {
     pointItem->setPos(plotPoint);
     connect(pointItem,&WayPtGraphicsItem::pointSelected,this, &PagePath::scenePointSelected);
     connect(pointItem,&WayPtGraphicsItem::pointPosChanged,this, &PagePath::scenePointPosChanged);
+    connect(pointItem,&WayPtGraphicsItem::deletePointItem,this, &PagePath::scenePointDeleted);
+
     plotKeyPt.push_back(pointItem);
 
     trajPlotView->scene()->addItem(pointItem);
@@ -816,10 +855,7 @@ void PagePath::on_Button_delete_point_clicked()
 {
     if (inputPoint_num > 2 )
     {
-
-        inputModel->removeRow(inputPoint_num - 1);
-
-        inputPoint_num--;
+        removePt(plotKeyPt[inputPoint_num-1]->getPointIndex(),inputPoint_num-1);
     }
 }
 
@@ -852,14 +888,6 @@ void PagePath::on_Sample_distance_clicked(bool checked)
 }
 
 
-/**
- * @brief PagePath::on_Button_update_point_clicked 点击更新按钮
- */
-void PagePath::on_Button_update_point_clicked()
-{
-    init_table_out();
-    table_update();
-}
 void PagePath::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
     //设置图片背景
@@ -915,7 +943,7 @@ void PagePath::scenePointReleased(int idx,int keyIdx) {
 }
 
 void PagePath::scenePointDeleted(int idx,int keyIdx) {
-
+    removePt(idx,keyIdx);
 }
 
 void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int keyIdx) {
@@ -953,7 +981,8 @@ void PagePath::clearWayPt() {
     {
         if(x->getPointType() == WayPtGraphicsItem::WAY_POINT)
         {
-            x->remove();
+            trajPlotView->scene()->removeItem(x);
+            x->deleteLater();
         }
     }
 }
@@ -975,6 +1004,54 @@ void PagePath::inputModelChanged(QStandardItem *item) {
                                           width_t, height_t);
         auto plotPointitem = plotKeyPt[rowNum];
         plotPointitem->setPos(plotPoint);
+    }
+}
+
+void PagePath::on_table_output_CustomContextMenuRequested(QPoint pos)
+{
+    output_view_Menu->exec(QCursor::pos());
+}
+
+void PagePath::on_table_input_CustomContextMenuRequested(QPoint pos)
+{
+
+    input_view_Menu->exec(QCursor::pos());
+}
+
+void PagePath::removePt(int wayidx, int keyidx) {
+
+    if (keyidx >= 0 && inputPoint_num > 2 )
+    {
+        auto keypt = plotKeyPt[keyidx];
+        trajPlotView->scene()->removeItem(keypt);
+        keypt->deleteLater();
+        plotKeyPt.removeAt(keyidx);
+        inputModel->removeRow(keyidx);
+        inputPoint_num--;
+    }
+    if ( wayidx>= 0 )
+    {
+        auto waypt = plotWayPt[wayidx];
+        trajPlotView->scene()->removeItem(waypt);
+        plotWayPt.removeAt(wayidx);
+        outputModel->removeRow(wayidx);
+        waypt->deleteLater();
+        generated_ptsNnum--;
+    }
+
+    updatePlotIdx();
+}
+
+void PagePath::updatePlotIdx() {
+    int keycnt=0;
+    for (auto keyptItem : plotKeyPt){
+        keyptItem->setKeyIndex(keycnt);
+        keycnt++;
+    }
+    int waycnt=0;
+    for (auto wayptItem : plotWayPt) {
+        wayptItem->setPointIndex(waycnt);
+        waycnt++;
     }
 }
 

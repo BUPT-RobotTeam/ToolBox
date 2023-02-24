@@ -22,6 +22,11 @@ public:
     void setPointTime(double pointTime);
     void remove();
     int getPointType() const;
+
+    int getPointIndex() const;
+
+    int getKeyIndex() const;
+
     enum {KEY_POINT,WAY_POINT};
 
 signals:

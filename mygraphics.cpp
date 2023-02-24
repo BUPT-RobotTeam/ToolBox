@@ -110,9 +110,9 @@ void WayPtGraphicsItem::setPointTime(double pointTime) {
 }
 
 void WayPtGraphicsItem::remove() {
-    scene()->removeItem(this);
+//    scene()->removeItem(this);
     emit deletePointItem(global_index, key_index);
-    this->deleteLater();
+//    this->deleteLater();
 }
 
 void WayPtGraphicsItem::setKeyIndex(int keyIndex) {
@@ -121,6 +121,14 @@ void WayPtGraphicsItem::setKeyIndex(int keyIndex) {
 
 int WayPtGraphicsItem::getPointType() const {
     return pointType;
+}
+
+int WayPtGraphicsItem::getPointIndex() const {
+    return global_index;
+}
+
+int WayPtGraphicsItem::getKeyIndex() const {
+    return key_index;
 }
 
 // 自定义graphicView
