@@ -124,6 +124,7 @@ SOURCES += main.cpp\
     utility.cpp \
     tcpserversimple.cpp \
     bezier.cpp \
+    spinboxDelegate.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -137,6 +138,7 @@ HEADERS  += mainwindow.h \
     utility.h \
     tcpserversimple.h \
     bezier.h \
+    spinboxDelegate.cpp
 
 
 FORMS    += mainwindow.ui
