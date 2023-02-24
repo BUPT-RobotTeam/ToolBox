@@ -12,7 +12,7 @@
 #include <QVector>
 #include <QSizePolicy>
 #include <time_optimizer/trajectory_generator.h>
-
+#include <qmath.h>
 
 double map_width = 0;
 double map_height = 0;
@@ -83,7 +83,6 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 
     buttonLoadPathClickedNum=0;
     setMouseTracking(true);
-
 
 }
 
@@ -713,14 +712,17 @@ void PagePath::on_Button_clear_clicked()
     segment_num=0;
     trajPlotView->scene()->clear();
     input_ptsList.clear();
-    draw_axis();
-    addKeypt();
-    addKeypt();
-    trajPlotView->show();
+
     //清零轨迹生成器时要全部清空
     generated_ptsSegList.clear();
     plotWayPt.clear();
     plotKeyPt.clear();
+
+
+    draw_axis();
+    addKeypt();
+    addKeypt();
+    trajPlotView->show();
 
 //    ui->Edit_bezier_cnt->setText("0");
 
@@ -890,19 +892,23 @@ void PagePath::on_Sample_distance_clicked(bool checked)
 
 void PagePath::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
-    //设置图片背景
-    map_width=ui->Edit_map_width->text().toFloat();
-    map_height=ui->Edit_map_heigh->text().toFloat();
-    map_width_pixel=img->width();
-    map_height_pixel=img->height();
-    res_w=trajPlotView->width();
+    plotScene_init();
+}
+
+void PagePath::plotScene_init() {//设置图片背景
+    map_width= ui->Edit_map_width->text().toFloat();
+    map_height= ui->Edit_map_heigh->text().toFloat();
+    map_width_pixel= img->width();
+    map_height_pixel= img->height();
+    res_w= trajPlotView->width();
     res_h=res_w*(map_height_pixel/map_width_pixel);
-    trajPlotView->resize(res_w,res_h);
-    trajPlotView->setFixedSize(res_w,res_h);
+    trajPlotView->resize(res_w, res_h);
+    trajPlotView->setFixedSize(res_w, res_h);
     trajPlotView->setSceneRect(0, 0, res_w, res_h);
+
     width_t=float(res_w)/map_width;
     height_t=res_h/map_height;
-    *newImg=img->scaled(res_w,res_h);
+    *newImg = img->scaled(res_w, res_h);
     trajPlotView->setBackgroundBrush(QPixmap::fromImage(*newImg));
 
     //绘制坐标轴
@@ -910,7 +916,6 @@ void PagePath::showEvent(QShowEvent *event) {
     addKeypt();
     addKeypt();
     trajPlotView->show();
-
 }
 
 void PagePath::scenePointSelected(int idx,int keyIdx) {
