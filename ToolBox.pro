@@ -138,7 +138,7 @@ HEADERS  += mainwindow.h \
     utility.h \
     tcpserversimple.h \
     bezier.h \
-    spinboxDelegate.cpp
+    spinboxDelegate.h
 
 
 FORMS    += mainwindow.ui
