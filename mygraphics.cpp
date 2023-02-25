@@ -15,11 +15,11 @@ WayPtGraphicsItem::WayPtGraphicsItem(int type, QGraphicsItem *parent)
     editMenu = new QMenu(nullptr);
     switch (type) {
         case KEY_POINT:
-            m_color = QColor("#F2A766");
+            m_color = QColor("#F400FF");
             setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
             break;
         case WAY_POINT:
-            m_color = QColor("#D9D9D9");
+            m_color = QColor("#12B337");
             transferAction = editMenu->addAction(tr("转为关键点"));
 
             break;

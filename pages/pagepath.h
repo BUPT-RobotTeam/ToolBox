@@ -102,10 +102,6 @@ private slots:
 
     void on_Button_delete_point_clicked();
 
-    void on_Sampple_time_clicked(bool checked);
-
-    void on_Sample_distance_clicked(bool checked);
-
     void on_table_output_CustomContextMenuRequested(QPoint pos);
 
     void on_table_input_CustomContextMenuRequested(QPoint pos);

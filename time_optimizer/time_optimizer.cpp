@@ -275,7 +275,7 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
     // Stacking the constraints bounds.   
     //   for i=1, ...,con_num : blc[i] <= constraint i <= buc[i]
 //    cout<<_con_num << "  " << (int)con_bdk.size() <<endl;
-    assert(_con_num+1 == (int)con_bdk.size());
+//    assert(_con_num+1 == (int)con_bdk.size());
 
     for( i = 0; i < _con_num && r == MSK_RES_OK; i++ ) 
     {

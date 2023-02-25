@@ -275,7 +275,19 @@ void PagePath::setVesc(VescInterface *vesc)
 //    }
 }
 
-
+/**
+ * @brief ret_rotate_point 旋转坐标系换算函数
+ * @param x 坐标点
+ * @param y 坐标点
+ * @param dangle 旋转，正运算设置为translate_dangle，逆运算设置为-translate_dangle
+ * @param dx 正运算设置为translate_dx，逆运算设置为-translate_dx*width_t,
+ * @param dy 正运算设置为translate_dy，逆运算设置为-translate_dy*height_t,
+ * @param toggle_x toggle_x
+ * @param toggle_y toggle_y
+ * @param w 正运算设置为width_t，逆运算设置为 1/width_t
+ * @param h 正运算设置为height_t，逆运算设置为 1/height_t
+ * @return 换算后的点
+ */
 QPointF cal_rotate_point(double x,double y,double dangle,double dx,double dy,int toggle_x,int toggle_y,double w,double h)
 {
     if(dangle==0)
@@ -313,6 +325,9 @@ void PagePath::plotTrajectory()
 
     map_width=ui->Edit_map_width->text().toFloat();
     map_height=ui->Edit_map_heigh->text().toFloat();
+    height_t=res_h/map_height;
+    width_t=float(res_w)/map_width;
+
     draw_axis();
 
 
@@ -862,34 +877,6 @@ void PagePath::on_Button_delete_point_clicked()
 }
 
 
-/**
- * @brief PagePath::on_Sampple_time_clicked 勾选采样时间槽函数
- * @param checked
- */
-void PagePath::on_Sampple_time_clicked(bool checked)
-{
-    if(checked)
-    {
-        ui->Sample_distance->setCheckState(Qt::CheckState::Unchecked);
-    }
-
-}
-
-
-/**
- * @brief PagePath::on_Sample_distance_clicked 勾选采样距离槽函数
- * @param checked
- */
-void PagePath::on_Sample_distance_clicked(bool checked)
-{
-    if(checked)
-    {
-        ui->Sampple_time->setCheckState(Qt::CheckState::Unchecked);
-    }
-    ui->Sampple_time->setCheckState(Qt::CheckState::Unchecked);
-}
-
-
 void PagePath::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
     plotScene_init();
@@ -934,7 +921,7 @@ void PagePath::scenePointSelected(int idx,int keyIdx) {
     auto retPt = cal_rotate_point(
             selPoint->scenePos().x(),selPoint->scenePos().y(),
             -translate_dangle,
-            -translate_dx, -translate_dy,
+            -translate_dx*width_t, -translate_dy*height_t,
             toggle_x, toggle_y,
             1/width_t, 1/height_t
     );
@@ -965,7 +952,7 @@ void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int keyIdx) {
     auto retPt = cal_rotate_point(
             selPoint->scenePos().x(),selPoint->scenePos().y(),
             -translate_dangle,
-            -translate_dx, -translate_dy,
+            -translate_dx*width_t, -translate_dy*height_t,
             toggle_x, toggle_y,
             1/width_t, 1/height_t
     );
@@ -1025,8 +1012,12 @@ void PagePath::on_table_input_CustomContextMenuRequested(QPoint pos)
 
 void PagePath::removePt(int wayidx, int keyidx) {
 
-    if (keyidx >= 0 && inputPoint_num > 2 )
+    if (keyidx >= 0  )
     {
+        if(inputPoint_num <= 2)
+        {
+            return;//不能删除要直接返回，否则会作为路径点被删除
+        }
         auto keypt = plotKeyPt[keyidx];
         trajPlotView->scene()->removeItem(keypt);
         keypt->deleteLater();
@@ -1037,7 +1028,11 @@ void PagePath::removePt(int wayidx, int keyidx) {
     if ( wayidx>= 0 )
     {
         auto waypt = plotWayPt[wayidx];
-        trajPlotView->scene()->removeItem(waypt);
+        if (keyidx < 0  )
+        {
+            trajPlotView->scene()->removeItem(waypt);
+            //避免重复从场景中移除
+        }
         plotWayPt.removeAt(wayidx);
         outputModel->removeRow(wayidx);
         waypt->deleteLater();

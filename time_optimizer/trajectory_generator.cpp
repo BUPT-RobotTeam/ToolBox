@@ -77,11 +77,11 @@ void TimeOptimizerTraj::trajGeneration(Eigen::MatrixXd path)
     {
         QString warningText;
         warningText=QString::asprintf(
-                "[TimeOptimizer DEMO] possible resons :\n"
-                "1 - please check the spatial trajectory,\n"
-                "2 - numerical issue of the solver, try setting a larger d_s"
+                "[TimeOptimizer DEMO] 可能的原因 :\n"
+                "1 - 检查你的Mosek license是否安装,\n"
+                "2 - 求解器的数值问题，调大d_s"
         );
-        QMessageBox::warning(nullptr, "[TimeOptimizer DEMO] temporal optimization fail",
+        QMessageBox::warning(nullptr, "[TimeOptimizer DEMO] 轨迹生成失败",
                              warningText, QMessageBox::Ok  , QMessageBox::Ok);
 
 //        cout<<"[TimeOptimizer DEMO] temporal optimization fail"<<endl;

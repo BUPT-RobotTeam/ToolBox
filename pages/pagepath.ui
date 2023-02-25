@@ -71,7 +71,7 @@
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>27</height>
+               <height>60</height>
               </size>
              </property>
              <property name="text">
@@ -84,7 +84,7 @@
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>27</height>
+               <height>60</height>
               </size>
              </property>
              <property name="text">
@@ -532,29 +532,11 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_29">
-            <item>
-             <widget class="QCheckBox" name="Sampple_time">
-              <property name="text">
-               <string>等时采样</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="Sample_distance">
-              <property name="text">
-               <string>等距采样</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_30">
             <item>
              <widget class="QLabel" name="label_38">
               <property name="text">
-               <string>采样时间(ms)/距离(m):</string>
+               <string>d_s(m):</string>
               </property>
              </widget>
             </item>
@@ -563,8 +545,14 @@
               <property name="decimals">
                <number>2</number>
               </property>
+              <property name="maximum">
+               <double>1.000000000000000</double>
+              </property>
               <property name="singleStep">
                <double>0.100000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.050000000000000</double>
               </property>
              </widget>
             </item>
