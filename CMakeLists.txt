@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(tool_box VERSION 1.10 LANGUAGES CXX)
+project(tool_box VERSION 1.5.0 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -8,10 +8,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # qt_standard_project_setup()
 add_definitions ( -Wall )
 #message(DEBUG "1111${PWD}")
-set(VT_VERSION  ${PROJECT_VERSION})
+#set(VT_VERSION  ${PROJECT_VERSION})
 set(VT_INTRO_VERSION  1)
 add_definitions(
-        -DVT_VERSION=${VT_VERSION}
+        -DVT_VERSION=1.5
         -DVT_INTRO_VERSION=${VT_INTRO_VERSION}
         -DVER_ORIGINAL
 )

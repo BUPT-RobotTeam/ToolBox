@@ -42,7 +42,7 @@ WayPtGraphicsItem::WayPtGraphicsItem(int type, QGraphicsItem *parent)
 void WayPtGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mousePressEvent(event);
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::LeftButton && this->contains(event->pos()))
     {
         setSelected(true);
         emit pointSelected(this->global_index,this->key_index);
@@ -60,19 +60,31 @@ void WayPtGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //            }
 //        }
     }
-    else if (event->button() == Qt::RightButton)
+    else if (event->button() == Qt::RightButton && this->contains(event->pos()))
     {
-        editMenu->exec(QCursor::pos());
+        setSelected(false);
+
+//        setSelected(true);
+//        emit pointSelected(this->global_index,this->key_index);
+        editMenu->exec(QCursor::pos()+QPoint{5,5});
+    }
+    else
+    {
+        setSelected(false);
+        emit pointReleased(this->global_index,this->key_index);
     }
 }
 
 void WayPtGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(this->pointType == KEY_POINT)
+    if(this->isSelected())
     {
-        emit pointPosChanged(this->global_index, event->pos(), this->key_index);
+        QGraphicsItem::mouseMoveEvent(event);
+        if(this->pointType == KEY_POINT)
+        {
+            emit pointPosChanged(this->global_index, event->pos(), this->key_index);
+        }
     }
-    QGraphicsItem::mouseMoveEvent(event);
 }
 
 /**

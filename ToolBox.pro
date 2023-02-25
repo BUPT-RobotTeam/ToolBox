@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 # Version
-VT_VERSION = 1.04
+VT_VERSION = 1.5
 VT_INTRO_VERSION = 1
 
 # Ubuntu 18.04 (should work on raspbian buster too)

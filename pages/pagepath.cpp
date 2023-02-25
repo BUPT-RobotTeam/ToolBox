@@ -1014,13 +1014,13 @@ void PagePath::inputModelChanged(QStandardItem *item) {
 
 void PagePath::on_table_output_CustomContextMenuRequested(QPoint pos)
 {
-    output_view_Menu->exec(QCursor::pos());
+    output_view_Menu->exec(QCursor::pos()+QPoint{5,5});
 }
 
 void PagePath::on_table_input_CustomContextMenuRequested(QPoint pos)
 {
 
-    input_view_Menu->exec(QCursor::pos());
+    input_view_Menu->exec(QCursor::pos()+QPoint{5,5});
 }
 
 void PagePath::removePt(int wayidx, int keyidx) {
