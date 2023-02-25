@@ -143,6 +143,10 @@ private: //function
     void plotTrajectory();
 
     void plotScene_init();
+
+    void clear_trajectory();
+
+    void get_coordTranslate() const;
 };
 QPointF cal_rotate_point(double x, double y, double dangle, double dx, double dy, int toggle_x, int toggle_y, double w,
                          double h);

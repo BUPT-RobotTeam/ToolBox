@@ -50,11 +50,8 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 
     newImg = new QImage;
     //初始化坐标变换
-    translate_dx = ui->Edit_translate_dx->text().toDouble();
-    translate_dy = ui->Edit_translate_dy->text().toDouble();
-    translate_dangle = ui->Edit_translate_dangle->text().toDouble();
-    map_width=ui->Edit_map_width->text().toFloat();
-    map_height=ui->Edit_map_heigh->text().toFloat();
+//    get_coordTranslate();
+
 
 
 
@@ -147,6 +144,7 @@ void PagePath::init_table_out()
  */
 void PagePath::init_table_input()
 {
+
     inputModel->clear();
 //    outputModel->setRowCount(1);
     disconnect(inputModel,nullptr,this,nullptr);
@@ -280,8 +278,8 @@ void PagePath::setVesc(VescInterface *vesc)
  * @param x 坐标点
  * @param y 坐标点
  * @param dangle 旋转，正运算设置为translate_dangle，逆运算设置为-translate_dangle
- * @param dx 正运算设置为translate_dx，逆运算设置为-translate_dx*width_t,
- * @param dy 正运算设置为translate_dy，逆运算设置为-translate_dy*height_t,
+ * @param dx 正运算设置为translate_dx，逆运算设置为-translate_dx*width_t*toggle_x,
+ * @param dy 正运算设置为translate_dy，逆运算设置为-translate_dy*height_t*toggle_y,
  * @param toggle_x toggle_x
  * @param toggle_y toggle_y
  * @param w 正运算设置为width_t，逆运算设置为 1/width_t
@@ -318,15 +316,7 @@ void PagePath::plotTrajectory()
     clear_axis();
     clearWayPt();
     plotWayPt.clear();
-    translate_dx=ui->Edit_translate_dx->text().toDouble();
-    translate_dy=ui->Edit_translate_dy->text().toDouble();
-    toggle_x=ui->Edit_x_toggle->text().toInt();
-    toggle_y=ui->Edit_y_toggle->text().toInt();
-
-    map_width=ui->Edit_map_width->text().toFloat();
-    map_height=ui->Edit_map_heigh->text().toFloat();
-    height_t=res_h/map_height;
-    width_t=float(res_w)/map_width;
+    get_coordTranslate();
 
     draw_axis();
 
@@ -399,6 +389,27 @@ void PagePath::plotTrajectory()
 
 
 }
+
+void PagePath::get_coordTranslate() const {
+    translate_dangle = ui->Edit_translate_dangle->text().toDouble();
+    translate_dx= ui->Edit_translate_dx->text().toDouble();
+    translate_dy= ui->Edit_translate_dy->text().toDouble();
+    toggle_x= ui->Edit_x_toggle->text().toInt();
+    toggle_y= ui->Edit_y_toggle->text().toInt();
+
+    map_width= ui->Edit_map_width->text().toFloat();
+    map_height= ui->Edit_map_heigh->text().toFloat();
+
+    map_width_pixel=img->width();
+    map_height_pixel=img->height();
+    res_w=trajPlotView->width();
+    res_h=res_w*(map_height_pixel/map_width_pixel);
+
+    width_t=float(res_w)/map_width;
+    height_t=res_h/map_height;
+
+}
+
 void PagePath::clear_axis()
 {
     trajPlotView->scene()->removeItem(xAxisArrowItem);
@@ -490,8 +501,9 @@ void PagePath::draw_axis() {// 绘制坐标系
 void PagePath::on_Button_create_path_clicked()
 {
     buttonLoadPathClickedNum=0;
+    clear_trajectory();
     // 获取坐标系旋转角度
-    translate_dangle = ui->Edit_translate_dangle->text().toDouble();
+
 
     //运动学参数获取
     double max_v,max_acc,max_jerk,target_angle;
@@ -502,7 +514,7 @@ void PagePath::on_Button_create_path_clicked()
     traj_generator->setMaxVel(max_v);
     traj_generator->setMaxAcc(max_acc);
     traj_generator->setMaxDAcc(max_jerk);
-
+    dynamic_cast<TimeOptimizerTraj*>(traj_generator.get())->setDS(ui->Sample_interval->text().toDouble());
 
     //input_path
     QVector<QPointF> input_pts;
@@ -512,12 +524,10 @@ void PagePath::on_Button_create_path_clicked()
     {
         auto inputXIdx = inputModel->index(i,0);
         auto inputYIdx = inputModel->index(i,1);
-        auto inputNumIdx = inputModel->index(i,2);
 
         auto xData=inputModel->data(inputXIdx);
         auto yData=inputModel->data(inputYIdx);
-        auto numData=inputModel->data(inputNumIdx);
-        if(xData.canConvert<double>() && yData.canConvert<double>() && (i==inputPoint_num-1 ||numData.canConvert<int>()))
+        if(xData.canConvert<double>() && yData.canConvert<double>() )
         {
             input_pts.push_back(QPointF(xData.toDouble(),yData.toDouble()));
         }
@@ -550,7 +560,7 @@ void PagePath::on_Button_create_path_clicked()
     if ( !traj_generator->isHasTraj()){return;}
     // 采样
     int samplePtNum_btw_wayPt;
-    samplePtNum_btw_wayPt = ui->Edit_num_btw_two->text().toInt();
+//    samplePtNum_btw_wayPt = ui->Edit_num_btw_two->text().toInt();
 
     segment_num = traj_generator->getSegmentNum();
     double  traj_time_start = traj_generator->getTrajTimeStart()+0.01,
@@ -559,11 +569,18 @@ void PagePath::on_Button_create_path_clicked()
     traj_time_now = traj_time_start;
 
 
-    generated_ptsSegList.clear();
-    generated_ptsNnum = 0 ;
+
     for(int i=0;i<segment_num;i++)
     {
         QVector<CtrlCmd_s> segTraj;
+        auto inputNumIdx = inputModel->index(i,2);
+        auto numData=inputModel->data(inputNumIdx);
+        if ( !(numData.canConvert<int>()) )
+        {
+            QMessageBox::warning(nullptr, "ToolBox", "输入的关键点间隔数非法！", QMessageBox::Ok , QMessageBox::Ok);
+            return;
+        }
+        samplePtNum_btw_wayPt = numData.toInt();
         double seg_time = traj_generator->getTrajSegmentTime(i);
         double time_interval = seg_time / (samplePtNum_btw_wayPt);
         double seg_time_start = traj_time_now;
@@ -722,16 +739,14 @@ void PagePath::on_Button_clear_clicked()
 //    ui->plainTextEdit_input->clear();
 //    ui->Edit_bezier_length->clear();
 //    ui->Edit_point_num->clear();
-    inputPoint_num=0;
-    generated_ptsNnum=0;
-    segment_num=0;
-    trajPlotView->scene()->clear();
-    input_ptsList.clear();
 
-    //清零轨迹生成器时要全部清空
-    generated_ptsSegList.clear();
+    trajPlotView->scene()->clear();
     plotWayPt.clear();
     plotKeyPt.clear();
+    inputPoint_num =0;
+
+    //清零轨迹生成器时要全部清空
+    clear_trajectory();
 
 
     draw_axis();
@@ -740,6 +755,14 @@ void PagePath::on_Button_clear_clicked()
     trajPlotView->show();
 
 //    ui->Edit_bezier_cnt->setText("0");
+
+}
+
+void PagePath::clear_trajectory() {
+    generated_ptsNnum =0;
+    segment_num =0;
+    generated_ptsSegList.clear();
+    input_ptsList.clear();
 
 }
 
@@ -791,17 +814,10 @@ void PagePath::on_Button_load_img_clicked()
     img->load(tempFilename);
 
 //    trajPlotView->clear();
-    map_width=ui->Edit_map_width->text().toFloat();
-    map_height=ui->Edit_map_heigh->text().toFloat();
-    map_width_pixel=img->width();
-    map_height_pixel=img->height();
-    res_w=trajPlotView->width();
-    res_h=res_w*(map_height_pixel/map_width_pixel);
+    get_coordTranslate();
     trajPlotView->resize(res_w,res_h);
     trajPlotView->setFixedSize(res_w,res_h);
     trajPlotView->setSceneRect(0, 0, res_w, res_h);
-    width_t=float(res_w)/map_width;
-    height_t=res_h/map_height;
     *newImg=img->scaled(res_w,res_h);
     trajPlotView->setBackgroundBrush(QPixmap::fromImage(*newImg));
 }
@@ -813,7 +829,7 @@ void PagePath::addKeypt() {
 
     //在列表中添加spinbox便于编辑
     if (inputPoint_num > 0) {
-        auto lastRowNumItem = new QStandardItem(QString::asprintf("%d", 1));
+        auto lastRowNumItem = new QStandardItem(QString::asprintf("%d", 6));
         lastRowNumItem->setTextAlignment(Qt::AlignHCenter);
 //    rowList.push_back(aItem);
         inputModel->setItem(inputPoint_num - 1, 2, lastRowNumItem);
@@ -883,18 +899,12 @@ void PagePath::showEvent(QShowEvent *event) {
 }
 
 void PagePath::plotScene_init() {//设置图片背景
-    map_width= ui->Edit_map_width->text().toFloat();
-    map_height= ui->Edit_map_heigh->text().toFloat();
-    map_width_pixel= img->width();
-    map_height_pixel= img->height();
-    res_w= trajPlotView->width();
-    res_h=res_w*(map_height_pixel/map_width_pixel);
+    get_coordTranslate();
     trajPlotView->resize(res_w, res_h);
     trajPlotView->setFixedSize(res_w, res_h);
     trajPlotView->setSceneRect(0, 0, res_w, res_h);
 
-    width_t=float(res_w)/map_width;
-    height_t=res_h/map_height;
+
     *newImg = img->scaled(res_w, res_h);
     trajPlotView->setBackgroundBrush(QPixmap::fromImage(*newImg));
 
@@ -921,7 +931,7 @@ void PagePath::scenePointSelected(int idx,int keyIdx) {
     auto retPt = cal_rotate_point(
             selPoint->scenePos().x(),selPoint->scenePos().y(),
             -translate_dangle,
-            -translate_dx*width_t, -translate_dy*height_t,
+            -translate_dx*width_t*toggle_x, -translate_dy*height_t*toggle_y,
             toggle_x, toggle_y,
             1/width_t, 1/height_t
     );
@@ -952,7 +962,7 @@ void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int keyIdx) {
     auto retPt = cal_rotate_point(
             selPoint->scenePos().x(),selPoint->scenePos().y(),
             -translate_dangle,
-            -translate_dx*width_t, -translate_dy*height_t,
+            -translate_dx*width_t*toggle_x, -translate_dy*height_t*toggle_y,
             toggle_x, toggle_y,
             1/width_t, 1/height_t
     );

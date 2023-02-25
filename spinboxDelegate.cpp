@@ -33,7 +33,9 @@ void SpinBoxDelegate::setEditorData(QWidget *editor,
     double value = index.model()->data(index, Qt::EditRole).toDouble();
 
     auto *spinBox = dynamic_cast<QDoubleSpinBox*>(editor);
+
     spinBox->setValue(value);
+    spinBox->setDecimals(spinBox_prec);
 }
 
 void SpinBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
@@ -44,6 +46,7 @@ void SpinBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     auto value = spinBox->value();
 
     model->setData(index, value, Qt::EditRole);
+
 }
 
 void SpinBoxDelegate::updateEditorGeometry(QWidget *editor,

@@ -508,30 +508,6 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_12">
-            <item>
-             <widget class="QLabel" name="label_13">
-              <property name="text">
-               <string>两点之间点数:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="Edit_num_btw_two">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>200</number>
-              </property>
-              <property name="value">
-               <number>8</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_30">
             <item>
              <widget class="QLabel" name="label_38">
@@ -549,10 +525,10 @@
                <double>1.000000000000000</double>
               </property>
               <property name="singleStep">
-               <double>0.100000000000000</double>
+               <double>0.010000000000000</double>
               </property>
               <property name="value">
-               <double>0.050000000000000</double>
+               <double>0.100000000000000</double>
               </property>
              </widget>
             </item>
@@ -756,7 +732,6 @@
   <tabstop>Button_open_folder</tabstop>
   <tabstop>Edit_now_angle</tabstop>
   <tabstop>Edit_target_angle</tabstop>
-  <tabstop>Edit_num_btw_two</tabstop>
   <tabstop>Edit_max_speed</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>
