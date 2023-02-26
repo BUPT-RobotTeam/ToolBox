@@ -1,15 +1,16 @@
-//
-// Created by LiNY2 on 2023/02/20 0020.
-//
+/**
+ * @author liny2
+ * @brief 表格spinbox编辑器代理
+ */
 
 #include "spinboxDelegate.h"
 
 SpinBoxDelegate::SpinBoxDelegate(QObject *parent ,double min,
                                  double max,double step,
                                  double defaultVal,int prec)
-    : QStyledItemDelegate(parent),
-    spinBox_Min(min),spinBox_Max(max),
-    spinBox_SingleStep(step),spinBox_defaultVal(defaultVal),spinBox_prec(prec)
+        : QStyledItemDelegate(parent),
+          spinBox_Min(min),spinBox_Max(max),
+          spinBox_SingleStep(step),spinBox_defaultVal(defaultVal),spinBox_prec(prec)
 {
 
 }

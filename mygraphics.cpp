@@ -1,3 +1,7 @@
+/**
+ * @authors liny2 Cameliass
+ * @brief 自定义图像场景和图形对象，用于显示、拖动关键点和路径点。
+ */
 #include "mygraphics.h"
 #include <cmath>
 #include <pages/pagepath.h>
@@ -7,7 +11,11 @@
 int deletePoint=-1;
 int selPoint=-1;
 
-
+/**
+ * @brief WayPtGraphicsItem构造函数，继承
+ * @param type
+ * @param parent
+ */
 WayPtGraphicsItem::WayPtGraphicsItem(int type, QGraphicsItem *parent)
     : QObject(nullptr),QGraphicsEllipseItem(parent),pointType(type)
 {
@@ -191,26 +199,5 @@ void TrajectoryPlotGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
 };
-
-/**
- * @brief ret_rotate_point 旋转坐标系换算函数
- * @param x
- * @param y
- * @return
- */
-QPointF ret_rotate_point(float x,float y)
-{
-//    if(translate_dangle==0)
-//    {
-//        return QPointF((x/width_t-translate_dy)/toggle_x,(y/height_t-translate_dx)/toggle_y);
-//    }
-//    else
-//    {
-//        float x_val=(x/width_t-translate_dy)/toggle_x;
-//        float y_val=(y/height_t-translate_dx)/toggle_y;
-//        return  QPointF(x_val*cos(-translate_dangle * M_PI / 180.0) - y_val*sin(-translate_dangle * M_PI / 180.0),
-//                        y_val*cos(-translate_dangle * M_PI / 180.0) + x_val*sin(-translate_dangle * M_PI / 180.0));
-//    }
-}
 
 

@@ -1,3 +1,7 @@
+/**
+ * @authors liny2 Cameliass
+ * @brief 自定义图像场景和图形对象，用于显示、拖动关键点和路径点。
+ */
 #ifndef MYGRAPHICS_H
 #define MYGRAPHICS_H
 
@@ -84,5 +88,4 @@ protected:
 
 };
 
-QPointF ret_rotate_point(float x,float y);
 #endif // MYGRAPHICS_H

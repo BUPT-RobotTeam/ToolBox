@@ -59,8 +59,8 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
                                                 ui->Edit_max_acceleration->text().toDouble()));
     outputModel = new QStandardItemModel();
     inputModel = new QStandardItemModel();
-    xDelegate = new SpinBoxDelegate(this,- map_width ,map_width , 0.01   );
-    yDelegate = new SpinBoxDelegate(this,- map_height ,map_height , 0.01   );
+    xDelegate = new SpinBoxDelegate(this,- 99 ,99 , 0.01   );
+    yDelegate = new SpinBoxDelegate(this,- 99 ,99 , 0.01   );
     genNumDelegate = new SpinBoxDelegate(this,1 ,99 , 1,1,0);
 
     init_table_out();
@@ -170,7 +170,7 @@ void PagePath::init_table_input()
     ui->table_input->setSelectionMode(QTableView::SingleSelection);
     ui->table_input->setSelectionBehavior(QTableView::SelectRows);
 
-    //删除菜单初始化并连接信号
+    //删除菜单,初始化并连接信号
     delete input_view_Menu;
     input_view_Menu = new QMenu(this);
     input_view_Menu->addAction("删除",this,[=]{
@@ -288,18 +288,41 @@ void PagePath::setVesc(VescInterface *vesc)
  */
 QPointF cal_rotate_point(double x,double y,double dangle,double dx,double dy,int toggle_x,int toggle_y,double w,double h)
 {
-    if(dangle==0)
+    if(dangle<1e-5)
     {
         return {(dx+toggle_x*x)*w,(dy+toggle_y*y)*h};
     }
     else
     {
-        float x_val=x*cos(dangle * M_PI / 180.0) - y*sin(dangle * M_PI / 180.0);
-        float y_val=y*cos(dangle * M_PI / 180.0) + x*sin(dangle * M_PI / 180.0);
+        double x_val=x*cos(dangle * M_PI / 180.0) - y*sin(dangle * M_PI / 180.0);
+        double y_val=y*cos(dangle * M_PI / 180.0) + x*sin(dangle * M_PI / 180.0);
         return  {(dx+toggle_x*x_val)*w, (dy+toggle_y*y_val)*h};
     }
 }
 
+/**
+ * @brief ret_rotate_point 旋转坐标系换算函数
+ * @param x
+ * @param y
+ * @return
+ */
+QPointF ret_rotate_point(double x,double y,double dangle,double dx,double dy,int toggle_x,int toggle_y,double w,double h)
+{
+    if(dangle<1e-5)
+    {
+        return {(x/w-dx)/toggle_x,(y/h-dy)/toggle_y};
+    }
+//    if(translate_dangle==0)
+//    {
+//        return QPointF((x/width_t-translate_dy)/toggle_x,(y/height_t-translate_dx)/toggle_y);
+//    }
+
+    double x_val=(x/w-dx)/toggle_x;
+    double y_val=(y/h-dy)/toggle_y;
+    return {x_val*cos(-dangle * M_PI / 180.0) - y_val*sin(-dangle * M_PI / 180.0),
+            y_val*cos(-dangle * M_PI / 180.0) + x_val*sin(-dangle * M_PI / 180.0)};
+
+}
 /**
  * @brief 点击加载曲线按钮
  *
@@ -800,16 +823,14 @@ void PagePath::on_Button_load_img_clicked()
     QString tempFilename = QFileDialog::getOpenFileName(this,
                                                         "Choose picture", "/",
                                                         "Image Files(*.jpg *.png *.bmp *.jpeg *.gif *.tga)");
-    if (!tempFilename.isEmpty())
+    if (tempFilename.isEmpty())
     {
-        ui->Edit_file_location->setText(tempFilename);
-    }
-    else
-    {
+//        ui->Edit_file_location->setText(tempFilename);
         QMessageBox::information(nullptr, "error", "No such file",
                                  QMessageBox::Yes, QMessageBox::Yes);
         return;
     }
+
     ui->Edit_img_location->setText(tempFilename);
     img->load(tempFilename);
 
@@ -928,12 +949,12 @@ void PagePath::scenePointSelected(int idx,int keyIdx) {
         selPoint= plotWayPt[idx];
     }
 
-    auto retPt = cal_rotate_point(
+    auto retPt = ret_rotate_point(
             selPoint->scenePos().x(),selPoint->scenePos().y(),
-            -translate_dangle,
-            -translate_dx*width_t*toggle_x, -translate_dy*height_t*toggle_y,
+            translate_dangle,
+            translate_dx, translate_dy,
             toggle_x, toggle_y,
-            1/width_t, 1/height_t
+            width_t, height_t
     );
     auto nowPointValue=QString::asprintf("第%d个点,第%d个关键点\tx: %.3f,y: %.3f",idx,keyIdx,retPt.x(),retPt.y());
 
@@ -959,12 +980,12 @@ void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int keyIdx) {
         selPoint= plotWayPt[idx];
     }
 
-    auto retPt = cal_rotate_point(
+    auto retPt = ret_rotate_point(
             selPoint->scenePos().x(),selPoint->scenePos().y(),
-            -translate_dangle,
-            -translate_dx*width_t*toggle_x, -translate_dy*height_t*toggle_y,
+            translate_dangle,
+            translate_dx, translate_dy,
             toggle_x, toggle_y,
-            1/width_t, 1/height_t
+            width_t, height_t
     );
     auto nowPointValue=QString::asprintf("第%d个点,第%d个关键点\tx: %.3f,y: %.3f",idx,keyIdx,retPt.x(),retPt.y());
     if (keyIdx >= 0)

@@ -1,6 +1,7 @@
-//
-// Created by LiNY2 on 2023/02/20 0020.
-//
+/**
+ * @author liny2
+ * @brief 表格spinbox编辑器代理头文件
+ */
 
 #ifndef CMAKELISTS_TXT_SPINBOXDELEGATE_H
 #define CMAKELISTS_TXT_SPINBOXDELEGATE_H
