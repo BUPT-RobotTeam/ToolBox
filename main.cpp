@@ -1,3 +1,23 @@
+/**
+ * @mainpage ToolBox文档
+ * @section intro_sec Introduction
+ * 欢迎使用Tool Box;
+ * 基于Benjamin Vedder的vesc_tool_1.24修改而来
+ * 在原软件框架下增加通用串口示波器，保留IMU数据显示，并进行了部分汉化
+ * 本软件仅供个人学习、研究之用
+ * @section install_sec Installation
+ * 直接下载使用，注意需要申请mosek的学术许可证
+ * @subsection install_dependencies Installing Dependencies
+ *  Mosek ：我们使用 mosek 来求解二阶锥程序 (SOCP)。要使用 mosek，您应该在此处批准学术许可。
+ * 学术许可证是免费的，而且很容易批准。
+ * 许可证文件应放在用户主目录下名为“mosek”的文件夹中（$HOME/mosek/mosek.lic 或 %USERPROFILE%@\mosek@\mosek.lic）。\n
+ * 在大多数典型情况下，这将是：\n
+ *  1. /home/YOUR_USER_NAME/mosek/mosek.lic (Linux)\n
+ *  2. /Users/YOUR_USER_NAME/mosek/mosek.lic (OSX)\n
+ *  3. C:@\Users@\YOUR_USER_NAME@\mosek@\mosek.lic@\ (Windows)\n
+
+ */
+
 #include "mainwindow.h"
 
 #include <QApplication>

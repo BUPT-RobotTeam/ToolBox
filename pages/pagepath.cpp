@@ -288,7 +288,7 @@ void PagePath::setVesc(VescInterface *vesc)
  */
 QPointF cal_rotate_point(double x,double y,double dangle,double dx,double dy,int toggle_x,int toggle_y,double w,double h)
 {
-    if(dangle<1e-5)
+    if(std::abs(dangle)<1e-5)
     {
         return {(dx+toggle_x*x)*w,(dy+toggle_y*y)*h};
     }
@@ -308,7 +308,7 @@ QPointF cal_rotate_point(double x,double y,double dangle,double dx,double dy,int
  */
 QPointF ret_rotate_point(double x,double y,double dangle,double dx,double dy,int toggle_x,int toggle_y,double w,double h)
 {
-    if(dangle<1e-5)
+    if(std::abs(dangle)<1e-5)
     {
         return {(x/w-dx)/toggle_x,(y/h-dy)/toggle_y};
     }

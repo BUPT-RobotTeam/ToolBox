@@ -11,11 +11,7 @@
 int deletePoint=-1;
 int selPoint=-1;
 
-/**
- * @brief WayPtGraphicsItem构造函数，继承
- * @param type
- * @param parent
- */
+
 WayPtGraphicsItem::WayPtGraphicsItem(int type, QGraphicsItem *parent)
     : QObject(nullptr),QGraphicsEllipseItem(parent),pointType(type)
 {
@@ -23,11 +19,11 @@ WayPtGraphicsItem::WayPtGraphicsItem(int type, QGraphicsItem *parent)
     editMenu = new QMenu(nullptr);
     switch (type) {
         case KEY_POINT:
-            m_color = QColor("#F400FF");
+            m_color = QColor("#FF2609");
             setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
             break;
         case WAY_POINT:
-            m_color = QColor("#12B337");
+            m_color = QColor("#57FF09");
             transferAction = editMenu->addAction(tr("转为关键点"));
 
             break;
@@ -43,10 +39,7 @@ WayPtGraphicsItem::WayPtGraphicsItem(int type, QGraphicsItem *parent)
     deleteAction = editMenu->addAction(tr("删除点"),[=](){remove();});
 }
 
-/**
- * @brief WayPtGraphicsItem::mousePressEvent 左键移动点
- * @param event
- */
+
 void WayPtGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mousePressEvent(event);
@@ -158,10 +151,7 @@ TrajectoryPlotGraphicsView::TrajectoryPlotGraphicsView(QWidget *parent)
     this->setScene(TrajectoryPlotGraphicsScene);
 }
 
-/**
- * @brief TrajectoryPlotGraphicsView::mousePressEvent 右键删除点
- * @param event
- */
+
 void TrajectoryPlotGraphicsView::mousePressEvent(QMouseEvent *event)
 {
 
