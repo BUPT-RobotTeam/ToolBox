@@ -17,7 +17,9 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QDateTimeEdit>
-
+/**
+ * 表格spinbox编辑器代理头文件
+ */
 class SpinBoxDelegate : public QStyledItemDelegate
 {
     Q_OBJECT

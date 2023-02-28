@@ -274,17 +274,18 @@ void PagePath::setVesc(VescInterface *vesc)
 }
 
 /**
- * @brief ret_rotate_point 旋转坐标系换算函数
+ * @brief 旋转坐标系正向换算函数
  * @param x 坐标点
  * @param y 坐标点
- * @param dangle 旋转，正运算设置为translate_dangle，逆运算设置为-translate_dangle
- * @param dx 正运算设置为translate_dx，逆运算设置为-translate_dx*width_t*toggle_x,
- * @param dy 正运算设置为translate_dy，逆运算设置为-translate_dy*height_t*toggle_y,
+ * @param dangle 旋转，正运算设置为translate_dangle
+ * @param dx 正运算设置为translate_dx
+ * @param dy 正运算设置为translate_dy
  * @param toggle_x toggle_x
  * @param toggle_y toggle_y
- * @param w 正运算设置为width_t，逆运算设置为 1/width_t
- * @param h 正运算设置为height_t，逆运算设置为 1/height_t
+ * @param w 正运算设置为width_t
+ * @param h 正运算设置为height_t
  * @return 换算后的点
+ * @warning 逆运算似乎不同构，还是用 ret_rotate_point 函数吧
  */
 QPointF cal_rotate_point(double x,double y,double dangle,double dx,double dy,int toggle_x,int toggle_y,double w,double h)
 {
@@ -301,9 +302,17 @@ QPointF cal_rotate_point(double x,double y,double dangle,double dx,double dy,int
 }
 
 /**
- * @brief ret_rotate_point 旋转坐标系换算函数
- * @param x
- * @param y
+ * @brief 旋转坐标系反向换算函数
+ * @param x 坐标点
+ * @param y 坐标点
+ * @param dangle 旋转，设置为translate_dangle
+ * @param dx 设置为translate_dx
+ * @param dy 设置为translate_dy
+ * @param toggle_x toggle_x
+ * @param toggle_y toggle_y
+ * @param w 设置为width_t
+ * @param h 设置为height_t
+ * @return 换算后的点
  * @return
  */
 QPointF ret_rotate_point(double x,double y,double dangle,double dx,double dy,int toggle_x,int toggle_y,double w,double h)
@@ -324,8 +333,11 @@ QPointF ret_rotate_point(double x,double y,double dangle,double dx,double dy,int
 
 }
 /**
- * @brief 点击加载曲线按钮
- *
+ * 清空之前打印的点，但不清空关键点。
+ * 获取坐标变换并重新绘制坐标轴\n
+ * 之后遍历每段轨迹，更新关键点坐标，绘制路径点
+ * （最后一个点是特殊处理的。）\n
+ * 同时还会修改plotWayPt,plotKeyPt
  */
 void PagePath::plotTrajectory()
 {
@@ -432,7 +444,9 @@ void PagePath::get_coordTranslate() const {
     height_t=res_h/map_height;
 
 }
-
+/**
+ *
+ */
 void PagePath::clear_axis()
 {
     trajPlotView->scene()->removeItem(xAxisArrowItem);
@@ -445,6 +459,9 @@ void PagePath::clear_axis()
     trajPlotView->scene()->removeItem(yAxisLineItem);
 
 }
+/**
+ * 注意需要在类中存储相关item的指针以便删除
+ */
 void PagePath::draw_axis() {// 绘制坐标系
 
 
@@ -518,12 +535,19 @@ void PagePath::draw_axis() {// 绘制坐标系
 
 
 /**
- * @brief 点击“确定”按钮，开始规划轨迹
- *
+ * @details 首先清零以前的轨迹生成缓存\n
+ * 之后从输入框后获取运动学参数，并赋值给轨迹参数器。\n
+ * 从表格中获取输入点，注意判断输入框合法性。
+ * 少于两个点不能去生成轨迹，轨迹生成器会出现数值错误。
+ * 有两个点在同一位置也会导致错误\n
+ * 之后用eigen矩阵存储输入点，解出轨迹后采样。
+ * 采样按照等时间采样。存储是按照轨迹段分段存储。特殊处理第一个点的dir为0，以及最后一个点也要存储在内（按照等时采样刚好最后一个点不会被采样到）。\n
+ * 输出点到表格中，进行一次点可视化。
+ * @todo 属于生成器的要求，应该在轨迹生成器里判断而不是在此处判断
  */
 void PagePath::on_Button_create_path_clicked()
 {
-    buttonLoadPathClickedNum=0;
+    buttonLoadPathClickedNum=0;//这个变量暂时没有用了
     clear_trajectory();
     // 获取坐标系旋转角度
 
@@ -665,7 +689,7 @@ void PagePath::on_Button_create_path_clicked()
 
 /**
  * @brief 点击“生成文件”按钮
- * @todo 使用tabletView的数据
+ * @details 从表格中读取数据，之后写入文件
  */
 void PagePath::on_Button_create_file_clicked()
 {
@@ -753,7 +777,11 @@ void PagePath::on_Button_create_file_clicked()
 
 /**
  * @brief 点击“清空”按钮
- *
+ * @details 清空两个表格。
+ * 清空scene和存储点指针数组\n
+ * 清空轨迹生成器\n
+ * 重新绘制scene的坐标轴。
+ * @bug 好像清空表格和坐标系变换一起操作会有问题
  */
 void PagePath::on_Button_clear_clicked()
 {
@@ -771,7 +799,7 @@ void PagePath::on_Button_clear_clicked()
     //清零轨迹生成器时要全部清空
     clear_trajectory();
 
-
+    get_coordTranslate();
     draw_axis();
     addKeypt();
     addKeypt();
@@ -780,7 +808,9 @@ void PagePath::on_Button_clear_clicked()
 //    ui->Edit_bezier_cnt->setText("0");
 
 }
-
+/**
+ * @details 清空轨迹点元数据，包括输入点、分段存储的输出点数组。
+ */
 void PagePath::clear_trajectory() {
     generated_ptsNnum =0;
     segment_num =0;
@@ -816,7 +846,7 @@ void PagePath::on_Button_open_folder_clicked()
 
 /**
  * @brief 点击“选择图片”图标
- *
+ * @details 同时会计算小车坐标和scene坐标的变换关系。
  */
 void PagePath::on_Button_load_img_clicked()
 {
@@ -844,7 +874,11 @@ void PagePath::on_Button_load_img_clicked()
 }
 
 /**
- * @brief PagePath::addKeypt() 添加关键点
+ * @brief  添加关键点
+ * @details 添加上一行最后一列的单元格。\n
+ * 添加一行坐标编辑单元格\n
+ * 在场景中添加关键点，初始坐标(1,1)。并将点的WayPtGraphicsItem指针加入plotKeyPt中。\n
+ * 连接信号。
  */
 void PagePath::addKeypt() {
 
@@ -884,6 +918,13 @@ void PagePath::addKeypt() {
                                  width_t, height_t);
     pointItem->setRect(0,0,4,4);
     pointItem->setPos(plotPoint);
+    /**
+     * 会添加以下信号@code{.cpp}
+     * connect(pointItem,&WayPtGraphicsItem::pointSelected,this, &PagePath::scenePointSelected);
+     * connect(pointItem,&WayPtGraphicsItem::pointPosChanged,this, &PagePath::scenePointPosChanged);
+     * connect(pointItem,&WayPtGraphicsItem::deletePointItem,this, &PagePath::scenePointDeleted);
+     * @endcode
+     */ ///////
     connect(pointItem,&WayPtGraphicsItem::pointSelected,this, &PagePath::scenePointSelected);
     connect(pointItem,&WayPtGraphicsItem::pointPosChanged,this, &PagePath::scenePointPosChanged);
     connect(pointItem,&WayPtGraphicsItem::deletePointItem,this, &PagePath::scenePointDeleted);
@@ -894,7 +935,8 @@ void PagePath::addKeypt() {
     inputPoint_num++;
 }
 /**
- * @brief PagePath::on_Button_add_point_clicked 点击“加点”按钮
+ * @brief 点击“加点”按钮
+ * @details 调用  PagePath::addKeypt();
  */
 void PagePath::on_Button_add_point_clicked()
 {
@@ -904,6 +946,7 @@ void PagePath::on_Button_add_point_clicked()
 
 /**
  * @brief PagePath::on_Button_delete_point_clicked  点击删点按钮
+ * 不允许删除关键点到两个点以下
  */
 void PagePath::on_Button_delete_point_clicked()
 {
@@ -913,12 +956,22 @@ void PagePath::on_Button_delete_point_clicked()
     }
 }
 
-
+/**
+ *
+ * @brief 窗口显示事件
+ * @details 为了准确获取trajPlotView的大小，正确resize trajPlotView的大小。
+ * 所以需要在此事件中调用 plotScene_init();
+ * @param event
+ */
 void PagePath::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
     plotScene_init();
 }
-
+/**
+ * 获取场景的坐标变换，之后设置背景图
+ * @note 如果想使用qt原生的graphicsView坐标变换。需要注意不能使用背景笔刷或者不要，
+ * 否则会出现背景图平铺。如果想利用qt原生坐标变换，可能得给scene画上背景比如坐标轴什么的，转scene不转view。
+ */
 void PagePath::plotScene_init() {//设置图片背景
     get_coordTranslate();
     trajPlotView->resize(res_w, res_h);
@@ -998,7 +1051,11 @@ void PagePath::scenePointPosChanged(int idx, QPointF nowPos, int keyIdx) {
     ui->nowPoint->setText(nowPointValue);
     ui->nowPoint->update();
 }
-
+/**
+ * 利用对象的WayPtGraphicsItem::getPointType()判断点类型\n
+ * 使用QObject::deleteLater()可以让对象完成事件后销毁
+ * 注意调用此函数仅限于可视化点时使用，用于清空场景且不让关键点对象被销毁。
+ */
 void PagePath::clearWayPt() {
     for(auto x :plotWayPt)
     {
@@ -1029,18 +1086,30 @@ void PagePath::inputModelChanged(QStandardItem *item) {
         plotPointitem->setPos(plotPoint);
     }
 }
-
+/**
+ * @brief 输出表格右键菜单
+ * 加5个偏移防止鼠标连击
+ * @param pos
+ */
 void PagePath::on_table_output_CustomContextMenuRequested(QPoint pos)
 {
     output_view_Menu->exec(QCursor::pos()+QPoint{5,5});
 }
-
+/**
+ * @brief 输入表格右键菜单
+ * 加5个偏移防止鼠标连击
+ * @param pos
+ */
 void PagePath::on_table_input_CustomContextMenuRequested(QPoint pos)
 {
-
     input_view_Menu->exec(QCursor::pos()+QPoint{5,5});
 }
-
+/**
+ * 删除点。分别根据wayidx，keyidx是否大于等于0来决定是否删除\n
+ * 如果不能将关键点删除到少于两个，函数会直接返回
+ * 删除点时同时会删除：场景项目、数组内容、表格内容。\n
+ * 并使用QObject::deleteLater()可以让对象完成事件后销毁
+ */
 void PagePath::removePt(int wayidx, int keyidx) {
 
     if (keyidx >= 0  )
@@ -1072,7 +1141,9 @@ void PagePath::removePt(int wayidx, int keyidx) {
 
     updatePlotIdx();
 }
-
+/**
+ * 遍历数组更新关键点和路径点下标
+ */
 void PagePath::updatePlotIdx() {
     int keycnt=0;
     for (auto keyptItem : plotKeyPt){

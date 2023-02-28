@@ -25,7 +25,7 @@ class WayPtGraphicsItem : public QObject, public QGraphicsEllipseItem
     Q_OBJECT
 public:
     /**
-     * 构造函数，指定点类型。
+     * @brief 构造函数，指定点类型。
      * @param type 关键点或路径点 \n
      * @refitem WayPtGraphicsItem::KEY_POINT 关键点 \n
      * @refitem WayPtGraphicsItem::WAY_POINT 路径点
@@ -41,14 +41,14 @@ public:
      */
     WayPtGraphicsItem(QColor color, QGraphicsItem *parent = 0);
     /**
-     * 用于指定点在waypoint列表的idx，未生成轨迹为-1
+     * @brief 用于指定点在waypoint列表的idx，未生成轨迹为-1
      * @param pointIndex 下标
      * @refitem PagePath::plotWayPt
      * @refitem PagePath::plotKeyPt;
      */
     void setPointIndex(int pointIndex);
     /**
-     * 用于指定点在keypoint列表的idx，不是keypoint为-1
+     * @brief 用于指定点在keypoint列表的idx，不是keypoint为-1
      * @param keyIndex
      * @see PagePath::plotWayPt
      * @see PagePath::plotKeyPt;
@@ -60,24 +60,25 @@ public:
      */
     void setPointTime(double pointTime);
     /**
-     * 用于在删除点之前进行一些操作，目前只会发送信号 deletePointItem(int idx,int keyIdx);\n
+     * @brief 用于在删除点之前进行一些操作
+     * @details 目前只会发送信号 deletePointItem(int idx,int keyIdx);\n
      * @see deletePointItem(int idx,int keyIdx);
      */
     void remove();
     /**
-     * 获取点的类型
+     * @brief 获取点的类型
      * @return int 点类型
      * @refitem WayPtGraphicsItem::KEY_POINT 关键点 \n
      * @refitem WayPtGraphicsItem::WAY_POINT 路径点
      */
     int getPointType() const;
     /**
-     * 获取路径点下标，未生成点为-1
+     * @brief 获取路径点下标，未生成点为-1
      * @return int，下标
      */
     int getPointIndex() const;
     /**
-     * 获取关键点下标，不是关键点为-1
+     * @brief 获取关键点下标，不是关键点为-1
      * @return int，下标
      */
     int getKeyIndex() const;
@@ -101,12 +102,12 @@ protected:
     */
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     /**
-     * WayPtGraphicsItem::mouseMoveEvent 左键移动点，重载父类QGraphicsEllipseItem的函数
+     * @brief WayPtGraphicsItem::mouseMoveEvent 左键移动点，重载父类QGraphicsEllipseItem的函数
      * @param event
      */
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     /**
-     * WayPtGraphicsItem::mouseMoveEvent 松开点，重载父类QGraphicsEllipseItem的函数
+     * @brief WayPtGraphicsItem::mouseMoveEvent 松开点，重载父类QGraphicsEllipseItem的函数
      * @param event
      */
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
