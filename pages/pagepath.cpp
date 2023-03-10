@@ -80,6 +80,7 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 
     buttonLoadPathClickedNum=0;
     setMouseTracking(true);
+    connect(ui->buttonGroup_outputMode, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),this,&PagePath::on_outputModeSelChanged);
 
 }
 
@@ -87,6 +88,7 @@ PagePath::PagePath(QWidget *parent) : QWidget(parent),
 PagePath::~PagePath()
 {
     plotWayPt.clear();
+
 
     trajPlotView->scene()->clear();
     delete trajPlotView;
@@ -606,7 +608,7 @@ void PagePath::on_Button_create_path_clicked()
     traj_generator->trajGeneration(input_waypoints_mat);
     if ( !traj_generator->isHasTraj()){return;}
     // 采样
-    int samplePtNum_btw_wayPt;
+
 //    samplePtNum_btw_wayPt = ui->Edit_num_btw_two->text().toInt();
 
     segment_num = traj_generator->getSegmentNum();
@@ -615,31 +617,101 @@ void PagePath::on_Button_create_path_clicked()
             traj_time_now;
     traj_time_now = traj_time_start;
 
+    switch (sampleMode)
+    {
+        case POINT_NUM:
+        {
+            QVector<int> samplePtNum_btw_wayPt;
+            for(int i=0;i<segment_num;i++) {
+                auto inputNumIdx = inputModel->index(i,2);
+                auto numData=inputModel->data(inputNumIdx);
+                if ( !(numData.canConvert<int>()) )
+                {
+                    QMessageBox::warning(nullptr, "ToolBox", "输入的关键点间隔数非法！", QMessageBox::Ok , QMessageBox::Ok);
+                    return;
+                }
+                samplePtNum_btw_wayPt.push_back(numData.toInt());
+            }
+            sampleTrajByPtNum(traj_time_final, traj_time_now, samplePtNum_btw_wayPt);
+            break;
+        }
+        case TIMEINTERVAL:
+        {
+            double time_interval = ui->Edit_sampleTime->value();
+            if(static_cast<int>((traj_time_final-traj_time_start)/time_interval) < inputPoin    t_num )
+            {
+                QMessageBox::warning(nullptr, "ToolBox", "时间间隔过大导致关键点丢失，请设置一个更小的时间间隔", QMessageBox::Ok , QMessageBox::Ok);
+                return;
+            }
+
+            sampleTrajByTime(traj_time_now, time_interval);
+            break;
+        }
+        default:
+            break;
+    }
 
 
-    for(int i=0;i<segment_num;i++)
+    /*输出点提醒*/
+    init_table_out();
+    table_update();
+    plotTrajectory();
+
+}
+
+void PagePath::sampleTrajByTime(double traj_time_now, double time_interval) {
+    for(int i=0; i < segment_num; i++)
     {
         QVector<CtrlCmd_s> segTraj;
-        auto inputNumIdx = inputModel->index(i,2);
-        auto numData=inputModel->data(inputNumIdx);
-        if ( !(numData.canConvert<int>()) )
-        {
-            QMessageBox::warning(nullptr, "ToolBox", "输入的关键点间隔数非法！", QMessageBox::Ok , QMessageBox::Ok);
-            return;
-        }
-        samplePtNum_btw_wayPt = numData.toInt();
         double seg_time = traj_generator->getTrajSegmentTime(i);
-        double time_interval = seg_time / (samplePtNum_btw_wayPt);
-        double seg_time_start = traj_time_now;
-        for(int j=0;j < samplePtNum_btw_wayPt;j++)
+        double seg_time_final = traj_time_now + seg_time;
+        while(traj_time_now<seg_time_final)
         {
-            double t = seg_time_start + 1.0 * j * time_interval;
-            auto traj_cmd = traj_generator->getCtrlCmd(t);
-            Eigen::Vector2d pos_cmd,vel_cmd;
+            auto traj_cmd = traj_generator->getCtrlCmd(traj_time_now);
+            Vector2d pos_cmd,vel_cmd;
             pos_cmd = (traj_cmd.block(0,0,2,1));
             vel_cmd = (traj_cmd.block(0,1,2,1));
             double vel = vel_cmd.norm();
-            double dir = std::acos( vel_cmd.dot(Eigen::Vector2d(1,0)) / ( vel_cmd.norm()*1.0 ) );
+            double dir = acos(vel_cmd.dot(Vector2d(1, 0)) / (vel_cmd.norm() * 1.0 ) );
+//            traj_pos.push_back(QPointF(pos_cmd(0),pos_cmd(1)));
+//            traj_speed.push_back(vel);
+//            traj_dir.push_back(dir);
+//            traj_angle.push_back(0);
+
+            segTraj.push_back(
+                    {QPointF(pos_cmd(0),pos_cmd(1)),
+                     QPointF(vel_cmd(0),vel_cmd(1)),
+                     vel,dir,0.00,traj_time_now}
+            );
+
+            generated_ptsNnum++;
+
+            traj_time_now+=time_interval;
+        }
+        generated_ptsSegList.push_back(segTraj);
+
+    }
+}
+
+void PagePath::sampleTrajByPtNum(double traj_time_final, double traj_time_now, const QVector<int> &samplePtNum_btw_wayPt) {
+    for(int i=0; i < segment_num; i++)
+    {
+        QVector<CtrlCmd_s> segTraj;
+
+        int samplePtNum;
+        samplePtNum = samplePtNum_btw_wayPt[i];
+        double seg_time = traj_generator->getTrajSegmentTime(i);
+        double time_interval = seg_time / (samplePtNum);
+        double seg_time_start = traj_time_now;
+        for(int j=0;j < samplePtNum;j++)
+        {
+            double t = seg_time_start + 1.0 * j * time_interval;
+            auto traj_cmd = traj_generator->getCtrlCmd(t);
+            Vector2d pos_cmd,vel_cmd;
+            pos_cmd = (traj_cmd.block(0,0,2,1));
+            vel_cmd = (traj_cmd.block(0,1,2,1));
+            double vel = vel_cmd.norm();
+            double dir = acos(vel_cmd.dot(Vector2d(1, 0)) / (vel_cmd.norm() * 1.0 ) );
 //            traj_pos.push_back(QPointF(pos_cmd(0),pos_cmd(1)));
 //            traj_speed.push_back(vel);
 //            traj_dir.push_back(dir);
@@ -659,18 +731,18 @@ void PagePath::on_Button_create_path_clicked()
     }
     //特殊处理最后和第一个点
     generated_ptsSegList[0][0].dir = 0.0000f;
-    auto ptsSegListIter = generated_ptsSegList[segment_num-1].end() - 1 ;
+    auto ptsSegListIter = generated_ptsSegList[segment_num - 1].end() - 1 ;
     auto inputPtIter = input_ptsList.end() - 1;
     if( (ptsSegListIter->pos - (*inputPtIter) ).manhattanLength() > (1e-5) )
     {
         double t = traj_time_final-0.01;
         auto traj_cmd = traj_generator->getCtrlCmd(t);
-        Eigen::Vector2d pos_cmd,vel_cmd;
+        Vector2d pos_cmd,vel_cmd;
         pos_cmd = (traj_cmd.block(0,0,2,1));
         vel_cmd = (traj_cmd.block(0,1,2,1));
         double vel = vel_cmd.norm();
-        double dir = std::acos( vel_cmd.dot(Eigen::Vector2d(1,0)) / ( vel_cmd.norm()*1.0 ) );
-        generated_ptsSegList[segment_num-1].push_back(
+        double dir = acos(vel_cmd.dot(Vector2d(1, 0)) / (vel_cmd.norm() * 1.0 ) );
+        generated_ptsSegList[segment_num - 1].push_back(
                 {QPointF(pos_cmd(0),pos_cmd(1)),
                  QPointF(vel_cmd(0),vel_cmd(1)),
                  vel,dir,0.00,t}
@@ -678,12 +750,6 @@ void PagePath::on_Button_create_path_clicked()
         generated_ptsNnum++;
 
     }
-
-    /*输出点提醒*/
-    init_table_out();
-    table_update();
-    plotTrajectory();
-
 }
 
 
@@ -1155,6 +1221,21 @@ void PagePath::updatePlotIdx() {
         wayptItem->setPointIndex(waycnt);
         waycnt++;
     }
+}
+
+void PagePath::on_outputModeSelChanged(QAbstractButton *button) {
+    if (button == ui->radioButton_PointNumMode)
+    {
+        ui->Edit_sampleTime->setReadOnly(true);
+        sampleMode = POINT_NUM;
+//            break;
+    }
+    else if( button == ui->radioButton_TimeIntervalMode )
+    {
+        ui->Edit_sampleTime->setReadOnly(false);
+        sampleMode = TIMEINTERVAL;
+    }
+
 }
 
 

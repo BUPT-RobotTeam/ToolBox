@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <mygraphics.h>
 #include <QLabel>
+#include <QAbstractButton>
 
 namespace Ui {
 class PagePath;
@@ -199,9 +200,15 @@ private slots:
     void on_table_output_CustomContextMenuRequested(QPoint pos);
 
     void on_table_input_CustomContextMenuRequested(QPoint pos);
+     /**
+      * outputMode按钮变化槽函数
+      * @param button
+      */
+    void on_outputModeSelChanged(QAbstractButton *button);
 
 private://变量
-
+    enum outputMode_enum{POINT_NUM,TIMEINTERVAL};
+    outputMode_enum sampleMode=POINT_NUM ;
     Ui::PagePath *ui;
     int buttonLoadPathClickedNum; ///<判断是否已经打印了轨迹
     QVector<QPointF> input_ptsList; ///<存储输入点
@@ -279,6 +286,10 @@ private: //function
      * @brief 获取坐标换算
      */
     void get_coordTranslate() const;
+
+    void sampleTrajByPtNum(double traj_time_final, double traj_time_now, const QVector<int> &samplePtNum_btw_wayPt);
+
+    void sampleTrajByTime(double traj_time_now, double time_interval);
 };
 QPointF cal_rotate_point(double x, double y, double dangle, double dx, double dy, int toggle_x, int toggle_y, double w,
                          double h);
