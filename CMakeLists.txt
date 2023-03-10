@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(tool_box VERSION 1.5.0 LANGUAGES CXX)
+project(tool_box VERSION 1.5.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -11,7 +11,7 @@ add_definitions ( -Wall )
 #set(VT_VERSION  ${PROJECT_VERSION})
 set(VT_INTRO_VERSION  1)
 add_definitions(
-        -DVT_VERSION=1.5
+        -DVT_VERSION=1.51
         -DVT_INTRO_VERSION=${VT_INTRO_VERSION}
         -DVER_ORIGINAL
 )
