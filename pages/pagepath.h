@@ -286,9 +286,18 @@ private: //function
      * @brief 获取坐标换算
      */
     void get_coordTranslate() const;
-
+    /**
+     * 按照点数量采样，间隔点数量需要从输入表中先读取。
+     * @param traj_time_final 轨迹最终时间
+     * @param traj_time_now 轨迹开始时刻
+     * @param samplePtNum_btw_wayPt 间隔点数量
+     */
     void sampleTrajByPtNum(double traj_time_final, double traj_time_now, const QVector<int> &samplePtNum_btw_wayPt);
-
+    /**
+     * 按照时间间隔采样
+     * @param traj_time_now 轨迹开始时刻
+     * @param time_interval 采样间隔
+     */
     void sampleTrajByTime(double traj_time_now, double time_interval);
 };
 QPointF cal_rotate_point(double x, double y, double dangle, double dx, double dy, int toggle_x, int toggle_y, double w,
