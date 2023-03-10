@@ -638,7 +638,7 @@ void PagePath::on_Button_create_path_clicked()
         case TIMEINTERVAL:
         {
             double time_interval = ui->Edit_sampleTime->value();
-            if(static_cast<int>((traj_time_final-traj_time_start)/time_interval) < inputPoin    t_num )
+            if(static_cast<int>((traj_time_final-traj_time_start)/time_interval) < inputPoint_num )
             {
                 QMessageBox::warning(nullptr, "ToolBox", "时间间隔过大导致关键点丢失，请设置一个更小的时间间隔", QMessageBox::Ok , QMessageBox::Ok);
                 return;
