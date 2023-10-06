@@ -1,4 +1,4 @@
-#include "scriptFunctionData.h"
+﻿#include "scriptFunctionData.h"
 #include <sstream>
 #include <cstring>
 

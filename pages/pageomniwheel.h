@@ -1,4 +1,4 @@
-#ifndef PAGEOMNIWHEEL_H
+﻿#ifndef PAGEOMNIWHEEL_H
 #define PAGEOMNIWHEEL_H
 
 #include <QMainWindow>

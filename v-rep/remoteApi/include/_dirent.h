@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Dirent interface for Microsoft Visual Studio
  * Version 1.21
  *

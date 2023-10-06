@@ -1,4 +1,4 @@
-#include <trajectory_generator.h>
+﻿#include <trajectory_generator.h>
 #include <QMessageBox>
 #include <QString>
 #include <QTextStream>
@@ -77,11 +77,11 @@ void TimeOptimizerTraj::trajGeneration(Eigen::MatrixXd path)
     {
         QString warningText;
         warningText=QString::asprintf(
-                "[TimeOptimizer DEMO] 可能的原因 :\n"
-                "1 - 检查你的Mosek license是否安装,\n"
-                "2 - 求解器的数值问题，调大d_s"
+                u8"[TimeOptimizer DEMO] 可能的原因 :\n"
+                u8"1 - 检查你的Mosek license是否安装,\n"
+                u8"2 - 求解器的数值问题，调大d_s"
         );
-        QMessageBox::warning(nullptr, "[TimeOptimizer DEMO] 轨迹生成失败",
+        QMessageBox::warning(nullptr, u8"[TimeOptimizer DEMO] 轨迹生成失败",
                              warningText, QMessageBox::Ok  , QMessageBox::Ok);
 
 //        cout<<"[TimeOptimizer DEMO] temporal optimization fail"<<endl;
@@ -475,7 +475,7 @@ VectorXd TimeOptimizerTraj::timeAllocation( MatrixXd Path)
     return time;
 }
 
-__attribute__((unused)) VectorXd TimeOptimizerTraj::timeAllocationNaive(MatrixXd Path)
+[[maybe_unused]] VectorXd TimeOptimizerTraj::timeAllocationNaive(MatrixXd Path)
 {   
     VectorXd time(Path.rows() - 1);
 

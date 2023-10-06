@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @authors liny2 Cameliass
  * @brief 自定义图像场景和图形对象，用于显示、拖动关键点和路径点。
  */
@@ -24,7 +24,7 @@ WayPtGraphicsItem::WayPtGraphicsItem(int type, QGraphicsItem *parent)
             break;
         case WAY_POINT:
             m_color = QColor("#57FF09");
-            transferAction = editMenu->addAction(tr("转为关键点"));
+            transferAction = editMenu->addAction(tr(u8"转为关键点"));
 
             break;
         default:
@@ -36,7 +36,7 @@ WayPtGraphicsItem::WayPtGraphicsItem(int type, QGraphicsItem *parent)
     setPen(p);
     setBrush(m_color);
 
-    deleteAction = editMenu->addAction(tr("删除点"),[=](){remove();});
+    deleteAction = editMenu->addAction(tr(u8"删除点"),[=](){remove();});
 }
 
 

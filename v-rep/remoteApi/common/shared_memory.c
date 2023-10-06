@@ -1,4 +1,4 @@
-// This file, and generally the shared memory part of the remote API
+﻿// This file, and generally the shared memory part of the remote API
 // are courtesy of Benjamin Navarro
 
 #include "shared_memory.h"

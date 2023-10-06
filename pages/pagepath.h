@@ -1,10 +1,12 @@
-#ifndef PAGEPATH_H
+﻿#ifndef PAGEPATH_H
 #define PAGEPATH_H
 
 #include <QWidget>
 #include "vescinterface.h"
 #include "bezier.h"
 #include <QStandardItemModel>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include "txtdialog.h"
 #include "trajectory_generator.h"
 #include "spinboxDelegate.h"
@@ -206,6 +208,11 @@ private slots:
       */
     void on_outputModeSelChanged(QAbstractButton *button);
 
+    void on_ButtonSavePathConfig_clicked();
+    void on_ButtonBrowsePathConfig_clicked();
+    void on_ButtonSavePathConfigAs_clicked();
+    void on_ButtonNewPathConfig_clicked();
+
 private://变量
     enum outputMode_enum{POINT_NUM,TIMEINTERVAL};
     outputMode_enum sampleMode=POINT_NUM ;
@@ -237,6 +244,8 @@ private://变量
 
     QMenu *input_view_Menu{nullptr} ,///<input_view右键菜单，设为空指针可以进行delete而不报错。
         *output_view_Menu{nullptr};///<output_view右键菜单，设为空指针可以进行delete而不报错。
+    QString json_config_path;
+	QString last_dir;// used as default directory for next getSaveFileName
 private: //function
     /**
      * @brief 窗口显示事件
@@ -291,14 +300,18 @@ private: //function
      * @param traj_time_final 轨迹最终时间
      * @param traj_time_now 轨迹开始时刻
      * @param samplePtNum_btw_wayPt 间隔点数量
+     * @param angle_rad angle的弧度值
      */
-    void sampleTrajByPtNum(double traj_time_final, double traj_time_now, const QVector<int> &samplePtNum_btw_wayPt);
+    void sampleTrajByPtNum(double traj_time_final, double traj_time_now, const QVector<int> &samplePtNum_btw_wayPt, double angle_rad);
     /**
      * 按照时间间隔采样
      * @param traj_time_now 轨迹开始时刻
      * @param time_interval 采样间隔
      */
-    void sampleTrajByTime(double traj_time_now, double time_interval);
+    void sampleTrajByTime(double traj_time_now, double time_interval, double angle_rad);
+
+    bool load_path_image_from_file();
+    bool save_to_file();
 };
 QPointF cal_rotate_point(double x, double y, double dangle, double dx, double dy, int toggle_x, int toggle_y, double w,
                          double h);

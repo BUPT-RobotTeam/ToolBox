@@ -1,4 +1,4 @@
-#include "pagenone.h"
+﻿#include "pagenone.h"
 #include "ui_pagenone.h"
 extern "C"{
 //#include "extApi.h"

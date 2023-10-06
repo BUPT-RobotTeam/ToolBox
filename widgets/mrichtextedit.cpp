@@ -1,4 +1,4 @@
-/*
+﻿/*
 ** Copyright (C) 2013 Jiří Procházka (Hobrasoft)
 ** Contact: http://www.hobrasoft.cz/
 **

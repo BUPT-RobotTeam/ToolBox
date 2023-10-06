@@ -1,4 +1,4 @@
-#include "stackNull.h"
+﻿#include "stackNull.h"
 
 CStackNull::CStackNull()
 {

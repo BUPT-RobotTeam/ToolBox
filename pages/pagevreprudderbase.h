@@ -1,4 +1,4 @@
-#ifndef PAGEVREPRUDDERBASE_H
+﻿#ifndef PAGEVREPRUDDERBASE_H
 #define PAGEVREPRUDDERBASE_H
 
 #include <QMainWindow>

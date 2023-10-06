@@ -1,4 +1,4 @@
-#include "utility.h"
+﻿#include "utility.h"
 #include <cmath>
 #include <QProgressDialog>
 #include <QEventLoop>
@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QFileInfo>
+#include <qmath.h>
 #include <QtGlobal>
 #include <QNetworkInterface>
 

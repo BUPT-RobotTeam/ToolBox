@@ -1,4 +1,4 @@
-#ifndef PAGESERIALANALYSIS_H
+﻿#ifndef PAGESERIALANALYSIS_H
 #define PAGESERIALANALYSIS_H
 
 #include <QWidget>

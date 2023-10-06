@@ -1,4 +1,4 @@
-#include "vbytearray.h"
+﻿#include "vbytearray.h"
 #include <cmath>
 #include <stdint.h>
 

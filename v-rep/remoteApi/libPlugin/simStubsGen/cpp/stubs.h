@@ -1,4 +1,4 @@
-#py from parse import parse
+﻿#py from parse import parse
 #py import model
 #py plugin = parse(pycpp.params['xml_file'])
 #ifndef STUBS_H__INCLUDED

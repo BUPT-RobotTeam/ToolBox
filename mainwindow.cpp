@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QDebug>
@@ -616,7 +616,7 @@ void MainWindow::reloadPages()
     mPagePath = new PagePath(this);
     mPagePath->setVesc(mVesc);
     ui->pageWidget->addWidget(mPagePath);
-    addPageItem(tr("路径规划"), "://res/icons/Line Chart-96.png", "", false, true);
+    addPageItem(tr(u8"路径规划"), "://res/icons/Line Chart-96.png", "", false, true);
 
     mPageNone = new PageNone(this);
     mPageNone->setVesc(mVesc);

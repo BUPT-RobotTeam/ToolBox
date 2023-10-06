@@ -1,4 +1,4 @@
-#ifndef BLEUART_H
+﻿#ifndef BLEUART_H
 #define BLEUART_H
 
 #include <QObject>

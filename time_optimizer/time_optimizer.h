@@ -1,4 +1,4 @@
-#ifndef _TIME_OPTIMIZER_H_
+﻿#ifndef _TIME_OPTIMIZER_H_
 #define _TIME_OPTIMIZER_H_
 
 #include <Eigen/Dense>

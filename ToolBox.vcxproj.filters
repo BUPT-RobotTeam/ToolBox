@@ -1,0 +1,785 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts;xlf</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts;xlf</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="widgets\aspectimglabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bezier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="commands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="digitalfiltering.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\displaybar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\displaypercentage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\helpdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\historylineedit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\imagewidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mygraphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\nrfpair.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="packet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pageconnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pagedataanalysis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pagedebugprint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pageimu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\pagelistitem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pagenone.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pagepath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pageserialanalysis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pagesettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\pagewelcome.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\parameditstring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\qcustomplot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\rtdatatext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spinboxDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\superslider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tcpserversimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="time_optimizer\time_optimizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="time_optimizer\trajectory_generator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="time_optimizer\trajectory_generator_waypoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pages\txtdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vbytearray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\vesc3dview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vescinterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\vtextbrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="widgets\aspectimglabel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="bezier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="commands.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="datatypes.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="digitalfiltering.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="widgets\displaybar.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\displaypercentage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\helpdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="widgets\historylineedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="widgets\imagewidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="mainwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="time_optimizer\mosek.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="mygraphics.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\nrfpair.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="packet.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pageconnection.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pagedataanalysis.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pagedebugprint.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pageimu.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\pagelistitem.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pagenone.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pagepath.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pageserialanalysis.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pagesettings.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pages\pagewelcome.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\parameditstring.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="widgets\paramtable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="widgets\qcustomplot.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\rtdatatext.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="spinboxDelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\superslider.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="tcpserversimple.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="time_optimizer\timeAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time_optimizer\time_optimizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time_optimizer\traj_poly_mono.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time_optimizer\trajectory_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time_optimizer\trajectory_generator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time_optimizer\trajectory_generator_waypoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="pages\txtdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="utility.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="vbytearray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="widgets\vesc3dview.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="vescinterface.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widgets\vtextbrowser.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\language\lang_Chinese.ts">
+      <Filter>Translation Files</Filter>
+    </None>
+    <None Include="res\language\lang_English.ts">
+      <Filter>Translation Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="widgets\helpdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="mainwindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="widgets\nrfpair.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pageconnection.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pagedataanalysis.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pagedebugprint.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pageimu.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pagenone.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pagepath.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pageserialanalysis.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pagesettings.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\pagewelcome.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="widgets\parameditstring.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pages\txtdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\icons\3ph_sine.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\About-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Add Image-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Align Center-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Align Justify-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Align Left-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Align Right-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Anchor-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Bold-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Brake Warning-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Bug-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Bulleted List-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\CHANGELOG">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Calculator-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Cancel-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Car Battery-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Circled Play-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Connected-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Console-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Controller-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Copy-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Cut-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Data Backup-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\fonts\DejaVuSans-Bold.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\fonts\DejaVuSans-BoldOblique.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\fonts\DejaVuSans-Oblique.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\fonts\DejaVuSans.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\fonts\DejaVuSansMono-Bold.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\fonts\DejaVuSansMono-BoldOblique.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\fonts\DejaVuSansMono-Oblique.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\fonts\DejaVuSansMono.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Delete-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Disconnected-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Down-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Download-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\EUC-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Electronics-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Fill Color-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Gyroscope-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Help-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Home-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Horizontal Settings Mixer-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Indent-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Italic-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Line Chart-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Link-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Menu 2-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Numbered List-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Ok-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Online-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Open Folder-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Outdent-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Outgoing Data-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Paste-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Plus Math-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Polyline-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Potentiometer-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Process-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Redo-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Refresh-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Restart-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Rs 232 Male-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Save as-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Save-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Send File-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Settings-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Shutdown-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Speed-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Stop Sign-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Stop-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Strikethrough-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Text Color-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Toggle Off-96_2.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Toggle On-96_2.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons_textedit\Undo-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Up-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Upload-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\User Group Man Man-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Waypoint Map-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Wii-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\Wizard-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\alive_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\alive_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\app_default.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\app_down.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\app_up.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\appconf.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\apply.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\arrow_down.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\arrow_l.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\arrow_r.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\arrow_up.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\bldc.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\can_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\can_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\expand_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\expand_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\expand_v_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\expand_v_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\path_image\ground.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\ic_folder_open_black_48dp.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\ic_insert_drive_file_black_48dp.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\icons8-target-96.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\imu_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\imu_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\keys_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\keys_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\lambda.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\language\lang_Chinese.qm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\language\lang_English.qm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\mcconf.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\motor.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\motor_default.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\motor_down.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\motor_up.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\images\neutral_v.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <QtRcc Include="res.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+    <None Include="res\icons\rl.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\rt_app_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\rt_app_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\rt_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\rt_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\rxp_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\rxp_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\sampl_trigger_start.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\sample_trigger_fault.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\sample_trigger_fault_nosend.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\sample_trigger_start_nosend.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\size_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\size_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\images\slider1.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\images\tool_box.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\txp_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\icons\txp_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\images\v1logo.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\images\v6plus_top.png">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include=".\tool_box_1.53_resource.rc" />
+  </ItemGroup>
+</Project>

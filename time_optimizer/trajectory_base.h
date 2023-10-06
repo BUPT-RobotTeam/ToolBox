@@ -1,4 +1,4 @@
-#ifndef _TRAJECTORY_H_
+﻿#ifndef _TRAJECTORY_H_
 #define _TRAJECTORY_H_
 
 #include <Eigen/Dense>

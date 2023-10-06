@@ -1,4 +1,4 @@
-// Use this header to dynamically load and bind coppeliaSim.dll and its functions (call loadSimLibrary and unloadSimLibrary)
+﻿// Use this header to dynamically load and bind coppeliaSim.dll and its functions (call loadSimLibrary and unloadSimLibrary)
 
 #if !defined(SIMLIB_INCLUDED_)
 #define SIMLIB_INCLUDED_

@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2019 Benjamin Vedder	benjamin@vedder.se
 
     This file is part of VESC Tool.

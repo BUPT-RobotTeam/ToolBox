@@ -1,4 +1,4 @@
-#ifndef DIGITALFILTERING_H
+﻿#ifndef DIGITALFILTERING_H
 #define DIGITALFILTERING_H
 
 #include <QVector>

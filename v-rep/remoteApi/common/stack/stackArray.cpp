@@ -1,4 +1,4 @@
-#include "stackArray.h"
+﻿#include "stackArray.h"
 #include "stackNull.h"
 #include "stackNumber.h"
 #include "stackBool.h"

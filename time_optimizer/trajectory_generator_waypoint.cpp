@@ -1,4 +1,4 @@
-#include "trajectory_generator_waypoint.h"
+﻿#include "trajectory_generator_waypoint.h"
 #include <stdio.h>
 //#include <ros/ros.h>
 //#include <ros/console.h>

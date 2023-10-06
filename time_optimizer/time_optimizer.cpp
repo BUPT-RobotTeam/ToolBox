@@ -1,6 +1,9 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include "time_optimizer.h"
+
+#include <QVector>
+
 #include "mosek.h"
 
 using namespace std;    
@@ -39,9 +42,12 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
     vector< pair<MSKboundkeye, pair<double, double> > > var_bdk; 
     vector< pair<MSKboundkeye, pair<double, double> > > var_bdk_n; 
 
-    int num_a[_seg_num], num_b[_seg_num], num_c[_seg_num], num_d[_seg_num];
+    /*int num_a[_seg_num], num_b[_seg_num], num_c[_seg_num], num_d[_seg_num];
     int num_t[_seg_num], num_e[_seg_num], num_f[_seg_num], num_g[_seg_num], num_h[_seg_num];
-    int num_x[_seg_num];
+    int num_x[_seg_num];*/
+    QVector<int> num_a(_seg_num, 0), num_b(_seg_num, 0), num_c(_seg_num, 0), num_d(_seg_num, 0);
+    QVector<int> num_t(_seg_num, 0), num_e(_seg_num, 0), num_f(_seg_num, 0), num_g(_seg_num, 0);
+    QVector<int> num_h(_seg_num, 0), num_x(_seg_num, 0);
 
     int num_a_n = 0, num_b_n = 0, num_c_n = 0, num_d_n = 0;
     int num_t_n = 0, num_e_n = 0, num_f_n = 0, num_g_n = 0, num_h_n = 0;
@@ -164,8 +170,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
     int _inequ_con_num = _inequ_acc_conti_num + _inequ_vel_num + _inequ_acc_num + _inequ_jer_num;
     int _con_num = _equ_con_num + _inequ_con_num + _equ_slack_num;
 
-    vector< pair<MSKboundkeye, pair<double, double> > > con_bdk; 
-    double x_var[_var_num];
+    vector< pair<MSKboundkeye, pair<double, double> > > con_bdk;
+    vector<double> x_var(_var_num, 0.0);
     MSKrescodee  r; 
     double primalobj;
 
@@ -300,8 +306,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
         for(int i = 0; i < K; i++)
         {
             int nzi = 3;
-            MSKint32t asub[nzi];
-            double aval[nzi];
+            MSKint32t asub[3];
+            double aval[3];
             aval[0] = -2.0 * d_s;
             aval[1] = -1.0;
             aval[2] =  1.0;
@@ -323,8 +329,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
     for(int k = 1; k < _seg_num; k ++) 
     {   
         int nzi = 2;
-        MSKint32t asub[nzi];
-        double aval[nzi];
+        MSKint32t asub[2];
+        double aval[2];
         aval[0] =  1.0;
         aval[1] = -1.0;
 
@@ -347,8 +353,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
         for(int i = 0; i < K; i++ )
         {
             int nzi = 3;
-            MSKint32t asub[nzi];
-            double aval[nzi];
+            MSKint32t asub[3];
+            double aval[3];
             aval[0] =  1.0;
             aval[1] =  1.0;
             aval[2] = -1.0;
@@ -371,8 +377,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
         for(int i = 0; i < K + 1; i++ )
         {
             int nzi = 2;
-            MSKint32t asub[nzi];
-            double aval[nzi];
+            MSKint32t asub[2];
+            double aval[2];
             aval[0] =  2.0;
             aval[1] = -1.0;
 
@@ -394,8 +400,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
         for(int i = 0; i < K + 1; i++ )
         {
             int nzi = 2;
-            MSKint32t asub[nzi];
-            double aval[nzi];
+            MSKint32t asub[2];
+            double aval[2];
             aval[0] = -1.0;
             aval[1] =  1.0;
 
@@ -417,8 +423,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
         for(int i = 0; i < K + 1; i++ )
         {
             int nzi = 2;
-            MSKint32t asub[nzi];
-            double aval[nzi];
+            MSKint32t asub[2];
+            double aval[2];
             aval[0] = -1.0;
             aval[1] =  1.0;
 
@@ -453,8 +459,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
         for(int i = 0; i < 3; i++) //for x, y, and z axis    
         {
             int nzi = 6;
-            MSKint32t asub[nzi];
-            double aval[nzi];
+            MSKint32t asub[6];
+            double aval[6];
             aval[0] = f_f(i);
             aval[1] = h_f(i) / 2.0;
             aval[2] = h_f(i) / 2.0;
@@ -491,8 +497,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
             for(int i = 0; i < 3; i++) //for x, y, and z axis    
             {
                 int nzi = 1;
-                MSKint32t asub[nzi];
-                double aval[nzi];
+                MSKint32t asub[1];
+                double aval[1];
 
                 aval[0] = pow(f(i), 2);                
                 asub[0] = idx_bias + num_a[k] + p;
@@ -520,8 +526,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
             for(int i = 0; i < 3; i++) //for x, y and z axis    
             {
                 int nzi = 3;
-                MSKint32t asub[nzi];
-                double aval[nzi];
+                MSKint32t asub[3];
+                double aval[3];
 
                 aval[0] = f(i);
                 aval[1] = h(i) / 2.0;
@@ -561,8 +567,8 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
             for(int i = 0; i < 3; i++) //for x, y and z axis    
             {
                 int nzi = 5; 
-                MSKint32t asub[nzi];
-                double aval[nzi];
+                MSKint32t asub[5];
+                double aval[5];
 
                 aval[0] = f_1(i);
                 aval[1] = h_1(i) / 2.0;
@@ -622,7 +628,7 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
             for(int i = 0; i < K; i++)
             {   
                 int nzi = 3;
-                MSKint32t csub[nzi];                
+                MSKint32t csub[3];                
                 
                 csub[0] = idx_bias + num_a[k] + num_b[k] + num_c[k] + i;
                 csub[1] = idx_bias + num_a[k] + num_b[k] + num_c[k] + num_d[k] + num_t[k] + i;
@@ -636,7 +642,7 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
             for(int i = 0; i < K + 1; i++)
             {   
                 int nzi = 3;
-                MSKint32t csub[nzi];                
+                MSKint32t csub[3];                
                 
                 csub[0] = idx_bias + num_a[k] + num_b[k] + num_c[k] + num_d[k] + num_t[k] + num_e[k] + num_f[k] + num_g[k] + i;
 
@@ -653,7 +659,7 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
     //Stacking the quadratic induced rotated cone;
     {           
         int nzi = 2 + num_a_n;
-        MSKint32t csub[nzi];                
+        vector<int> csub(nzi, 0);        
         
         csub[0] = num_x_n;
         csub[1] = num_x_n + 1;
@@ -672,13 +678,13 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
             idx_bias += num_x[k];
         }
 
-        r = MSK_appendcone(task, MSK_CT_RQUAD, 0.0, nzi, csub);
+        r = MSK_appendcone(task, MSK_CT_RQUAD, 0.0, nzi, csub.data());
     }
 
    // Stacking the objective function
     int nzi = num_d_n + 1;
-    MSKint32t asub[nzi];
-    double aval[nzi];
+    vector<int> asub(nzi, 0);
+    vector<double> aval(nzi, 0.0);
 
     aval[0] = rho * d_s;
     asub[0] = num_x_n;
@@ -698,7 +704,7 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
         idx_bias += num_x[k];
     }
     
-    r = MSK_putclist(task, nzi, asub, aval);
+    r = MSK_putclist(task, nzi, asub.data(), aval.data());
 
     if ( r==MSK_RES_OK ) 
          r = MSK_putobjsense(task, MSK_OBJECTIVE_SENSE_MINIMIZE);
@@ -724,7 +730,7 @@ int MinimumTimeOptimizer::MinimumTimeGeneration(
             
             r = MSK_getxx(task, 
                           MSK_SOL_ITR,    // Request the interior solution.  
-                          x_var); 
+                          x_var.data()); 
 
             r = MSK_getprimalobj(
                 task,

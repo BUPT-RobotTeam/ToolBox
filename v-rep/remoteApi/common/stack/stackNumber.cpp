@@ -1,4 +1,4 @@
-#include "stackNumber.h"
+﻿#include "stackNumber.h"
 #include <sstream>
 
 CStackNumber::CStackNumber(double n)

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @author liny2
  * @brief 表格spinbox编辑器代理
  */

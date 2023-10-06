@@ -1,4 +1,4 @@
-#ifndef _TRAJECTORY_POLY_MONO_H_
+﻿#ifndef _TRAJECTORY_POLY_MONO_H_
 #define _TRAJECTORY_POLY_MONO_H_
 
 #include <Eigen/Dense>

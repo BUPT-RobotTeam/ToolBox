@@ -1,4 +1,4 @@
-#include "luaFunctionDataItem.h"
+﻿#include "luaFunctionDataItem.h"
 
 CLuaFunctionDataItem::CLuaFunctionDataItem()
 {

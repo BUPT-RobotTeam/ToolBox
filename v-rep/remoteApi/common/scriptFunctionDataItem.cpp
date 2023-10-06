@@ -1,4 +1,4 @@
-#include "scriptFunctionDataItem.h"
+﻿#include "scriptFunctionDataItem.h"
 
 CScriptFunctionDataItem::CScriptFunctionDataItem()
 {

@@ -1,4 +1,4 @@
-#ifndef VESCINTERFACE_H
+﻿#ifndef VESCINTERFACE_H
 #define VESCINTERFACE_H
 
 #include <QObject>

@@ -1,4 +1,4 @@
-#ifndef PAGENONE_H
+﻿#ifndef PAGENONE_H
 #define PAGENONE_H
 
 #include <QWidget>

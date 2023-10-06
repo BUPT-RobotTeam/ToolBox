@@ -1,4 +1,4 @@
-#include "stackBool.h"
+﻿#include "stackBool.h"
 #include <sstream>
 
 CStackBool::CStackBool(bool theValue)

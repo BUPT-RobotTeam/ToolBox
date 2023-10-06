@@ -1,4 +1,4 @@
-#ifndef _TRAJ_GEN_H_
+﻿#ifndef _TRAJ_GEN_H_
 #define _TRAJ_GEN_H_
 
 #include <string>

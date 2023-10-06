@@ -1,4 +1,4 @@
-#ifndef _EXTAPIPLATFORM__
+﻿#ifndef _EXTAPIPLATFORM__
 #define _EXTAPIPLATFORM__
 
 #ifdef __cplusplus

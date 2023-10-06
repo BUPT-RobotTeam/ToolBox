@@ -1,4 +1,4 @@
-#ifndef _TIME_DATA_TYPE_
+﻿#ifndef _TIME_DATA_TYPE_
 #define _TIME_DATA_TYPE_
 
 #include <Eigen/Dense>

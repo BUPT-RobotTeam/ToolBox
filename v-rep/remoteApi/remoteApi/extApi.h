@@ -1,4 +1,4 @@
-#ifndef _EXTAPI__
+﻿#ifndef _EXTAPI__
 #define _EXTAPI__
 
 #ifdef __cplusplus

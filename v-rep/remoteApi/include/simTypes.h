@@ -1,4 +1,4 @@
-#if !defined(SIMTYPES_INCLUDED_)
+﻿#if !defined(SIMTYPES_INCLUDED_)
 #define SIMTYPES_INCLUDED_
 
 // Various types used in the interface functions:

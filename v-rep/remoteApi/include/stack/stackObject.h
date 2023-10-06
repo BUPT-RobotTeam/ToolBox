@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "simLib.h"
 #include <string>
 

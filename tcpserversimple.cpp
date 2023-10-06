@@ -1,4 +1,4 @@
-#include "tcpserversimple.h"
+﻿#include "tcpserversimple.h"
 #include <QDebug>
 
 TcpServerSimple::TcpServerSimple(QObject *parent) : QObject(parent)

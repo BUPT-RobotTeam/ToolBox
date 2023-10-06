@@ -1,4 +1,4 @@
-#if !defined(SIMCONST_INCLUDED_)
+﻿#if !defined(SIMCONST_INCLUDED_)
 #define SIMCONST_INCLUDED_
 
 #define SIM_PROGRAM_VERSION_NB 40000

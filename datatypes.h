@@ -1,4 +1,4 @@
-#ifndef DATATYPES_H
+﻿#ifndef DATATYPES_H
 #define DATATYPES_H
 
 #include <QObject>

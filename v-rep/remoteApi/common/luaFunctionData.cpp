@@ -1,4 +1,4 @@
-#include "luaFunctionData.h"
+﻿#include "luaFunctionData.h"
 #include <sstream>
 #include <cstring>
 

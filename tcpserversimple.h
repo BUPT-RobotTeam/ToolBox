@@ -1,4 +1,4 @@
-#ifndef TCPSERVERSIMPLE_H
+﻿#ifndef TCPSERVERSIMPLE_H
 #define TCPSERVERSIMPLE_H
 
 #include <QObject>

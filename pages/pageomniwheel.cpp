@@ -1,4 +1,4 @@
-#include "pageomniwheel.h"
+﻿#include "pageomniwheel.h"
 #include "ui_pageomniwheel.h"
 
 PageOmniWheel::PageOmniWheel(QWidget *parent) :

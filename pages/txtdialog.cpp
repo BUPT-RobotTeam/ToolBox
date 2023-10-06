@@ -1,4 +1,4 @@
-#include "txtdialog.h"
+﻿#include "txtdialog.h"
 #include "ui_txtdialog.h"
 
 txtDialog::txtDialog(QWidget *parent) :

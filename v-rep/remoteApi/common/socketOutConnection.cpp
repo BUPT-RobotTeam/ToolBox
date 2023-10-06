@@ -1,4 +1,4 @@
-#include "socketOutConnection.h"
+﻿#include "socketOutConnection.h"
 
 #define HEADER_LENGTH 6 // byte1=id1, byte2=id2, byte3+byte4=packetSize, byte5+byte6=packetsLeftToRead
 

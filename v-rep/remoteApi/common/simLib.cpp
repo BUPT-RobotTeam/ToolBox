@@ -1,4 +1,4 @@
-#include "../include/simLib.h"
+﻿#include "../include/simLib.h"
 #include <stdio.h>
 #if defined (__linux) || defined (__APPLE__)
     #include <dlfcn.h>

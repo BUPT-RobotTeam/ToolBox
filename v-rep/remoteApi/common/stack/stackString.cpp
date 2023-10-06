@@ -1,4 +1,4 @@
-#include "stackString.h"
+﻿#include "stackString.h"
 #include <sstream>
 
 CStackString::CStackString(const char* str,int l)

@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2019 Benjamin Vedder	benjamin@vedder.se
 
     This file is part of VESC Tool.
@@ -141,7 +141,7 @@ PageImu::PageImu(QWidget *parent) :
     ui->magPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignRight|Qt::AlignBottom);
     ui->magPlot->legend->setBrush(QBrush(QColor(255,255,255,230)));
     ui->magPlot->xAxis->setLabel("Seconds (s)");
-    ui->magPlot->yAxis->setLabel("Magnetic Field (µT)");
+    ui->magPlot->yAxis->setLabel("Magnetic Field (ÂµT)");
 
     m3dView = new Vesc3DView(this);
     m3dView->setMinimumWidth(200);

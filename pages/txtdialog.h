@@ -1,4 +1,4 @@
-#ifndef TXTDIALOG_H
+﻿#ifndef TXTDIALOG_H
 #define TXTDIALOG_H
 
 #include <QDialog>

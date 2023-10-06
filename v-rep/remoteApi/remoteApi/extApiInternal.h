@@ -1,4 +1,4 @@
-#ifndef __EXTAPIINTERNAL_
+﻿#ifndef __EXTAPIINTERNAL_
 #define __EXTAPIINTERNAL_
 
 #include "extApiPlatform.h"

@@ -1,4 +1,4 @@
-#ifndef VBYTEARRAY_H
+﻿#ifndef VBYTEARRAY_H
 #define VBYTEARRAY_H
 
 #include <QByteArray>

@@ -1,4 +1,4 @@
-#include "pageserialanalysis.h"
+﻿#include "pageserialanalysis.h"
 #include "ui_pageserialanalysis.h"
 
 PageSerialAnalysis::PageSerialAnalysis(QWidget *parent) : QWidget(parent),

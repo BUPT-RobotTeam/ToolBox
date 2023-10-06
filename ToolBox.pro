@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 # Version
-VT_VERSION = 1.51
+VT_VERSION = 1.53
 VT_INTRO_VERSION = 1
 
 # Ubuntu 18.04 (should work on raspbian buster too)
@@ -14,7 +14,7 @@ VT_INTRO_VERSION = 1
 DEFINES += VT_VERSION=$$VT_VERSION
 DEFINES += VT_INTRO_VERSION=$$VT_INTRO_VERSION
 
-CONFIG += c++11
+CONFIG += c++17
 
 #TRANLATION
 TRANSLATIONS += res/language/lang_English.ts \

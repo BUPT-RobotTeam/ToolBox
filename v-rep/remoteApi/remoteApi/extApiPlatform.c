@@ -1,4 +1,4 @@
-// Shared memory routines are courtesy of Benjamin Navarro
+﻿// Shared memory routines are courtesy of Benjamin Navarro
 
 #include "extApiPlatform.h"
 #include <stdio.h>
